@@ -3,12 +3,11 @@
 ## Active To-Dos
 
 ### High-Priority
+- [ ] Review D&A roadmap .pptx #Modernization
+- [ ] Get Looker commercials  #DataModernization
+- [ ] Schedule monthly skip-level meetings with team #Staffing
+- [ ] Update comp statuses for August  ##Lucky
 - [ ] Q3 BI Engineering Prioritization #Planning #Capacity
-
-
-
-
-
 - [ ] Store EntraID updates #MCEMigration
 - [ ] SQL query for intraday sales and traffic #storeInsights
 - [ ] Complete workbook for VMWare migration #VMWare
@@ -47,10 +46,27 @@
 - Snowflake MFA account enforcement #Platform @Shrikant
 
 
+
+
+#### 2026-08-04
+
+##### Priorities
+
+- build an app
+- attend meetings
+- eat lunch
+
 ##### Accomplished
+
+- attended meetings
+- built app
 
 ##### Blocked
 
+- staffing
+
 ##### Notes
 
-##### New Action Items
+- was this a useful day? history will decide
+
+

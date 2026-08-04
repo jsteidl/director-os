@@ -22,7 +22,11 @@ from screens.task_complete import (
 from screens.add_task import (
     AddTaskScreen,
 )
+from parser import add_daily_entry
 
+from screens.daily_checkin import (
+    DailyCheckinScreen
+)
 
 class DashboardScreen(Screen):
 
@@ -31,6 +35,7 @@ class DashboardScreen(Screen):
         Binding("d", "complete_task", "Done"),
         Binding("u", "reopen_task", "Undo"),
         Binding("r", "refresh_data", "Refresh"),
+        Binding("t", "daily_checkin", "Check-in")
     ]
 
     CSS = """
@@ -229,3 +234,32 @@ class DashboardScreen(Screen):
         )
 
         self.refresh_data()
+
+    # =====================================================
+    # REOPEN TASK
+    # =====================================================
+    def action_daily_checkin(self):
+
+        self.app.push_screen(
+            DailyCheckinScreen(),
+            self.daily_checkin_callback
+        )
+
+
+    def daily_checkin_callback(
+    self,
+    result
+    ):
+
+        if not result:
+            return
+
+        success = add_daily_entry(
+            result["priorities"],
+            result["accomplished"],
+            result["blocked"],
+            result["notes"],
+        )
+
+        self.refresh_data()
+        

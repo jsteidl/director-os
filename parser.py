@@ -3,6 +3,10 @@ from datetime import date
 from pathlib import Path
 
 
+# ==========================================================
+# FILE HELPERS
+# ==========================================================
+
 def get_log_file():
 
     filename = (
@@ -24,6 +28,14 @@ def load_log():
         return ""
 
     return path.read_text(
+        encoding="utf-8"
+    )
+
+
+def save_log(content):
+
+    get_log_file().write_text(
+        content,
         encoding="utf-8"
     )
 
@@ -109,10 +121,7 @@ def add_task(task_name, tag=""):
         1,
     )
 
-    get_log_file().write_text(
-        content,
-        encoding="utf-8",
-    )
+    save_log(content)
 
 
 # ==========================================================
@@ -136,6 +145,29 @@ def get_dependencies():
         )
         for item, owner, since in matches
     ]
+
+
+def add_dependency(
+    item,
+    owner,
+):
+
+    content = load_log()
+
+    line = (
+        f"- {item} | Owner: {owner} "
+        f"| Since: {date.today()}\n"
+    )
+
+    marker = "### Waiting On\n"
+
+    content = content.replace(
+        marker,
+        marker + line,
+        1,
+    )
+
+    save_log(content)
 
 
 # ==========================================================
@@ -197,15 +229,12 @@ def complete_task(
 
     content = content.replace(
         "### Wins Worth Mentioning",
-        accomplishment
-        + "### Wins Worth Mentioning",
+        accomplishment +
+        "### Wins Worth Mentioning",
         1,
     )
 
-    get_log_file().write_text(
-        content,
-        encoding="utf-8",
-    )
+    save_log(content)
 
 
 # ==========================================================
@@ -235,7 +264,6 @@ def reopen_task(task_title):
     for match in matches:
 
         if match.group(1) == task_title:
-
             target = match
             break
 
@@ -254,7 +282,62 @@ def reopen_task(task_title):
         1,
     )
 
-    get_log_file().write_text(
-        content,
-        encoding="utf-8",
+    save_log(content)
+
+
+# ==========================================================
+# DAILY ENTRY
+# ==========================================================
+
+def add_daily_entry(
+    priorities,
+    accomplished,
+    blocked,
+    notes,
+):
+
+    content = load_log()
+
+    today = date.today().isoformat()
+
+    entry = f"""
+
+#### {today}
+
+##### Priorities
+
+{to_markdown_list(priorities)}
+
+##### Accomplished
+
+{to_markdown_list(accomplished)}
+
+##### Blocked
+
+{to_markdown_list(blocked)}
+
+##### Notes
+
+{to_markdown_list(notes)}
+
+
+"""
+
+    content += entry
+
+    save_log(content)
+
+    return True
+
+def to_markdown_list(text):
+
+    lines = [
+        line.strip()
+        for line in text.splitlines()
+        if line.strip()
+    ]
+
+    return "\n".join(
+        f"- {line}"
+        for line in lines
     )
