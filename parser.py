@@ -264,6 +264,20 @@ def resolve_dependency(
 
     save_log(content)
 
+    def get_daily_log_text():
+
+        content = load_log()
+
+        marker = "### Daily Log"
+
+        if marker not in content:
+            return "No daily log entries."
+
+        return content.split(
+            marker,
+            1
+        )[1].strip()
+
 
 
 # ==========================================================
@@ -436,4 +450,28 @@ def to_markdown_list(text):
     return "\n".join(
         f"- {line}"
         for line in lines
+    )
+
+# ==========================================================
+# DAILY LOG VIEWER
+# ==========================================================
+
+def get_daily_log_text():
+
+    content = load_log()
+
+    marker = "### Daily Log"
+
+    if marker not in content:
+        return "No daily log entries found."
+
+    log_text = content.split(
+        marker,
+        1
+    )[1].strip()
+
+    return (
+        "DAILY LOG\n"
+        "=========\n\n"
+        + log_text
     )

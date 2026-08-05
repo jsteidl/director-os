@@ -39,6 +39,9 @@ from screens.resolve_dependency import (
     ResolveDependencyScreen
 )
 
+from screens.daily_log_viewer import (
+    DailyLogViewerScreen
+)
 class DashboardScreen(Screen):
 
     BINDINGS = [
@@ -49,6 +52,7 @@ class DashboardScreen(Screen):
         Binding("t", "daily_checkin", "Check-in"),
         Binding("w", "add_dependency", "Dependency"),
         Binding("x", "resolve_dependency", "Resolve"),
+        Binding("l", "show_daily_log", "Daily Log")
     ]
 
     CSS = """
@@ -346,3 +350,13 @@ class DashboardScreen(Screen):
         )
 
         self.refresh_data()
+# =====================================================
+# DAILY LOG VIEW
+# =====================================================
+    def action_show_daily_log(
+        self
+    ):
+
+        self.app.push_screen(
+            DailyLogViewerScreen()
+        )

@@ -110,3 +110,24 @@
 - lots to do -- take your time and stay focused!
 
 
+
+
+#### 2026-08-05
+
+##### Priorities
+
+
+
+##### Accomplished
+
+- closed 2 issues in director OS app
+
+##### Blocked
+
+
+
+##### Notes
+
+
+
+
