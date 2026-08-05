@@ -42,6 +42,9 @@ from screens.resolve_dependency import (
 from screens.daily_log_viewer import (
     DailyLogViewerScreen
 )
+
+from screens.daily_log_navigator import DailyLogNavigator
+
 class DashboardScreen(Screen):
 
     BINDINGS = [
@@ -358,5 +361,5 @@ class DashboardScreen(Screen):
     ):
 
         self.app.push_screen(
-            DailyLogViewerScreen()
+            DailyLogNavigator()
         )

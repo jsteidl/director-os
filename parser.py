@@ -1,6 +1,7 @@
 import re
 from datetime import date
 from pathlib import Path
+from dataclasses import dataclass
 
 
 # ==========================================================
@@ -90,6 +91,13 @@ class ResolvedDependency:
         self.owner = owner
         self.resolved = resolved
         self.notes = notes
+@dataclass
+class DailyLogEntry:
+    date: str
+    priorities: list[str]
+    accomplished: list[str]
+    blocked: list[str]
+    notes: list[str]
 
 # ==========================================================
 # TASKS
@@ -451,7 +459,84 @@ def to_markdown_list(text):
         f"- {line}"
         for line in lines
     )
+def parse_daily_log(content):
+    """Parse Daily Log entries into DailyLogEntry objects."""
 
+    entries = []
+
+    current_entry = None
+    current_section = None
+
+    for raw_line in content.splitlines():
+        line = raw_line.strip()
+
+        if not line:
+            continue
+
+        # --------------------------------------------------
+        # Date Header
+        # Example:
+        # #### 2026-08-05
+        # --------------------------------------------------
+        if line.startswith("#### ") and not line.startswith("#####"):
+            date_text = line.replace("#### ", "").strip()
+
+            current_entry = DailyLogEntry(
+                date=date_text,
+                priorities=[],
+                accomplished=[],
+                blocked=[],
+                notes=[],
+            )
+
+            entries.append(current_entry)
+            current_section = None
+            continue
+
+        # --------------------------------------------------
+        # Section Header
+        # Example:
+        # ##### Priorities
+        # --------------------------------------------------
+        if line.startswith("##### "):
+            current_section = (
+                line.replace("##### ", "")
+                .strip()
+                .lower()
+            )
+            continue
+
+        # --------------------------------------------------
+        # List Item
+        # Example:
+        # - Review roadmap
+        # --------------------------------------------------
+        if (
+            line.startswith("- ")
+            and current_entry is not None
+            and current_section is not None
+        ):
+            item = line[2:].strip()
+
+            if current_section == "priorities":
+                current_entry.priorities.append(item)
+
+            elif current_section == "accomplished":
+                current_entry.accomplished.append(item)
+
+            elif current_section == "blocked":
+                current_entry.blocked.append(item)
+
+            elif current_section == "notes":
+                current_entry.notes.append(item)
+
+    # Newest first
+    entries.sort(
+        key=lambda entry: entry.date,
+        reverse=True,
+    )
+
+    return entries
 # ==========================================================
 # DAILY LOG VIEWER
 # ==========================================================

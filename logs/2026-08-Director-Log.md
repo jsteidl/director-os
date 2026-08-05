@@ -3,7 +3,8 @@
 ## Active To-Dos
 
 ### High-Priority
-
+- [ ] discuss store insights timeline with manish and urvi today #storeInsights
+- [ ] send meeting times to Brian Williams for 2026-08-07 #Looker
 - [ ] Review D&A roadmap .pptx #Modernization
 - [ ] Get Looker commercials  #DataModernization
 - [ ] Schedule monthly skip-level meetings with team #Staffing
@@ -52,7 +53,6 @@
 
 ### Daily Log
 
-
 #### 2026-08-04
 
 ##### Priorities
@@ -60,14 +60,6 @@
 - SQL query for intraday sales and traffic #storeInsights
 - Workbook update for infra VMWare migration effort #VMWare
 - Snowflake MFA account enforcement #Platform @Shrikant
-
-
-
-
-#### 2026-08-04
-
-##### Priorities
-
 - build an app
 - attend meetings
 - eat lunch
@@ -85,9 +77,6 @@
 
 - was this a useful day? history will decide
 
-
-
-
 #### 2026-08-05
 
 ##### Priorities
@@ -99,7 +88,7 @@
 
 ##### Accomplished
 
-
+- closed 2 issues in director OS app
 
 ##### Blocked
 
@@ -108,26 +97,3 @@
 ##### Notes
 
 - lots to do -- take your time and stay focused!
-
-
-
-
-#### 2026-08-05
-
-##### Priorities
-
-
-
-##### Accomplished
-
-- closed 2 issues in director OS app
-
-##### Blocked
-
-
-
-##### Notes
-
-
-
-
