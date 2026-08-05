@@ -8,9 +8,17 @@ class Task:
 
 @dataclass
 class Dependency:
-    item: str
-    owner: str
-    since: str
+    def __init__(
+        self,
+        item,
+        owner,
+        since,
+        age,
+    ):
+        self.item = item
+        self.owner = owner
+        self.since = since
+        self.age = age
 
 
 @dataclass

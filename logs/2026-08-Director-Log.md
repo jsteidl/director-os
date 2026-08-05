@@ -14,6 +14,9 @@
 - [ ] Snowflake MFA account enforcement #Platform @Shrikant
 
 ### Waiting On
+- testing | Owner: testing | Since: 2026-08-04
+- will this work | Owner: me | Since: 2026-08-04
+- check snowflake users and accounts | Owner: jeff | Since: 2026-08-04
 - Aimpoint NDA/MSA | Owner: Ashlie | Since: 2026-07-31
 - Snowflake RSA roadmap | Owner: Tor | Since: 2026-08-03
 

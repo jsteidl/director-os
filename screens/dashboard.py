@@ -12,6 +12,7 @@ from widgets.accomplishments_table import (
 from parser import (
     complete_task,
     add_task,
+    add_dependency,
     reopen_task,
 )
 
@@ -28,6 +29,10 @@ from screens.daily_checkin import (
     DailyCheckinScreen
 )
 
+from screens.add_dependency import (
+    AddDependencyScreen
+)
+
 class DashboardScreen(Screen):
 
     BINDINGS = [
@@ -35,7 +40,8 @@ class DashboardScreen(Screen):
         Binding("d", "complete_task", "Done"),
         Binding("u", "reopen_task", "Undo"),
         Binding("r", "refresh_data", "Refresh"),
-        Binding("t", "daily_checkin", "Check-in")
+        Binding("t", "daily_checkin", "Check-in"),
+        Binding("w", "add_dependency", "Dependency")
     ]
 
     CSS = """
@@ -244,7 +250,9 @@ class DashboardScreen(Screen):
             DailyCheckinScreen(),
             self.daily_checkin_callback
         )
-
+    # =====================================================
+    # DAILY CHECKIN
+    # =====================================================
 
     def daily_checkin_callback(
     self,
@@ -263,3 +271,33 @@ class DashboardScreen(Screen):
 
         self.refresh_data()
         
+    # =====================================================
+    # DEPENDENCY
+    # =====================================================
+    def action_add_dependency(self):
+
+        self.app.push_screen(
+            AddDependencyScreen(),
+            self.add_dependency_callback
+        )
+
+
+    def add_dependency_callback(
+        self,
+        result
+    ):
+
+        if not result:
+            return
+
+        dependency, owner = result
+
+        if not dependency:
+            return
+
+        add_dependency(
+            dependency,
+            owner
+        )
+
+        self.refresh_data()

@@ -10,7 +10,7 @@ class DependencyTable(DataTable):
         self.add_columns(
             "Dependency",
             "Owner",
-            "Since",
+            "Age",
         )
 
         self.load_dependencies()
@@ -20,9 +20,8 @@ class DependencyTable(DataTable):
         self.clear()
 
         for dep in get_dependencies():
-
             self.add_row(
                 dep.item,
                 dep.owner,
-                dep.since,
+                f"{dep.age}d",
             )

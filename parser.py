@@ -57,10 +57,12 @@ class Dependency:
         item,
         owner,
         since,
+        age,
     ):
         self.item = item
         self.owner = owner
         self.since = since
+        self.age = age
 
 
 class Accomplishment:
@@ -128,6 +130,9 @@ def add_task(task_name, tag=""):
 # DEPENDENCIES
 # ==========================================================
 
+from datetime import datetime, date
+
+
 def get_dependencies():
 
     content = load_log()
@@ -137,14 +142,29 @@ def get_dependencies():
         content,
     )
 
-    return [
-        Dependency(
-            item,
-            owner,
+    dependencies = []
+
+    for item, owner, since in matches:
+
+        since_date = datetime.strptime(
             since,
+            "%Y-%m-%d"
+        ).date()
+
+        age = (
+            date.today() - since_date
+        ).days
+
+        dependencies.append(
+            Dependency(
+                item,
+                owner,
+                since,
+                age,
+            )
         )
-        for item, owner, since in matches
-    ]
+
+    return dependencies
 
 
 def add_dependency(
