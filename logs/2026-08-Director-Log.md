@@ -3,6 +3,7 @@
 ## Active To-Dos
 
 ### High-Priority
+
 - [ ] Review D&A roadmap .pptx #Modernization
 - [ ] Get Looker commercials  #DataModernization
 - [ ] Schedule monthly skip-level meetings with team #Staffing
@@ -14,11 +15,18 @@
 - [ ] Snowflake MFA account enforcement #Platform @Shrikant
 
 ### Waiting On
-- testing | Owner: testing | Since: 2026-08-04
+
 - will this work | Owner: me | Since: 2026-08-04
 - check snowflake users and accounts | Owner: jeff | Since: 2026-08-04
 - Aimpoint NDA/MSA | Owner: Ashlie | Since: 2026-07-31
 - Snowflake RSA roadmap | Owner: Tor | Since: 2026-08-03
+
+### Resolved Dependencies
+
+- Dependency: testing
+  Owner: testing
+  Resolved: 2026-08-05
+  Notes: removing test dependency
 
 ### Someday/Future
 - Strategy command/system manager workflow replacements | Owner:Jeff | Since: 2026-08-03 #MCEMigration
@@ -35,7 +43,12 @@
   Outcome: test adding tasks ##testing
   Completed: 2026-08-04
 
+- Task: update August comp statuses #Lucky
+  Outcome: duplicate task
+  Completed: 2026-08-05
+
 ### Wins Worth Mentioning
+
 
 ### Daily Log
 
@@ -71,5 +84,29 @@
 ##### Notes
 
 - was this a useful day? history will decide
+
+
+
+
+#### 2026-08-05
+
+##### Priorities
+
+- RBOK Strategy renewal meeting
+- Q3 priority review
+- D&A deck review
+- Balance batch remediation
+
+##### Accomplished
+
+
+
+##### Blocked
+
+- MCE subscription cutover
+
+##### Notes
+
+- lots to do -- take your time and stay focused!
 
 

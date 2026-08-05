@@ -77,6 +77,19 @@ class Accomplishment:
         self.outcome = outcome
         self.completed = completed
 
+class ResolvedDependency:
+
+    def __init__(
+        self,
+        item,
+        owner,
+        resolved,
+        notes,
+    ):
+        self.item = item
+        self.owner = owner
+        self.resolved = resolved
+        self.notes = notes
 
 # ==========================================================
 # TASKS
@@ -188,6 +201,69 @@ def add_dependency(
     )
 
     save_log(content)
+
+def resolve_dependency(
+    dependency_name,
+    resolution_notes,
+):
+
+    content = load_log()
+
+    pattern = (
+        r"- (.*?) \| Owner: (.*?) "
+        r"\| Since: (\d{4}-\d{2}-\d{2})"
+    )
+
+    matches = re.findall(
+        pattern,
+        content,
+    )
+
+    target = None
+
+    for item, owner, since in matches:
+
+        if item == dependency_name:
+
+            target = (
+                item,
+                owner,
+                since,
+            )
+
+            break
+
+    if not target:
+        return
+
+    item, owner, since = target
+
+    original_line = (
+        f"- {item} | Owner: {owner} | Since: {since}"
+    )
+
+    content = content.replace(
+        original_line,
+        "",
+        1,
+    )
+
+    resolved_entry = (
+        f"- Dependency: {item}\n"
+        f"  Owner: {owner}\n"
+        f"  Resolved: {date.today()}\n"
+        f"  Notes: {resolution_notes}\n\n"
+    )
+
+    content = content.replace(
+        "### Someday/Future",
+        resolved_entry +
+        "### Someday/Future",
+        1,
+    )
+
+    save_log(content)
+
 
 
 # ==========================================================

@@ -33,6 +33,12 @@ from screens.add_dependency import (
     AddDependencyScreen
 )
 
+from parser import resolve_dependency
+
+from screens.resolve_dependency import (
+    ResolveDependencyScreen
+)
+
 class DashboardScreen(Screen):
 
     BINDINGS = [
@@ -41,7 +47,8 @@ class DashboardScreen(Screen):
         Binding("u", "reopen_task", "Undo"),
         Binding("r", "refresh_data", "Refresh"),
         Binding("t", "daily_checkin", "Check-in"),
-        Binding("w", "add_dependency", "Dependency")
+        Binding("w", "add_dependency", "Dependency"),
+        Binding("x", "resolve_dependency", "Resolve"),
     ]
 
     CSS = """
@@ -298,6 +305,44 @@ class DashboardScreen(Screen):
         add_dependency(
             dependency,
             owner
+        )
+
+        self.refresh_data()
+
+    def action_resolve_dependency(self):
+
+        table = self.query_one(
+            DependencyTable
+        )
+
+        row = table.cursor_row
+
+        if row is None:
+            return
+
+        dependency_name = str(
+            table.get_cell_at(
+                (row, 0)
+            )
+        )
+
+        self.app.push_screen(
+            ResolveDependencyScreen(),
+            lambda notes:
+                self.resolve_dependency_callback(
+                    dependency_name,
+                    notes
+                )
+        )
+    def resolve_dependency_callback(
+        self,
+        dependency_name,
+        notes,
+    ):
+
+        resolve_dependency(
+            dependency_name,
+            notes or "",
         )
 
         self.refresh_data()
