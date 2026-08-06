@@ -1,7 +1,7 @@
 import re
-from datetime import date
+from datetime import datetime, date
 from pathlib import Path
-from dataclasses import dataclass
+from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry
 
 
 # ==========================================================
@@ -42,71 +42,6 @@ def save_log(content):
 
 
 # ==========================================================
-# MODELS
-# ==========================================================
-
-class Task:
-
-    def __init__(
-        self,
-        title,
-        priority=None,
-        due_date=None,
-    ):
-        self.title = title
-        self.priority = priority
-        self.due_date = due_date
-
-
-class Dependency:
-
-    def __init__(
-        self,
-        item,
-        owner,
-        since,
-        age,
-    ):
-        self.item = item
-        self.owner = owner
-        self.since = since
-        self.age = age
-
-
-class Accomplishment:
-
-    def __init__(
-        self,
-        task,
-        outcome,
-        completed,
-    ):
-        self.task = task
-        self.outcome = outcome
-        self.completed = completed
-
-class ResolvedDependency:
-
-    def __init__(
-        self,
-        item,
-        owner,
-        resolved,
-        notes,
-    ):
-        self.item = item
-        self.owner = owner
-        self.resolved = resolved
-        self.notes = notes
-@dataclass
-class DailyLogEntry:
-    date: str
-    priorities: list[str]
-    accomplished: list[str]
-    blocked: list[str]
-    notes: list[str]
-
-# ==========================================================
 # TASKS
 # ==========================================================
 
@@ -135,8 +70,6 @@ def get_tasks():
             r"Due:(\d{4}-\d{2}-\d{2})",
             title,
         )
-        if due_match:
-            print(due_match.group(1))
 
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
 
@@ -150,8 +83,6 @@ def get_tasks():
                 priority=priority,
             )
         )
-    for task in tasks:
-        print(f"title={task.title} priority={task.priority}")
     return tasks
 
 
@@ -180,8 +111,6 @@ def add_task(task_name, tag=""):
 # ==========================================================
 # DEPENDENCIES
 # ==========================================================
-
-from datetime import datetime, date
 
 
 def get_dependencies():
@@ -301,21 +230,6 @@ def resolve_dependency(
     )
 
     save_log(content)
-
-    def get_daily_log_text():
-
-        content = load_log()
-
-        marker = "### Daily Log"
-
-        if marker not in content:
-            return "No daily log entries."
-
-        return content.split(
-            marker,
-            1
-        )[1].strip()
-
 
 
 # ==========================================================
