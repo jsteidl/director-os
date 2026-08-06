@@ -2,6 +2,9 @@ from textual.widgets import DataTable
 
 from parser import get_someday_items
 
+def _t(text, n=50):
+    return text if len(text) <= n else text[:n - 1] + "…"
+
 
 class SomedayTable(DataTable):
 
@@ -23,7 +26,7 @@ class SomedayTable(DataTable):
         for item in get_someday_items():
 
             self.add_row(
-                item.item,
-                item.owner,
+                _t(item.item),
+                _t(item.owner),
                 item.since,
             )

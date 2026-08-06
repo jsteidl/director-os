@@ -3,6 +3,9 @@ from rich.text import Text
 
 from parser import get_risks
 
+def _t(text, n=50):
+    return text if len(text) <= n else text[:n - 1] + "…"
+
 SEVERITY_COLORS = {
     "high": "red",
     "medium": "yellow",
@@ -33,8 +36,8 @@ class RisksTable(DataTable):
             color = SEVERITY_COLORS.get(severity.lower(), "white")
             severity_text = Text(severity, style=color)
             self.add_row(
-                risk.description,
-                risk.owner,
+                _t(risk.description),
+                _t(risk.owner),
                 severity_text,
                 risk.since,
             )

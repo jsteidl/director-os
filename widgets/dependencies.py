@@ -2,6 +2,9 @@ from textual.widgets import DataTable
 
 from parser import get_dependencies
 
+def _t(text, n=50):
+    return text if len(text) <= n else text[:n - 1] + "…"
+
 
 class DependencyTable(DataTable):
 
@@ -22,7 +25,7 @@ class DependencyTable(DataTable):
 
         for dep in get_dependencies():
             self.add_row(
-                dep.item,
-                dep.owner,
+                _t(dep.item),
+                _t(dep.owner),
                 f"{dep.age}d",
             )

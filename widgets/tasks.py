@@ -2,6 +2,9 @@ from textual.widgets import DataTable
 
 from parser import get_tasks
 
+def _t(text, n=50):
+    return text if len(text) <= n else text[:n - 1] + "…"
+
 
 class TaskTable(DataTable):
 
@@ -23,7 +26,7 @@ class TaskTable(DataTable):
         for task in get_tasks():
 
             self.add_row(
-                task.title,
+                _t(task.title),
                 task.priority or "",
                 task.due_date or "",
             )

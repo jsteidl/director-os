@@ -3,6 +3,7 @@
 ## Active To-Dos
 
 ### High-Priority
+- [ ] (A) Follow up with Sergio/Joel T. on Dustin's laptop request Due:2026-08-06 ##support
 - [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-06 ##Contracts
 - [ ] (A) Send email notification of subscription change Due:2026-08-06 ##MCE
 - [ ] (A) Review D&A roadmap .pptx #Modernization
@@ -120,11 +121,13 @@
 
 ##### Accomplished
 
+- Met with Syed's team re: API access request. Set expectation for Syed to meet with R&I to better understand the request
+- Confirmed internal path forward to accelerate Store insights dashboard
 - Corrected ETL script issue which was introduced by employee feed changes
 
 ##### Blocked
 
-
+- Feedback from Chetan #StoreInsights
 
 ##### Notes
 
