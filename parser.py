@@ -180,6 +180,7 @@ def get_tasks():
     ):
         priority = None
         due_date = None
+        created = None
         due_match = re.search(
             r"Due:(\d{4}-\d{2}-\d{2})",
             title,
@@ -188,6 +189,16 @@ def get_tasks():
             due_date = due_match.group(1)
             title = title.replace(
                 f" Due:{due_date}", ""
+            ).strip()
+
+        created_match = re.search(
+            r"Created:(\d{4}-\d{2}-\d{2})",
+            title,
+        )
+        if created_match:
+            created = created_match.group(1)
+            title = title.replace(
+                f" Created:{created}", ""
             ).strip()
 
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
@@ -204,6 +215,7 @@ def get_tasks():
                 title=title,
                 priority=priority,
                 due_date=due_date,
+                created=created,
                 tags=tags,
             )
         )
@@ -220,6 +232,8 @@ def add_task(task_name, tag="", due_date="", priority=""):
 
     if due_date:
         line += f" Due:{due_date}"
+
+    line += f" Created:{date.today()}"
 
     if tag:
         line += f" #{tag}"
@@ -1024,6 +1038,12 @@ def get_metrics():
 
     oldest_dep = max((d.age for d in deps), default=0)
 
+    oldest_task = max(
+        ((today - datetime.strptime(t.created, "%Y-%m-%d").date()).days
+         for t in tasks if t.created),
+        default=0
+    )
+
     high_risks = sum(1 for r in risks if r.severity.upper() == "H")
 
     month_wins = sum(
@@ -1036,6 +1056,7 @@ def get_metrics():
         "overdue": overdue,
         "deps": len(deps),
         "oldest_dep": oldest_dep,
+        "oldest_task": oldest_task,
         "high_risks": high_risks,
         "accomplishments": len(accomplishments),
         "month_wins": month_wins,

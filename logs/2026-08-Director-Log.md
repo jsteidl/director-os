@@ -5,10 +5,10 @@
 ### High-Priority
 - [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-06 ##Contracts
 - [ ] (A) Send email notification of subscription change Due:2026-08-06 ##MCE
-- [ ] (A) Review D&A roadmap .pptx #Modernization
-- [ ] (B) Get Looker commercials  #DataModernization
+- [ ] (A) Review D&A roadmap .pptx Due:2026-08-06 #Modernization
+- [ ] (B) Get Looker commercials Due:2026-08-06 #Modernization
 - [ ] (C) Schedule monthly skip-level meetings with team #Staffing
-- [ ] (A) Q3 BI Engineering Prioritization #Planning #Capacity
+- [ ] (A) Q3 BI Engineering Prioritization Due:2026-08-06 #planning
 - [ ] (A) Store EntraID updates #MCE
 - [ ] (A) SQL query for intraday sales and traffic Due:2026-08-07 #storeInsights
 - [ ] (C) Complete workbook for VMWare migration #VMWare

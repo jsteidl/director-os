@@ -20,15 +20,11 @@ class MetricsWidget(Static):
 
         line = Text()
 
-        line.append_text(_colored(m["tasks"], "Tasks"))
-        line.append("  |  ")
         line.append_text(_colored(m["overdue"], "Overdue", bad_if_nonzero=True))
         line.append("  |  ")
-        line.append_text(_colored(m["deps"], "Waiting On"))
-        line.append("  |  ")
-        line.append_text(_colored(m["oldest_dep"], "Oldest Dep (days)", bad_if_nonzero=True))
-        line.append("  |  ")
         line.append_text(_colored(m["high_risks"], "High Risks", bad_if_nonzero=True))
+        line.append("  |  ")
+        line.append_text(_colored(m["oldest_task"], "Oldest Task (d)", bad_if_nonzero=True))
         line.append("  |  ")
         line.append_text(_colored(m["month_wins"], "Wins This Month"))
 

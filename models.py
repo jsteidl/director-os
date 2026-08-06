@@ -7,6 +7,7 @@ class Task:
     title: str
     priority: str | None = None
     due_date: date | None = None
+    created: str | None = None
     tags: list[str] = field(default_factory=list)
 
 
