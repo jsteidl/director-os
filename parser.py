@@ -47,8 +47,15 @@ def save_log(content):
 
 class Task:
 
-    def __init__(self, title):
+    def __init__(
+        self,
+        title,
+        priority=None,
+        due_date=None,
+    ):
         self.title = title
+        self.priority = priority
+        self.due_date = due_date
 
 
 class Dependency:
@@ -116,13 +123,29 @@ def get_tasks():
     if not match:
         return []
 
-    return [
-        Task(title)
-        for title in re.findall(
-            r"- \[ \] (.*)",
-            match.group(1),
+    tasks = []
+
+    for title in re.findall(
+        r"- \[ \] (.*)",
+        match.group(1),
+    ):
+        priority = None
+
+        priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
+
+        if priority_match:
+            priority = priority_match.group(1)
+            title = priority_match.group(2)
+
+        tasks.append(
+            Task(
+                title=title,
+                priority=priority,
+            )
         )
-    ]
+    for task in tasks:
+        print(f"title={task.title} priority={task.priority}")
+    return tasks
 
 
 def add_task(task_name, tag=""):
