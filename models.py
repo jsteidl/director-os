@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-
+from datetime import date
 
 @dataclass
 class Task:
     title: str
-
+    priority: str | None = None
+    due_date: date | None = None
 
 @dataclass
 class Dependency:
