@@ -70,6 +70,11 @@ def get_tasks():
             r"Due:(\d{4}-\d{2}-\d{2})",
             title,
         )
+        if due_match:
+            due_date = due_match.group(1)
+            title = title.replace(
+                f" Due:{due_date}", ""
+            ).strip()
 
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
 
@@ -81,16 +86,22 @@ def get_tasks():
             Task(
                 title=title,
                 priority=priority,
+                due_date=due_date,
             )
         )
     return tasks
 
 
-def add_task(task_name, tag=""):
+def add_task(task_name, tag="", due_date="", priority=""):
 
     content = load_log()
 
-    line = f"- [ ] {task_name}"
+    title = f"({priority}) {task_name}" if priority else task_name
+
+    line = f"- [ ] {title}"
+
+    if due_date:
+        line += f" Due:{due_date}"
 
     if tag:
         line += f" #{tag}"

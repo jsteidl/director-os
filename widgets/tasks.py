@@ -8,7 +8,9 @@ class TaskTable(DataTable):
     def on_mount(self):
 
         self.add_columns(
-            "Task"
+            "Task",
+            "Priority",
+            "Due",
         )
 
         self.load_tasks()
@@ -20,5 +22,7 @@ class TaskTable(DataTable):
         for task in get_tasks():
 
             self.add_row(
-                task.title
+                task.title,
+                task.priority or "",
+                task.due_date or "",
             )

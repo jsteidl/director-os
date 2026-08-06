@@ -129,14 +129,16 @@ class DashboardScreen(Screen):
         if not result:
             return
 
-        task_name, tag = result
+        task_name, priority, due_date, tag = result
 
         if not task_name:
             return
 
         add_task(
             task_name,
-            tag
+            tag,
+            due_date,
+            priority,
         )
 
         self.refresh_data()
