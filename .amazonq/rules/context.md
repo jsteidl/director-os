@@ -109,7 +109,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - Text fields truncated to 50 chars with `…` via `_t()` helper in each widget file
 - Risk severity color-coded: H=red, M=yellow, L=green using `rich.text.Text`
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
-- `g` opens `TagManagerScreen` — rename/merge tags across all objects
+- `t` opens `TagManagerScreen` — rename/merge tags across all objects
 - Title bar: `director_os` docked top, accent background, centered
 - Footer: quote (left, `1fr`) + clock (right, `auto`) in a horizontal container docked bottom
 - Quote rotates on launch and on `r` refresh
@@ -124,7 +124,8 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `d` | Complete task |
 | `u` | Reopen accomplishment as task |
 | `delete` | Delete selected row |
-| `t` | Daily check-in |
+| `!` | Daily check-in |
+| `t` | Tag manager |
 | `w` | Add dependency |
 | `x` | Resolve dependency |
 | `i` | Add risk |
@@ -132,7 +133,6 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `p` | Promote someday item to task |
 | `l` | Open daily log navigator |
 | `v` | View focused widget full-screen |
-| `g` | Tag manager |
 | `r` | Refresh data + new quote |
 | `?` | Help |
 | `q` | Quit |

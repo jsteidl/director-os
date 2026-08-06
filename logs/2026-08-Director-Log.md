@@ -3,7 +3,6 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) Follow up with Sergio/Joel T. on Dustin's laptop request Due:2026-08-06 ##support
 - [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-06 ##Contracts
 - [ ] (A) Send email notification of subscription change Due:2026-08-06 ##MCE
 - [ ] (A) Review D&A roadmap .pptx #Modernization
@@ -18,7 +17,7 @@
 ### Waiting On
 
 
-- check snowflake users and accounts | Owner: jeff | Since: 2026-08-04
+
 - Aimpoint NDA/MSA | Owner: Ashlie | Since: 2026-07-31
 - Snowflake RSA roadmap | Owner: Tor | Since: 2026-08-03
 
@@ -34,7 +33,14 @@
   Resolved: 2026-08-06
   Notes: this was a dependency test entry
 
+- Dependency: check snowflake users and accounts
+  Owner: jeff
+  Resolved: 2026-08-06
+  Notes: 
+
 ### Someday/Future
+- Standardize Strategy access provisioning | Owner: Jeff | Since: 2026-08-06 #MCE
+- Review service account policies  | Owner: Jeff | Since: 2026-08-06 #security
 - Strategy command/system manager workflow replacements | Owner: Jeff | Since: 2026-08-03
 
 ### Risks
@@ -57,6 +63,10 @@
 
 - Task: Update comp statuses for August
   Outcome: updated netsuite to reflect in reporting 2026-08-06
+  Completed: 2026-08-06
+
+- Task: Follow up with Sergio/Joel T. on Dustin's laptop …
+  Outcome: escalated to support
   Completed: 2026-08-06
 
 ### Wins Worth Mentioning
@@ -133,4 +143,24 @@
 
 - Lot's of meetings today. Stay focused on priorities!!
 - Lucky ETL error this morning related to Balance Audited Sales Boomi process; reports delayed
+
+
+#### 2026-08-06
+
+##### Priorities
+
+
+
+##### Accomplished
+
+
+
+##### Blocked
+
+
+
+##### Notes
+
+
+
 

@@ -240,7 +240,8 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None):
 
     content = load_log()
 
-    pattern = re.compile(r"- \[ \] .*" + re.escape(old_title) + r".*")
+    search_text = old_title.rstrip("…")
+    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
 
     if not match:
@@ -263,7 +264,8 @@ def delete_task(task_title):
 
     content = load_log()
 
-    pattern = re.compile(r"- \[ \] .*" + re.escape(task_title) + r".*\n")
+    search_text = task_title.rstrip("…")
+    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
     content = pattern.sub("", content, count=1)
     save_log(content)
 
@@ -277,9 +279,18 @@ def get_dependencies():
 
     content = load_log()
 
+    match = re.search(
+        r"### Waiting On(.*?)### Resolved Dependencies",
+        content,
+        re.S,
+    )
+
+    if not match:
+        return []
+
     matches = re.findall(
         r"- (.*?) \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2})",
-        content,
+        match.group(1),
     )
 
     dependencies = []
@@ -747,7 +758,8 @@ def complete_task(
 
     content = load_log()
 
-    pattern = re.compile(r"- \[ \] .*" + re.escape(task_text) + r".*\n")
+    search_text = task_text.rstrip("…")
+    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
     content = pattern.sub("", content, count=1)
 
     accomplishment = (

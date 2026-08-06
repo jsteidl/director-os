@@ -48,7 +48,8 @@ Left column = immediate action. Right column = situational awareness.
 | `d` | Complete task |
 | `u` | Reopen accomplishment as task |
 | `delete` | Delete selected row |
-| `t` | Daily check-in |
+| `!` | Daily check-in |
+| `t` | Tag manager |
 | `w` | Add dependency |
 | `x` | Resolve dependency |
 | `i` | Add risk |

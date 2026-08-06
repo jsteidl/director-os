@@ -48,7 +48,8 @@ class DashboardScreen(Screen):
         Binding("delete", "delete_selected", "Delete"),
         Binding("u", "reopen_task", "Reopen"),
         Binding("r", "refresh_data", "Refresh"),
-        Binding("t", "daily_checkin", "Check-in"),
+        Binding("t", "tag_manager", "Tags"),
+        Binding("!", "daily_checkin", "Check-in"),
         Binding("w", "add_dependency", "Dependency"),
         Binding("x", "resolve_dependency", "Resolve"),
         Binding("i", "add_risk", "Risk"),
@@ -56,7 +57,6 @@ class DashboardScreen(Screen):
         Binding("p", "promote_someday", "Promote"),
         Binding("l", "show_daily_log", "Daily Log"),
         Binding("v", "view_widget", "View"),
-        Binding("g", "tag_manager", "Tags"),
         Binding("?", "show_help", "Help"),
     ]
 
@@ -606,22 +606,44 @@ class DashboardScreen(Screen):
 
     def action_daily_checkin(self):
 
-        self.app.push_screen(
-            DailyCheckinScreen(),
-            self.daily_checkin_callback
-        )
+        from parser import get_today_entry
+        entry = get_today_entry()
+
+        if entry:
+            screen = DailyCheckinScreen(
+                priorities="\n".join(entry.priorities),
+                accomplished="\n".join(entry.accomplished),
+                blocked="\n".join(entry.blocked),
+                notes="\n".join(entry.notes),
+            )
+        else:
+            screen = DailyCheckinScreen()
+
+        self.app.push_screen(screen, self.daily_checkin_callback)
 
     def daily_checkin_callback(self, result):
 
         if not result:
             return
 
-        add_daily_entry(
-            result["priorities"],
-            result["accomplished"],
-            result["blocked"],
-            result["notes"],
-        )
+        from parser import get_today_entry, edit_daily_entry
+        from datetime import date
+
+        if get_today_entry():
+            edit_daily_entry(
+                date.today().isoformat(),
+                result["priorities"],
+                result["accomplished"],
+                result["blocked"],
+                result["notes"],
+            )
+        else:
+            add_daily_entry(
+                result["priorities"],
+                result["accomplished"],
+                result["blocked"],
+                result["notes"],
+            )
 
         self.refresh_data()
         
