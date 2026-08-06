@@ -130,6 +130,13 @@ def get_tasks():
         match.group(1),
     ):
         priority = None
+        due_date = None
+        due_match = re.search(
+            r"Due:(\d{4}-\d{2}-\d{2})",
+            title,
+        )
+        if due_match:
+            print(due_match.group(1))
 
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
 

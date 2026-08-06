@@ -14,6 +14,7 @@
 - [ ] SQL query for intraday sales and traffic #storeInsights
 - [ ] Complete workbook for VMWare migration #VMWare
 - [ ] Snowflake MFA account enforcement #Platform @Shrikant
+- [ ] test 2026-08-08
 
 ### Waiting On
 
