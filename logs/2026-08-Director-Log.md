@@ -10,7 +10,7 @@
 - [ ] (B) Get Looker commercials  #DataModernization
 - [ ] (C) Schedule monthly skip-level meetings with team #Staffing
 - [ ] (A) Q3 BI Engineering Prioritization #Planning #Capacity
-- [ ] (A) Store EntraID updates #MCEMigration
+- [ ] (A) Store EntraID updates #MCE
 - [ ] (A) SQL query for intraday sales and traffic Due:2026-08-07 #storeInsights
 - [ ] (C) Complete workbook for VMWare migration #VMWare
 - [ ] (B) Snowflake MFA account enforcement #Platform @Shrikant
@@ -67,7 +67,7 @@
 #### 2026-08-04
 
 ##### Priorities
-- Store EntraID updates #MCEMigration
+- Store EntraID updates #MCE
 - SQL query for intraday sales and traffic #storeInsights
 - Workbook update for infra VMWare migration effort #VMWare
 - Snowflake MFA account enforcement #Platform @Shrikant

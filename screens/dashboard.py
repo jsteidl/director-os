@@ -36,6 +36,7 @@ from screens.reopen_task import ReopenTaskScreen
 from screens.add_risk import AddRiskScreen
 from screens.add_someday import AddSomedayScreen
 from screens.widget_viewer import WidgetViewerScreen
+from screens.tag_manager import TagManagerScreen
 
 class DashboardScreen(Screen):
 
@@ -54,6 +55,7 @@ class DashboardScreen(Screen):
         Binding("p", "promote_someday", "Promote"),
         Binding("l", "show_daily_log", "Daily Log"),
         Binding("v", "view_widget", "View"),
+        Binding("g", "tag_manager", "Tags"),
         Binding("?", "show_help", "Help"),
     ]
 
@@ -389,22 +391,29 @@ class DashboardScreen(Screen):
     def action_view_widget(self):
 
         focused = self.focused
+        p = __import__('parser')
 
         if isinstance(focused, TaskTable):
-            rows = [(t.title, t.priority or "", t.due_date or "") for t in __import__('parser').get_tasks()]
-            self.app.push_screen(WidgetViewerScreen("Tasks", ["Task", "Priority", "Due"], rows))
+            rows = [(t.title, t.priority or "", t.due_date or "", " ".join(f"#{tag}" for tag in t.tags)) for t in p.get_tasks()]
+            self.app.push_screen(WidgetViewerScreen("Tasks", ["Task", "Priority", "Due", "Tags"], rows))
         elif isinstance(focused, DependencyTable):
-            rows = [(d.item, d.owner, f"{d.age}d") for d in __import__('parser').get_dependencies()]
+            rows = [(d.item + (" " + " ".join(f"#{tag}" for tag in d.tags) if d.tags else ""), d.owner, f"{d.age}d") for d in p.get_dependencies()]
             self.app.push_screen(WidgetViewerScreen("Dependencies", ["Dependency", "Owner", "Age"], rows))
         elif isinstance(focused, RisksTable):
-            rows = [(r.description, r.owner, r.severity, r.since) for r in __import__('parser').get_risks()]
+            rows = [(r.description + (" " + " ".join(f"#{tag}" for tag in r.tags) if r.tags else ""), r.owner, r.severity, r.since) for r in p.get_risks()]
             self.app.push_screen(WidgetViewerScreen("Risks", ["Risk", "Owner", "Severity", "Since"], rows))
         elif isinstance(focused, SomedayTable):
-            rows = [(s.item, s.owner, s.since) for s in __import__('parser').get_someday_items()]
+            rows = [(s.item + (" " + " ".join(f"#{tag}" for tag in s.tags) if s.tags else ""), s.owner, s.since) for s in p.get_someday_items()]
             self.app.push_screen(WidgetViewerScreen("Someday / Future", ["Item", "Owner", "Since"], rows))
         elif isinstance(focused, AccomplishmentTable):
-            rows = [(a.task, a.outcome, a.completed) for a in __import__('parser').get_accomplishments()]
+            rows = [(a.task + (" " + " ".join(f"#{tag}" for tag in a.tags) if a.tags else ""), a.outcome, a.completed) for a in p.get_accomplishments()]
             self.app.push_screen(WidgetViewerScreen("Accomplishments", ["Task", "Outcome", "Completed"], rows))
+
+    def action_tag_manager(self):
+        self.app.push_screen(
+            TagManagerScreen(),
+            lambda saved: self.refresh_data() if saved else None
+        )
 
     # =====================================================
     # HELP

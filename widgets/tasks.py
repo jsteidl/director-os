@@ -15,6 +15,7 @@ class TaskTable(DataTable):
             "Task",
             "Priority",
             "Due",
+            "Tags",
         )
 
         self.load_tasks()
@@ -29,4 +30,5 @@ class TaskTable(DataTable):
                 _t(task.title),
                 task.priority or "",
                 task.due_date or "",
+                " ".join(f"#{t}" for t in task.tags) if task.tags else "",
             )

@@ -1030,6 +1030,30 @@ def get_metrics():
     }
 
 
+def get_all_tags():
+    """Return sorted list of unique tags across all objects."""
+    tags = set()
+    for t in get_tasks():
+        tags.update(t.tags)
+    for d in get_dependencies():
+        tags.update(d.tags)
+    for r in get_risks():
+        tags.update(r.tags)
+    for s in get_someday_items():
+        tags.update(s.tags)
+    for a in get_accomplishments():
+        tags.update(a.tags)
+    return sorted(tags, key=str.lower)
+
+
+def rename_tag(old_tag, new_tag):
+    """Rename all occurrences of #old_tag to #new_tag in the log file."""
+    path = get_log_file()
+    content = path.read_text(encoding="utf-8")
+    content = re.sub(r"#" + re.escape(old_tag) + r"\b", f"#{new_tag}", content)
+    path.write_text(content, encoding="utf-8")
+
+
 def get_daily_log_text():
 
     content = load_log()
