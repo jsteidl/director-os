@@ -983,6 +983,20 @@ def parse_daily_log(content):
 # DAILY LOG VIEWER
 # ==========================================================
 
+def get_today_entry():
+    """Return today's DailyLogEntry or None."""
+
+    content = load_log()
+    today = date.today().isoformat()
+    entries = parse_daily_log(content)
+
+    for entry in entries:
+        if entry.date == today:
+            return entry
+
+    return None
+
+
 def get_daily_log_text():
 
     content = load_log()

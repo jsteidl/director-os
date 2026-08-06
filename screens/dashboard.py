@@ -9,6 +9,7 @@ from widgets.dependencies import DependencyTable
 from widgets.accomplishments_table import AccomplishmentTable
 from widgets.risks import RisksTable
 from widgets.someday import SomedayTable
+from widgets.today import TodayWidget
 
 from parser import (
     complete_task,
@@ -33,6 +34,7 @@ from screens.help import HelpScreen
 from screens.reopen_task import ReopenTaskScreen
 from screens.add_risk import AddRiskScreen
 from screens.add_someday import AddSomedayScreen
+from screens.widget_viewer import WidgetViewerScreen
 
 class DashboardScreen(Screen):
 
@@ -50,6 +52,7 @@ class DashboardScreen(Screen):
         Binding("s", "add_someday", "Someday"),
         Binding("p", "promote_someday", "Promote"),
         Binding("l", "show_daily_log", "Daily Log"),
+        Binding("v", "view_widget", "View"),
         Binding("?", "show_help", "Help"),
     ]
 
@@ -71,19 +74,35 @@ class DashboardScreen(Screen):
         border: solid green;
     }
 
-    #accomplishments {
+    #tasks {
+        height: 1fr;
+        border: solid green;
+    }
+
+    #today {
         height: 12;
+        border: solid cyan;
+        padding: 0 1;
+    }
+
+    #dependencies {
+        height: 1fr;
         border: solid green;
     }
 
     #risks {
-        height: 12;
+        height: 1fr;
         border: solid red;
     }
 
     #someday {
-        height: 12;
+        height: 1fr;
         border: solid yellow;
+    }
+
+    #accomplishments {
+        height: 1fr;
+        border: solid green;
     }
     """
 
@@ -93,17 +112,20 @@ class DashboardScreen(Screen):
 
             Vertical(
                 MetricsWidget(id="metrics"),
+                Label("Executive Summary", classes="widget-label"),
                 Label("Tasks", classes="widget-label"),
-                TaskTable(),
-                Label("Someday / Future", classes="widget-label"),
-                SomedayTable(id="someday"),
+                TaskTable(id="tasks"),
+                Label("Today", classes="widget-label"),
+                TodayWidget(id="today"),
             ),
 
             Vertical(
                 Label("Dependencies", classes="widget-label"),
-                DependencyTable(),
+                DependencyTable(id="dependencies"),
                 Label("Risks", classes="widget-label"),
                 RisksTable(id="risks"),
+                Label("Someday / Future", classes="widget-label"),
+                SomedayTable(id="someday"),
                 Label("Accomplishments", classes="widget-label"),
                 AccomplishmentTable(id="accomplishments"),
             ),
@@ -328,6 +350,30 @@ class DashboardScreen(Screen):
         self.refresh_data()
 
     # =====================================================
+    # VIEW WIDGET
+    # =====================================================
+
+    def action_view_widget(self):
+
+        focused = self.focused
+
+        if isinstance(focused, TaskTable):
+            rows = [(t.title, t.priority or "", t.due_date or "") for t in __import__('parser').get_tasks()]
+            self.app.push_screen(WidgetViewerScreen("Tasks", ["Task", "Priority", "Due"], rows))
+        elif isinstance(focused, DependencyTable):
+            rows = [(d.item, d.owner, f"{d.age}d") for d in __import__('parser').get_dependencies()]
+            self.app.push_screen(WidgetViewerScreen("Dependencies", ["Dependency", "Owner", "Age"], rows))
+        elif isinstance(focused, RisksTable):
+            rows = [(r.description, r.owner, r.severity, r.since) for r in __import__('parser').get_risks()]
+            self.app.push_screen(WidgetViewerScreen("Risks", ["Risk", "Owner", "Severity", "Since"], rows))
+        elif isinstance(focused, SomedayTable):
+            rows = [(s.item, s.owner, s.since) for s in __import__('parser').get_someday_items()]
+            self.app.push_screen(WidgetViewerScreen("Someday / Future", ["Item", "Owner", "Since"], rows))
+        elif isinstance(focused, AccomplishmentTable):
+            rows = [(a.task, a.outcome, a.completed) for a in __import__('parser').get_accomplishments()]
+            self.app.push_screen(WidgetViewerScreen("Accomplishments", ["Task", "Outcome", "Completed"], rows))
+
+    # =====================================================
     # HELP
     # =====================================================
 
@@ -350,10 +396,7 @@ class DashboardScreen(Screen):
 
         metrics.update_metrics()
 
-        tasks = self.query_one(
-            TaskTable
-        )
-
+        tasks = self.query_one(TaskTable)
         tasks.load_tasks()
 
         deps = self.query_one(
@@ -361,6 +404,9 @@ class DashboardScreen(Screen):
         )
 
         deps.load_dependencies()
+
+        today = self.query_one(TodayWidget)
+        today.load_today()
 
         risks = self.query_one(RisksTable)
         risks.load_risks()

@@ -3,6 +3,7 @@
 ## Active To-Dos
 
 ### High-Priority
+- [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-06 ##Contracts
 - [ ] (A) Send email notification of subscription change Due:2026-08-06 ##MCE
 - [ ] (A) Review D&A roadmap .pptx #Modernization
 - [ ] (B) Get Looker commercials  #DataModernization
