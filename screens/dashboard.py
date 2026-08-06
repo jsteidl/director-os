@@ -25,6 +25,7 @@ from screens.add_dependency import AddDependencyScreen
 from screens.resolve_dependency import ResolveDependencyScreen
 from screens.daily_log_viewer import DailyLogViewerScreen
 from screens.daily_log_navigator import DailyLogNavigator
+from screens.help import HelpScreen
 
 class DashboardScreen(Screen):
 
@@ -36,7 +37,8 @@ class DashboardScreen(Screen):
         Binding("t", "daily_checkin", "Check-in"),
         Binding("w", "add_dependency", "Dependency"),
         Binding("x", "resolve_dependency", "Resolve"),
-        Binding("l", "show_daily_log", "Daily Log")
+        Binding("l", "show_daily_log", "Daily Log"),
+        Binding("?", "show_help", "Help"),
     ]
 
     CSS = """
@@ -74,6 +76,14 @@ class DashboardScreen(Screen):
             ),
 
         )
+
+    # =====================================================
+    # HELP
+    # =====================================================
+
+    def action_show_help(self):
+
+        self.app.push_screen(HelpScreen())
 
     # =====================================================
     # REFRESH
