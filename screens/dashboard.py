@@ -26,6 +26,7 @@ from screens.resolve_dependency import ResolveDependencyScreen
 from screens.daily_log_viewer import DailyLogViewerScreen
 from screens.daily_log_navigator import DailyLogNavigator
 from screens.help import HelpScreen
+from screens.reopen_task import ReopenTaskScreen
 
 class DashboardScreen(Screen):
 
@@ -232,11 +233,10 @@ class DashboardScreen(Screen):
         except Exception:
             return
 
-        reopen_task(
-            task_title
+        self.app.push_screen(
+            ReopenTaskScreen(task_title),
+            lambda confirmed: reopen_task(task_title) or self.refresh_data() if confirmed else None
         )
-
-        self.refresh_data()
 
     # =====================================================
     # DAILY CHECKIN
