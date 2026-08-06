@@ -26,9 +26,6 @@ class DailyLogNavigator(Screen):
     BINDINGS = [
         ("escape", "app.pop_screen", "Back"),
     ]
-    BINDINGS = [
-        ("escape", "app.pop_screen", "Back"),
-    ]
 
     def compose(self):
         yield Horizontal(

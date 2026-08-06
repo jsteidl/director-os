@@ -45,8 +45,6 @@ class DailyCheckinScreen(ModalScreen[dict]):
 
     def on_button_pressed(self, event):
 
-        print("BUTTON EVENT FIRED")
-
         if event.button.id != "save":
             return
 
@@ -71,8 +69,5 @@ class DailyCheckinScreen(ModalScreen[dict]):
                 TextArea
             ).text,
         }
-
-        print("ABOUT TO DISMISS")
-        print(result)
 
         self.dismiss(result)

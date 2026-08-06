@@ -10,7 +10,7 @@ class AccomplishmentsWidget(Static):
         accomplishments = get_accomplishments()
 
         output = "\n".join(
-            f"✓ {item}"
+            f"✓ {item.task}"
             for item in accomplishments[-10:]
         )
 

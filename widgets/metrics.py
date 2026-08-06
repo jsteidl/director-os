@@ -1,8 +1,6 @@
 from textual.widgets import Static
 
-from parser import get_tasks
-from parser import get_dependencies
-from parser import get_accomplishments
+from parser import get_tasks, get_dependencies, get_accomplishments
 
 
 class MetricsWidget(Static):

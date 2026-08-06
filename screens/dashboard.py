@@ -14,35 +14,16 @@ from parser import (
     add_task,
     add_dependency,
     reopen_task,
+    add_daily_entry,
+    resolve_dependency,
 )
 
-from screens.task_complete import (
-    CompleteTaskScreen,
-)
-
-from screens.add_task import (
-    AddTaskScreen,
-)
-from parser import add_daily_entry
-
-from screens.daily_checkin import (
-    DailyCheckinScreen
-)
-
-from screens.add_dependency import (
-    AddDependencyScreen
-)
-
-from parser import resolve_dependency
-
-from screens.resolve_dependency import (
-    ResolveDependencyScreen
-)
-
-from screens.daily_log_viewer import (
-    DailyLogViewerScreen
-)
-
+from screens.task_complete import CompleteTaskScreen
+from screens.add_task import AddTaskScreen
+from screens.daily_checkin import DailyCheckinScreen
+from screens.add_dependency import AddDependencyScreen
+from screens.resolve_dependency import ResolveDependencyScreen
+from screens.daily_log_viewer import DailyLogViewerScreen
 from screens.daily_log_navigator import DailyLogNavigator
 
 class DashboardScreen(Screen):
@@ -183,12 +164,7 @@ class DashboardScreen(Screen):
                 )
             )
 
-        except Exception as ex:
-
-            print(
-                f"Task selection error: {ex}"
-            )
-
+        except Exception:
             return
 
         self.app.push_screen(
@@ -241,12 +217,7 @@ class DashboardScreen(Screen):
                 )
             )
 
-        except Exception as ex:
-
-            print(
-                f"Accomplishment selection error: {ex}"
-            )
-
+        except Exception:
             return
 
         reopen_task(
@@ -256,27 +227,22 @@ class DashboardScreen(Screen):
         self.refresh_data()
 
     # =====================================================
-    # REOPEN TASK
+    # DAILY CHECKIN
     # =====================================================
+
     def action_daily_checkin(self):
 
         self.app.push_screen(
             DailyCheckinScreen(),
             self.daily_checkin_callback
         )
-    # =====================================================
-    # DAILY CHECKIN
-    # =====================================================
 
-    def daily_checkin_callback(
-    self,
-    result
-    ):
+    def daily_checkin_callback(self, result):
 
         if not result:
             return
 
-        success = add_daily_entry(
+        add_daily_entry(
             result["priorities"],
             result["accomplished"],
             result["blocked"],
@@ -353,12 +319,12 @@ class DashboardScreen(Screen):
         )
 
         self.refresh_data()
-# =====================================================
-# DAILY LOG VIEW
-# =====================================================
-    def action_show_daily_log(
-        self
-    ):
+
+    # =====================================================
+    # DAILY LOG VIEW
+    # =====================================================
+
+    def action_show_daily_log(self):
 
         self.app.push_screen(
             DailyLogNavigator()
