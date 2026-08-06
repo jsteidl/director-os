@@ -21,12 +21,116 @@ def get_log_file():
     )
 
 
+def get_prev_log_file():
+
+    today = date.today()
+
+    if today.month == 1:
+        prev = today.replace(year=today.year - 1, month=12, day=1)
+    else:
+        prev = today.replace(month=today.month - 1, day=1)
+
+    filename = f"{prev:%Y-%m}-Director-Log.md"
+
+    return (
+        Path(__file__).parent
+        / "logs"
+        / filename
+    )
+
+
+def scaffold_log(path):
+
+    month_label = date.today().strftime("%B %Y")
+
+    template = f"""# {month_label}
+
+## Active To-Dos
+
+### High-Priority
+
+### Waiting On
+
+### Resolved Dependencies
+
+### Someday/Future
+
+### Risks
+
+### Accomplishments
+
+### Wins Worth Mentioning
+
+### Daily Log
+"""
+
+    path.write_text(template, encoding="utf-8")
+
+
+def rollover_log():
+
+    current = get_log_file()
+    previous = get_prev_log_file()
+
+    if not previous.exists():
+        scaffold_log(current)
+        return
+
+    prev_content = previous.read_text(encoding="utf-8")
+
+    # Carry over incomplete tasks
+    task_match = re.search(
+        r"### High-Priority(.*?)### Waiting On",
+        prev_content,
+        re.S,
+    )
+
+    carried_tasks = ""
+
+    if task_match:
+        carried_tasks = "\n".join(
+            line for line in task_match.group(1).splitlines()
+            if re.match(r"- \[ \]", line.strip())
+        )
+
+    # Carry over open dependencies
+    dep_matches = re.findall(
+        r"- (.*?) \| Owner: (.*?) \| Since: (\d{4}-\d{2}-\d{2})",
+        prev_content,
+    )
+
+    carried_deps = "\n".join(
+        f"- {item} | Owner: {owner} | Since: {since}"
+        for item, owner, since in dep_matches
+    )
+
+    scaffold_log(current)
+
+    content = current.read_text(encoding="utf-8")
+
+    if carried_tasks:
+        content = content.replace(
+            "### High-Priority\n",
+            f"### High-Priority\n{carried_tasks}\n",
+            1,
+        )
+
+    if carried_deps:
+        content = content.replace(
+            "### Waiting On\n",
+            f"### Waiting On\n{carried_deps}\n",
+            1,
+        )
+
+    current.write_text(content, encoding="utf-8")
+
+
 def load_log():
 
     path = get_log_file()
 
     if not path.exists():
-        return ""
+        rollover_log()
 
     return path.read_text(
         encoding="utf-8"
