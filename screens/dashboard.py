@@ -3,6 +3,7 @@ from textual.containers import Horizontal, Vertical
 from textual.binding import Binding
 from textual.widgets import Label
 from datetime import datetime
+from quotes import get_random_quote
 
 from widgets.metrics import MetricsWidget
 from widgets.tasks import TaskTable
@@ -67,6 +68,19 @@ class DashboardScreen(Screen):
         padding: 0 1;
         background: $accent;
         color: $text;
+        layout: horizontal;
+    }
+
+    #app-quote {
+        width: 1fr;
+        color: $text;
+        background: $accent;
+    }
+
+    #app-clock {
+        width: auto;
+        color: $text;
+        background: $accent;
         text-align: right;
     }
 
@@ -134,7 +148,11 @@ class DashboardScreen(Screen):
     def compose(self):
 
         yield Label("director_os", id="app-title")
-        yield Label("", id="app-footer")
+        yield Horizontal(
+            Label("", id="app-quote"),
+            Label("", id="app-clock"),
+            id="app-footer"
+        )
         yield Horizontal(
 
             Vertical(
@@ -160,12 +178,13 @@ class DashboardScreen(Screen):
         )
 
     def on_mount(self):
+        self._quote = get_random_quote()
         self.set_interval(1, self._tick_clock)
 
     def _tick_clock(self):
-        self.query_one("#app-footer", Label).update(
-            datetime.now().strftime("%A, %B %d  %I:%M %p")
-        )
+        clock = datetime.now().strftime("%A, %B %d  %I:%M %p")
+        self.query_one("#app-quote", Label).update(self._quote)
+        self.query_one("#app-clock", Label).update(clock)
 
     # =====================================================
     # EDIT SELECTED
@@ -460,6 +479,8 @@ class DashboardScreen(Screen):
 
         accomplishments.load_data()
 
+        self._quote = get_random_quote()
+        self.query_one("#app-quote", Label).update(self._quote)
         self.refresh()
 
     # =====================================================
