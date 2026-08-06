@@ -12,14 +12,14 @@ from widgets.someday import SomedayTable
 
 from parser import (
     complete_task,
-    add_task,
-    add_dependency,
+    add_task, edit_task, delete_task,
+    add_dependency, edit_dependency, delete_dependency,
     reopen_task,
     add_daily_entry,
     resolve_dependency,
-    add_risk,
-    add_someday_item,
-    promote_someday_item,
+    add_risk, edit_risk, delete_risk, resolve_risk,
+    add_someday_item, edit_someday_item, delete_someday_item, promote_someday_item,
+    delete_accomplishment, edit_accomplishment,
 )
 
 from screens.task_complete import CompleteTaskScreen
@@ -38,7 +38,9 @@ class DashboardScreen(Screen):
 
     BINDINGS = [
         Binding("a", "add_task", "Add Task"),
+        Binding("e", "edit_selected", "Edit"),
         Binding("d", "complete_task", "Done"),
+        Binding("delete", "delete_selected", "Delete"),
         Binding("u", "reopen_task", "Reopen"),
         Binding("r", "refresh_data", "Refresh"),
         Binding("t", "daily_checkin", "Check-in"),
@@ -107,6 +109,223 @@ class DashboardScreen(Screen):
             ),
 
         )
+
+    # =====================================================
+    # EDIT SELECTED
+    # =====================================================
+
+    def action_edit_selected(self):
+
+        focused = self.focused
+
+        if isinstance(focused, TaskTable):
+            self._edit_task()
+        elif isinstance(focused, DependencyTable):
+            self._edit_dependency()
+        elif isinstance(focused, RisksTable):
+            self._edit_risk()
+        elif isinstance(focused, SomedayTable):
+            self._edit_someday()
+        elif isinstance(focused, AccomplishmentTable):
+            self._edit_accomplishment()
+
+    def _edit_accomplishment(self):
+
+        table = self.query_one(AccomplishmentTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            old_task = str(table.get_cell_at((row, 0)))
+            outcome = str(table.get_cell_at((row, 1)))
+        except Exception:
+            return
+        from screens.add_accomplishment import EditAccomplishmentScreen
+        self.app.push_screen(
+            EditAccomplishmentScreen(task=old_task, outcome=outcome),
+            lambda result: self._edit_accomplishment_callback(old_task, result)
+        )
+
+    def _edit_accomplishment_callback(self, old_task, result):
+        if not result:
+            return
+        new_task, outcome = result
+        edit_accomplishment(old_task, new_task, outcome)
+        self.refresh_data()
+
+    def _edit_task(self):
+
+        table = self.query_one(TaskTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            old_title = str(table.get_cell_at((row, 0)))
+            priority = str(table.get_cell_at((row, 1)))
+            due_date = str(table.get_cell_at((row, 2)))
+        except Exception:
+            return
+        self.app.push_screen(
+            AddTaskScreen(title=old_title, priority=priority, due_date=due_date),
+            lambda result: self._edit_task_callback(old_title, result)
+        )
+
+    def _edit_task_callback(self, old_title, result):
+        if not result:
+            return
+        new_title, priority, due_date, tag = result
+        tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
+        edit_task(old_title, new_title, priority, due_date, tags)
+        self.refresh_data()
+
+    def _edit_dependency(self):
+
+        table = self.query_one(DependencyTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            old_item = str(table.get_cell_at((row, 0)))
+            owner = str(table.get_cell_at((row, 1)))
+        except Exception:
+            return
+        self.app.push_screen(
+            AddDependencyScreen(item=old_item, owner=owner),
+            lambda result: self._edit_dependency_callback(old_item, result)
+        )
+
+    def _edit_dependency_callback(self, old_item, result):
+        if not result:
+            return
+        new_item, owner = result
+        edit_dependency(old_item, new_item, owner)
+        self.refresh_data()
+
+    def _edit_risk(self):
+
+        table = self.query_one(RisksTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            old_desc = str(table.get_cell_at((row, 0)))
+            owner = str(table.get_cell_at((row, 1)))
+            severity = str(table.get_cell_at((row, 2)))
+        except Exception:
+            return
+        self.app.push_screen(
+            AddRiskScreen(description=old_desc, owner=owner, severity=severity),
+            lambda result: self._edit_risk_callback(old_desc, result)
+        )
+
+    def _edit_risk_callback(self, old_desc, result):
+        if not result:
+            return
+        description, owner, severity, tags = result
+        edit_risk(old_desc, description, owner, severity, tags)
+        self.refresh_data()
+
+    def _edit_someday(self):
+
+        table = self.query_one(SomedayTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            old_item = str(table.get_cell_at((row, 0)))
+            owner = str(table.get_cell_at((row, 1)))
+        except Exception:
+            return
+        self.app.push_screen(
+            AddSomedayScreen(item=old_item, owner=owner),
+            lambda result: self._edit_someday_callback(old_item, result)
+        )
+
+    def _edit_someday_callback(self, old_item, result):
+        if not result:
+            return
+        new_item, owner, tags = result
+        edit_someday_item(old_item, new_item, owner, tags)
+        self.refresh_data()
+
+    # =====================================================
+    # DELETE SELECTED
+    # =====================================================
+
+    def action_delete_selected(self):
+
+        focused = self.focused
+
+        if isinstance(focused, TaskTable):
+            self._delete_task()
+        elif isinstance(focused, DependencyTable):
+            self._delete_dependency()
+        elif isinstance(focused, RisksTable):
+            self._delete_risk()
+        elif isinstance(focused, SomedayTable):
+            self._delete_someday()
+        elif isinstance(focused, AccomplishmentTable):
+            self._delete_accomplishment()
+
+    def _delete_task(self):
+        table = self.query_one(TaskTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            title = str(table.get_cell_at((row, 0)))
+        except Exception:
+            return
+        delete_task(title)
+        self.refresh_data()
+
+    def _delete_dependency(self):
+        table = self.query_one(DependencyTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            item = str(table.get_cell_at((row, 0)))
+        except Exception:
+            return
+        delete_dependency(item)
+        self.refresh_data()
+
+    def _delete_risk(self):
+        table = self.query_one(RisksTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            desc = str(table.get_cell_at((row, 0)))
+        except Exception:
+            return
+        delete_risk(desc)
+        self.refresh_data()
+
+    def _delete_someday(self):
+        table = self.query_one(SomedayTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            item = str(table.get_cell_at((row, 0)))
+        except Exception:
+            return
+        delete_someday_item(item)
+        self.refresh_data()
+
+    def _delete_accomplishment(self):
+        table = self.query_one(AccomplishmentTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        try:
+            title = str(table.get_cell_at((row, 0)))
+        except Exception:
+            return
+        delete_accomplishment(title)
+        self.refresh_data()
 
     # =====================================================
     # HELP

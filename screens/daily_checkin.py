@@ -5,6 +5,13 @@ from textual.containers import Vertical
 
 class DailyCheckinScreen(ModalScreen[dict]):
 
+    def __init__(self, priorities="", accomplished="", blocked="", notes=""):
+        super().__init__()
+        self._priorities = priorities
+        self._accomplished = accomplished
+        self._blocked = blocked
+        self._notes = notes
+
     def compose(self):
 
         yield Vertical(
@@ -12,33 +19,33 @@ class DailyCheckinScreen(ModalScreen[dict]):
             Label("Priorities"),
 
             TextArea(
+                self._priorities,
                 id="priorities",
-                placeholder="Today's priorities"
             ),
 
             Label("Accomplished"),
 
             TextArea(
+                self._accomplished,
                 id="accomplished",
-                placeholder="What did you accomplish?"
             ),
 
             Label("Blocked"),
 
             TextArea(
+                self._blocked,
                 id="blocked",
-                placeholder="What is blocked?"
             ),
 
             Label("Notes"),
 
             TextArea(
+                self._notes,
                 id="notes",
-                placeholder="Additional notes"
             ),
 
             Button(
-                "Save Check-In",
+                "Save",
                 id="save"
             ),
         )

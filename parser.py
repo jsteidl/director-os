@@ -144,9 +144,7 @@ def load_log():
     if not path.exists():
         rollover_log()
 
-    return path.read_text(
-        encoding="utf-8"
-    )
+    return path.read_text(encoding="utf-8")
 
 
 def save_log(content):
@@ -238,6 +236,38 @@ def add_task(task_name, tag="", due_date="", priority=""):
     save_log(content)
 
 
+def edit_task(old_title, new_title, priority="", due_date="", tags=None):
+
+    content = load_log()
+
+    pattern = re.compile(r"- \[ \] .*" + re.escape(old_title) + r".*")
+    match = pattern.search(content)
+
+    if not match:
+        return
+
+    new_line_title = f"({priority}) {new_title}" if priority else new_title
+    new_line = f"- [ ] {new_line_title}"
+
+    if due_date:
+        new_line += f" Due:{due_date}"
+
+    if tags:
+        new_line += " " + " ".join(f"#{t}" for t in tags)
+
+    content = content.replace(match.group(0), new_line, 1)
+    save_log(content)
+
+
+def delete_task(task_title):
+
+    content = load_log()
+
+    pattern = re.compile(r"- \[ \] .*" + re.escape(task_title) + r".*\n")
+    content = pattern.sub("", content, count=1)
+    save_log(content)
+
+
 # ==========================================================
 # DEPENDENCIES
 # ==========================================================
@@ -301,6 +331,35 @@ def add_dependency(
         1,
     )
 
+    save_log(content)
+
+
+def edit_dependency(old_item, new_item, owner):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(old_item) + r" \| Owner:\s*.*? \| Since:\s*(\d{4}-\d{2}-\d{2}).*"
+    )
+    match = pattern.search(content)
+
+    if not match:
+        return
+
+    since = match.group(1)
+    new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
+    content = content.replace(match.group(0), new_line, 1)
+    save_log(content)
+
+
+def delete_dependency(item_text):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*\n"
+    )
+    content = pattern.sub("", content, count=1)
     save_log(content)
 
 def resolve_dependency(
@@ -426,6 +485,70 @@ def add_risk(description, owner, severity, tags=None):
     save_log(content)
 
 
+def edit_risk(old_description, new_description, owner, severity, tags=None):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(old_description) + r" \| Owner:\s*.*? \| Since:\s*(\d{4}-\d{2}-\d{2}) \| Severity:\s*[HML].*"
+    )
+    match = pattern.search(content)
+
+    if not match:
+        return
+
+    since = match.group(1)
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+    new_line = (
+        f"- {new_description} | Owner: {owner} "
+        f"| Since: {since} "
+        f"| Severity: {severity.upper()}{tag_str}"
+    )
+    content = content.replace(match.group(0), new_line, 1)
+    save_log(content)
+
+
+def delete_risk(description):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(description) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2} \| Severity:\s*[HML].*\n"
+    )
+    content = pattern.sub("", content, count=1)
+    save_log(content)
+
+
+def resolve_risk(description, notes):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(description) + r" \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2}) \| Severity:\s*([HML]).*"
+    )
+    match = pattern.search(content)
+
+    if not match:
+        return
+
+    content = pattern.sub("", content, count=1)
+
+    resolved_entry = (
+        f"- Risk: {description}\n"
+        f"  Owner: {match.group(1)}\n"
+        f"  Severity: {match.group(3)}\n"
+        f"  Resolved: {date.today()}\n"
+        f"  Notes: {notes}\n\n"
+    )
+
+    content = content.replace(
+        "### Accomplishments\n",
+        resolved_entry + "### Accomplishments\n",
+        1,
+    )
+    save_log(content)
+
+
 # ==========================================================
 # SOMEDAY / FUTURE
 # ==========================================================
@@ -484,6 +607,36 @@ def add_someday_item(item, owner, tags=None):
     save_log(content)
 
 
+def edit_someday_item(old_item, new_item, owner, tags=None):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(old_item) + r" \| Owner:\s*.*? \| Since:\s*(\d{4}-\d{2}-\d{2}).*"
+    )
+    match = pattern.search(content)
+
+    if not match:
+        return
+
+    since = match.group(1)
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+    new_line = f"- {new_item} | Owner: {owner} | Since: {since}{tag_str}"
+    content = content.replace(match.group(0), new_line, 1)
+    save_log(content)
+
+
+def delete_someday_item(item_text):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*\n"
+    )
+    content = pattern.sub("", content, count=1)
+    save_log(content)
+
+
 def promote_someday_item(item_text):
 
     content = load_log()
@@ -537,6 +690,52 @@ def get_accomplishments():
     ]
 
 
+def _find_accomplishment_block(content, task_title):
+    """Find accomplishment block where stripped task title matches."""
+    pattern = re.compile(
+        r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n",
+        re.S,
+    )
+    for match in pattern.finditer(content):
+        if strip_tags(match.group(1)).strip() == task_title:
+            return match
+    return None
+
+
+def edit_accomplishment(old_task, new_task, outcome):
+
+    content = load_log()
+    match = _find_accomplishment_block(content, old_task)
+
+    if not match:
+        return
+
+    completed = match.group(3)
+    new_block = (
+        f"- Task: {new_task}\n"
+        f"  Outcome: {outcome}\n"
+        f"  Completed: {completed}\n"
+    )
+    content = content.replace(match.group(0), new_block, 1)
+    save_log(content)
+
+
+def delete_accomplishment(task_title):
+
+    content = load_log()
+    match = _find_accomplishment_block(content, task_title)
+
+    if not match:
+        return
+
+    # Remove the block plus the trailing blank line
+    full_block = re.compile(
+        re.escape(match.group(0)) + r"\n?"
+    )
+    content = full_block.sub("", content, count=1)
+    save_log(content)
+
+
 # ==========================================================
 # COMPLETE TASK
 # ==========================================================
@@ -548,15 +747,8 @@ def complete_task(
 
     content = load_log()
 
-    task_line = (
-        f"- [ ] {task_text}"
-    )
-
-    content = content.replace(
-        task_line,
-        "",
-        1,
-    )
+    pattern = re.compile(r"- \[ \] .*" + re.escape(task_text) + r".*\n")
+    content = pattern.sub("", content, count=1)
 
     accomplishment = (
         f"- Task: {task_text}\n"
@@ -600,7 +792,7 @@ def reopen_task(task_title):
 
     for match in matches:
 
-        if match.group(1) == task_title:
+        if strip_tags(match.group(1)).strip() == task_title:
             target = match
             break
 
@@ -661,10 +853,41 @@ def add_daily_entry(
 """
 
     content += entry
-
     save_log(content)
-
     return True
+
+
+def edit_daily_entry(entry_date, priorities, accomplished, blocked, notes):
+
+    content = load_log()
+
+    pattern = re.compile(
+        r"#### " + re.escape(entry_date) + r".*?(?=\n#### |\Z)",
+        re.S,
+    )
+
+    new_entry = f"""#### {entry_date}
+
+##### Priorities
+
+{to_markdown_list(priorities)}
+
+##### Accomplished
+
+{to_markdown_list(accomplished)}
+
+##### Blocked
+
+{to_markdown_list(blocked)}
+
+##### Notes
+
+{to_markdown_list(notes)}
+
+"""
+
+    content = pattern.sub(new_entry, content, count=1)
+    save_log(content)
 
 def to_markdown_list(text):
 

@@ -33,30 +33,28 @@
   Notes: this was a dependency test entry
 
 ### Someday/Future
-- Strategy command/system manager workflow replacements | Owner:Jeff | Since: 2026-08-03 #MCEMigration
+- Strategy command/system manager workflow replacements | Owner: Jeff | Since: 2026-08-03
 
 ### Risks
 
 ### Accomplishments
 
-- script working as expected so far (completed 2026-08-04)
-
-- this is an effort to put together a useful tool to track work, actions and accomplishments (completed 2026-08-04)
-
-- Task: update August comp statuses #Lucky
-  Outcome: duplicate task
-  Completed: 2026-08-05
-
-- Task: Update comp statuses for August  ##Lucky
-  Outcome: stores updated in NetSuite, comp status will reflect in today's reporting
-  Completed: 2026-08-06
-
+- Task: script working as expected so far
+  Outcome: script working as expected so far
+  Completed: 2026-08-04
+- Task: this is an effort to put together a useful tool to track work, actions and accomplishments
+  Outcome: this is an effort to put together a useful tool to track work, actions and accomplishments
+  Completed: 2026-08-04
 - Task: discuss store insights timeline with manish and urvi today #storeInsights
   Outcome: arrived at potential path to reduce timeline; meeting with team 2026-08-06
   Completed: 2026-08-06
 
 - Task: send meeting times to Brian Williams for 2026-08-07 #Looker
   Outcome: Sent options; meeting scheduled for Friday
+  Completed: 2026-08-06
+
+- Task: Update comp statuses for August
+  Outcome: updated netsuite to reflect in reporting 2026-08-06
   Completed: 2026-08-06
 
 ### Wins Worth Mentioning
@@ -131,5 +129,4 @@
 
 - Lot's of meetings today. Stay focused on priorities!!
 - Lucky ETL error this morning related to Balance Audited Sales Boomi process; reports delayed
-
 
