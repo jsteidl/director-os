@@ -36,7 +36,9 @@ from screens.help import HelpScreen
 from screens.reopen_task import ReopenTaskScreen
 from screens.add_risk import AddRiskScreen
 from screens.add_someday import AddSomedayScreen
+from screens.confirm import ConfirmScreen
 from screens.widget_viewer import WidgetViewerScreen
+from screens.weekly_review import WeeklyReviewScreen
 from screens.tag_manager import TagManagerScreen
 
 class DashboardScreen(Screen):
@@ -56,6 +58,7 @@ class DashboardScreen(Screen):
         Binding("s", "add_someday", "Someday"),
         Binding("p", "promote_someday", "Promote"),
         Binding("l", "show_daily_log", "Daily Log"),
+        Binding("W", "weekly_review", "Weekly Review"),
         Binding("v", "view_widget", "View"),
         Binding("?", "show_help", "Help"),
     ]
@@ -333,15 +336,21 @@ class DashboardScreen(Screen):
         focused = self.focused
 
         if isinstance(focused, TaskTable):
-            self._delete_task()
+            self._confirm_delete(self._delete_task)
         elif isinstance(focused, DependencyTable):
-            self._delete_dependency()
+            self._confirm_delete(self._delete_dependency)
         elif isinstance(focused, RisksTable):
-            self._delete_risk()
+            self._confirm_delete(self._delete_risk)
         elif isinstance(focused, SomedayTable):
-            self._delete_someday()
+            self._confirm_delete(self._delete_someday)
         elif isinstance(focused, AccomplishmentTable):
-            self._delete_accomplishment()
+            self._confirm_delete(self._delete_accomplishment)
+
+    def _confirm_delete(self, delete_fn):
+        self.app.push_screen(
+            ConfirmScreen("Delete this item? This cannot be undone."),
+            lambda confirmed: delete_fn() if confirmed else None
+        )
 
     def _delete_task(self):
         table = self.query_one(TaskTable)
@@ -779,6 +788,9 @@ class DashboardScreen(Screen):
 
         promote_someday_item(item_text)
         self.refresh_data()
+
+    def action_weekly_review(self):
+        self.app.push_screen(WeeklyReviewScreen())
 
     # =====================================================
     # DAILY LOG VIEW

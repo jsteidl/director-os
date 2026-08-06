@@ -132,6 +132,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `s` | Add someday item |
 | `p` | Promote someday item to task |
 | `l` | Open daily log navigator |
+| `W` | Weekly review |
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
 | `?` | Help |
@@ -141,15 +142,19 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 
 | # | Title |
 |---|-------|
-| #3 | Executive Snapshot |
 | #4 | Manager Update Generator |
 | #5 | Copilot Prompt Generator |
-| #8 | Accomplishment Details |
-| #11 | Theme Config |
-| #12 | Weekly Review |
-| #13 | Dependency Aging Alerts |
-| #16 | Package |
-| #17 | Portable log storage via configurable logs path |
+| #8 | Accomplishment Details View |
+| #11 | Theme Configuration |
+| #12 | Weekly Review Screen |
+| #14 | Tag Analytics Dashboard |
+| #15 | Export Manager Update |
+| #16 | Package Director OS |
+| #24 | Portable log storage via configurable logs path |
+| #25 | Confirmation dialog on delete |
+| #26 | Task aging color coding |
+| #27 | Search / filter across tables |
+| #28 | Carry-forward indicator for rolled-over tasks |
 
 ## Git Workflow
 

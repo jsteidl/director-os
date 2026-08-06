@@ -1087,6 +1087,46 @@ def rename_tag(old_tag, new_tag):
     path.write_text(content, encoding="utf-8")
 
 
+def get_weekly_summary():
+
+    today = date.today()
+    week_start = today - __import__('datetime').timedelta(days=today.weekday())
+    week_ago = week_start
+    content = load_log()
+    entries = parse_daily_log(content)
+
+    week_entries = [e for e in entries if e.date >= week_ago.isoformat()]
+
+    accomplishments = [
+        a for a in get_accomplishments()
+        if a.completed >= week_ago.isoformat()
+    ]
+
+    tasks = get_tasks()
+
+    return {
+        "entries": week_entries,
+        "accomplishments": accomplishments,
+        "open_tasks": tasks,
+        "week_start": week_ago.isoformat(),
+        "week_end": today.isoformat(),
+    }
+
+
+def save_weekly_review(notes, week_start, week_end):
+
+    content = load_log()
+
+    entry = (
+        f"\n\n#### Weekly Review: {week_start} to {week_end}\n\n"
+        f"##### Notes\n\n"
+        f"{to_markdown_list(notes)}\n"
+    )
+
+    content += entry
+    save_log(content)
+
+
 def get_daily_log_text():
 
     content = load_log()

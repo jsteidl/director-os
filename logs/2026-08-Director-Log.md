@@ -18,7 +18,7 @@
 
 
 
-- Aimpoint NDA/MSA | Owner: Ashlie | Since: 2026-07-31
+
 - Snowflake RSA roadmap | Owner: Tor | Since: 2026-08-03
 
 ### Resolved Dependencies
@@ -35,6 +35,11 @@
 
 - Dependency: check snowflake users and accounts
   Owner: jeff
+  Resolved: 2026-08-06
+  Notes: 
+
+- Dependency: Aimpoint NDA/MSA
+  Owner: Ashlie
   Resolved: 2026-08-06
   Notes: 
 
