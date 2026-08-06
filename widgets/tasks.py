@@ -7,6 +7,7 @@ class TaskTable(DataTable):
 
     def on_mount(self):
 
+        self.zebra_stripes = True
         self.add_columns(
             "Task",
             "Priority",

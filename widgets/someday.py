@@ -7,6 +7,7 @@ class SomedayTable(DataTable):
 
     def on_mount(self):
 
+        self.zebra_stripes = True
         self.add_columns(
             "Item",
             "Owner",

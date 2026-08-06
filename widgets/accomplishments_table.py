@@ -9,6 +9,7 @@ class AccomplishmentTable(
 
     def on_mount(self):
 
+        self.zebra_stripes = True
         self.add_columns(
             "Task",
             "Outcome",

@@ -2,6 +2,7 @@ from textual.screen import Screen
 from textual.containers import Horizontal, Vertical
 from textual.binding import Binding
 from textual.widgets import Label
+from datetime import datetime
 
 from widgets.metrics import MetricsWidget
 from widgets.tasks import TaskTable
@@ -57,6 +58,27 @@ class DashboardScreen(Screen):
     ]
 
     CSS = """
+    #app-footer {
+        dock: bottom;
+        height: 1;
+        width: 100%;
+        padding: 0 1;
+        background: $accent;
+        color: $text;
+        text-align: right;
+    }
+
+    #app-title {
+        dock: top;
+        height: 1;
+        width: 100%;
+        padding: 0 1;
+        background: $accent;
+        color: $text;
+        text-style: bold;
+        text-align: center;
+    }
+
     DataTable {
         height: 1fr;
     }
@@ -70,8 +92,9 @@ class DashboardScreen(Screen):
     }
 
     #metrics {
-        height: 7;
+        height: 3;
         border: solid green;
+        padding: 0 1;
     }
 
     #tasks {
@@ -108,11 +131,13 @@ class DashboardScreen(Screen):
 
     def compose(self):
 
+        yield Label("director_os", id="app-title")
+        yield Label("", id="app-footer")
         yield Horizontal(
 
             Vertical(
-                MetricsWidget(id="metrics"),
                 Label("Executive Summary", classes="widget-label"),
+                MetricsWidget(id="metrics"),
                 Label("Tasks", classes="widget-label"),
                 TaskTable(id="tasks"),
                 Label("Today", classes="widget-label"),
@@ -130,6 +155,14 @@ class DashboardScreen(Screen):
                 AccomplishmentTable(id="accomplishments"),
             ),
 
+        )
+
+    def on_mount(self):
+        self.set_interval(1, self._tick_clock)
+
+    def _tick_clock(self):
+        self.query_one("#app-footer", Label).update(
+            datetime.now().strftime("%A, %B %d  %I:%M %p")
         )
 
     # =====================================================

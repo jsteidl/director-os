@@ -997,6 +997,39 @@ def get_today_entry():
     return None
 
 
+def get_metrics():
+
+    today = date.today()
+    tasks = get_tasks()
+    deps = get_dependencies()
+    risks = get_risks()
+    accomplishments = get_accomplishments()
+
+    overdue = sum(
+        1 for t in tasks
+        if t.due_date and datetime.strptime(t.due_date, "%Y-%m-%d").date() < today
+    )
+
+    oldest_dep = max((d.age for d in deps), default=0)
+
+    high_risks = sum(1 for r in risks if r.severity.upper() == "H")
+
+    month_wins = sum(
+        1 for a in accomplishments
+        if a.completed.startswith(today.strftime("%Y-%m"))
+    )
+
+    return {
+        "tasks": len(tasks),
+        "overdue": overdue,
+        "deps": len(deps),
+        "oldest_dep": oldest_dep,
+        "high_risks": high_risks,
+        "accomplishments": len(accomplishments),
+        "month_wins": month_wins,
+    }
+
+
 def get_daily_log_text():
 
     content = load_log()
