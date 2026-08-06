@@ -1,7 +1,19 @@
 import re
 from datetime import datetime, date
 from pathlib import Path
-from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry
+from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry, Risk, SomedayItem
+
+
+# ==========================================================
+# TAG HELPERS
+# ==========================================================
+
+def extract_tags(text):
+    return re.findall(r"#(\w+)", text)
+
+
+def strip_tags(text):
+    return re.sub(r"\s*#\w+", "", text).strip()
 
 
 # ==========================================================
@@ -186,11 +198,15 @@ def get_tasks():
             priority = priority_match.group(1)
             title = priority_match.group(2)
 
+        tags = extract_tags(title)
+        title = strip_tags(title)
+
         tasks.append(
             Task(
                 title=title,
                 priority=priority,
                 due_date=due_date,
+                tags=tags,
             )
         )
     return tasks
@@ -209,7 +225,6 @@ def add_task(task_name, tag="", due_date="", priority=""):
 
     if tag:
         line += f" #{tag}"
-
     line += "\n"
 
     marker = "### High-Priority\n"
@@ -233,7 +248,7 @@ def get_dependencies():
     content = load_log()
 
     matches = re.findall(
-        r"- (.*?) \| Owner: (.*?) \| Since: (\d{4}-\d{2}-\d{2})",
+        r"- (.*?) \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2})",
         content,
     )
 
@@ -250,12 +265,16 @@ def get_dependencies():
             date.today() - since_date
         ).days
 
+        tags = extract_tags(item)
+        clean_item = strip_tags(item)
+
         dependencies.append(
             Dependency(
-                item,
+                clean_item,
                 owner,
                 since,
                 age,
+                tags,
             )
         )
 
@@ -292,8 +311,8 @@ def resolve_dependency(
     content = load_log()
 
     pattern = (
-        r"- (.*?) \| Owner: (.*?) "
-        r"\| Since: (\d{4}-\d{2}-\d{2})"
+        r"- (.*?) \| Owner:\s*(.*?) "
+        r"\| Since:\s*(\d{4}-\d{2}-\d{2})"
     )
 
     matches = re.findall(
@@ -348,6 +367,146 @@ def resolve_dependency(
 
 
 # ==========================================================
+# RISKS
+# ==========================================================
+
+def get_risks():
+
+    content = load_log()
+
+    match = re.search(
+        r"### Risks(.*?)###",
+        content,
+        re.S,
+    )
+
+    if not match:
+        return []
+
+    risks = []
+
+    for line in re.findall(
+        r"- (.*?) \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2}) \| Severity:\s*([HML])(.*)",
+        match.group(1),
+    ):
+        description, owner, since, severity, rest = line
+        tags = extract_tags(rest)
+
+        risks.append(
+            Risk(
+                description=description,
+                owner=owner,
+                since=since,
+                severity=severity,
+                tags=tags,
+            )
+        )
+
+    return risks
+
+
+def add_risk(description, owner, severity, tags=None):
+
+    content = load_log()
+
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+
+    line = (
+        f"- {description} | Owner: {owner} "
+        f"| Since: {date.today()} "
+        f"| Severity: {severity.upper()}{tag_str}\n"
+    )
+
+    content = content.replace(
+        "### Risks\n",
+        f"### Risks\n{line}",
+        1,
+    )
+
+    save_log(content)
+
+
+# ==========================================================
+# SOMEDAY / FUTURE
+# ==========================================================
+
+def get_someday_items():
+
+    content = load_log()
+
+    match = re.search(
+        r"### Someday/Future(.*?)### Risks",
+        content,
+        re.S,
+    )
+
+    if not match:
+        return []
+
+    items = []
+
+    for line in re.findall(
+        r"- (.*?) \| Owner:\s*(.*?) \| Since: (\d{4}-\d{2}-\d{2})(.*)",
+        match.group(1),
+    ):
+        item, owner, since, rest = line
+        tags = extract_tags(rest)
+
+        items.append(
+            SomedayItem(
+                item=item,
+                owner=owner,
+                since=since,
+                tags=tags,
+            )
+        )
+
+    return items
+
+
+def add_someday_item(item, owner, tags=None):
+
+    content = load_log()
+
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+
+    line = (
+        f"- {item} | Owner: {owner} "
+        f"| Since: {date.today()}{tag_str}\n"
+    )
+
+    content = content.replace(
+        "### Someday/Future\n",
+        f"### Someday/Future\n{line}",
+        1,
+    )
+
+    save_log(content)
+
+
+def promote_someday_item(item_text):
+
+    content = load_log()
+
+    pattern = (
+        r"- (.*?) \| Owner: (.*?) \| Since: (\d{4}-\d{2}-\d{2})(.*)"
+    )
+
+    for line in re.findall(pattern, content):
+        item, owner, since, rest = line
+        if item == item_text:
+            original = f"- {item} | Owner: {owner} | Since: {since}{rest}"
+            content = content.replace(original + "\n", "", 1)
+            content = content.replace(
+                "### High-Priority\n",
+                f"### High-Priority\n- [ ] {item}\n",
+                1,
+            )
+            save_log(content)
+            return
+
+
+# ==========================================================
 # ACCOMPLISHMENTS
 # ==========================================================
 
@@ -369,9 +528,10 @@ def get_accomplishments():
 
     return [
         Accomplishment(
-            task,
-            outcome,
-            completed,
+            task=strip_tags(task),
+            outcome=outcome,
+            completed=completed,
+            tags=extract_tags(task),
         )
         for task, outcome, completed in matches
     ]

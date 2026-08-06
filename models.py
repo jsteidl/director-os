@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 
@@ -7,6 +7,7 @@ class Task:
     title: str
     priority: str | None = None
     due_date: date | None = None
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -15,6 +16,7 @@ class Dependency:
     owner: str
     since: str
     age: int
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -22,6 +24,24 @@ class Accomplishment:
     task: str
     outcome: str
     completed: str
+    tags: list[str] = field(default_factory=list)
+
+
+@dataclass
+class Risk:
+    description: str
+    owner: str
+    since: str
+    severity: str
+    tags: list[str] = field(default_factory=list)
+
+
+@dataclass
+class SomedayItem:
+    item: str
+    owner: str
+    since: str
+    tags: list[str] = field(default_factory=list)
 
 
 @dataclass

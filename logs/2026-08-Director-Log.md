@@ -3,24 +3,19 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) test 2 Due:2026-08-05 #testing
-- [ ] Test task Due:2026-08-05 #testing
-- [ ] discuss store insights timeline with manish and urvi today #storeInsights
-- [ ] send meeting times to Brian Williams for 2026-08-07 #Looker
-- [ ] Review D&A roadmap .pptx #Modernization
-- [ ] Get Looker commercials  #DataModernization
-- [ ] Schedule monthly skip-level meetings with team #Staffing
-- [ ] Update comp statuses for August  ##Lucky
-- [ ] Q3 BI Engineering Prioritization #Planning #Capacity
-- [ ] Store EntraID updates #MCEMigration
-- [ ] SQL query for intraday sales and traffic #storeInsights
-- [ ] Complete workbook for VMWare migration #VMWare
-- [ ] Snowflake MFA account enforcement #Platform @Shrikant
-- [ ] test 2026-08-08
+- [ ] (A) Send email notification of subscription change Due:2026-08-06 ##MCE
+- [ ] (A) Review D&A roadmap .pptx #Modernization
+- [ ] (B) Get Looker commercials  #DataModernization
+- [ ] (C) Schedule monthly skip-level meetings with team #Staffing
+- [ ] (A) Q3 BI Engineering Prioritization #Planning #Capacity
+- [ ] (A) Store EntraID updates #MCEMigration
+- [ ] (A) SQL query for intraday sales and traffic Due:2026-08-07 #storeInsights
+- [ ] (C) Complete workbook for VMWare migration #VMWare
+- [ ] (B) Snowflake MFA account enforcement #Platform @Shrikant
 
 ### Waiting On
 
-- will this work | Owner: me | Since: 2026-08-04
+
 - check snowflake users and accounts | Owner: jeff | Since: 2026-08-04
 - Aimpoint NDA/MSA | Owner: Ashlie | Since: 2026-07-31
 - Snowflake RSA roadmap | Owner: Tor | Since: 2026-08-03
@@ -31,6 +26,11 @@
   Owner: testing
   Resolved: 2026-08-05
   Notes: removing test dependency
+
+- Dependency: will this work
+  Owner: me
+  Resolved: 2026-08-06
+  Notes: this was a dependency test entry
 
 ### Someday/Future
 - Strategy command/system manager workflow replacements | Owner:Jeff | Since: 2026-08-03 #MCEMigration
@@ -43,13 +43,21 @@
 
 - this is an effort to put together a useful tool to track work, actions and accomplishments (completed 2026-08-04)
 
-- Task: test adding tasks ##testing
-  Outcome: test adding tasks ##testing
-  Completed: 2026-08-04
-
 - Task: update August comp statuses #Lucky
   Outcome: duplicate task
   Completed: 2026-08-05
+
+- Task: Update comp statuses for August  ##Lucky
+  Outcome: stores updated in NetSuite, comp status will reflect in today's reporting
+  Completed: 2026-08-06
+
+- Task: discuss store insights timeline with manish and urvi today #storeInsights
+  Outcome: arrived at potential path to reduce timeline; meeting with team 2026-08-06
+  Completed: 2026-08-06
+
+- Task: send meeting times to Brian Williams for 2026-08-07 #Looker
+  Outcome: Sent options; meeting scheduled for Friday
+  Completed: 2026-08-06
 
 ### Wins Worth Mentioning
 
@@ -100,3 +108,28 @@
 ##### Notes
 
 - lots to do -- take your time and stay focused!
+
+
+#### 2026-08-06
+
+##### Priorities
+
+- SPARC Cutover Planning #MCE
+- EntraID updates #MCE
+- Lucky Sales/Traffic Query #StoreInsights
+- Balance Audited Sales remediation #Boomi #Lucky
+
+##### Accomplished
+
+- Corrected ETL script issue which was introduced by employee feed changes
+
+##### Blocked
+
+
+
+##### Notes
+
+- Lot's of meetings today. Stay focused on priorities!!
+- Lucky ETL error this morning related to Balance Audited Sales Boomi process; reports delayed
+
+

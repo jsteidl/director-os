@@ -1,13 +1,14 @@
 from textual.screen import Screen
 from textual.containers import Horizontal, Vertical
 from textual.binding import Binding
+from textual.widgets import Label
 
 from widgets.metrics import MetricsWidget
 from widgets.tasks import TaskTable
 from widgets.dependencies import DependencyTable
-from widgets.accomplishments_table import (
-    AccomplishmentTable,
-)
+from widgets.accomplishments_table import AccomplishmentTable
+from widgets.risks import RisksTable
+from widgets.someday import SomedayTable
 
 from parser import (
     complete_task,
@@ -16,6 +17,9 @@ from parser import (
     reopen_task,
     add_daily_entry,
     resolve_dependency,
+    add_risk,
+    add_someday_item,
+    promote_someday_item,
 )
 
 from screens.task_complete import CompleteTaskScreen
@@ -27,17 +31,22 @@ from screens.daily_log_viewer import DailyLogViewerScreen
 from screens.daily_log_navigator import DailyLogNavigator
 from screens.help import HelpScreen
 from screens.reopen_task import ReopenTaskScreen
+from screens.add_risk import AddRiskScreen
+from screens.add_someday import AddSomedayScreen
 
 class DashboardScreen(Screen):
 
     BINDINGS = [
-        Binding("a", "add_task", "Add"),
+        Binding("a", "add_task", "Add Task"),
         Binding("d", "complete_task", "Done"),
-        Binding("u", "reopen_task", "Undo"),
+        Binding("u", "reopen_task", "Reopen"),
         Binding("r", "refresh_data", "Refresh"),
         Binding("t", "daily_checkin", "Check-in"),
         Binding("w", "add_dependency", "Dependency"),
         Binding("x", "resolve_dependency", "Resolve"),
+        Binding("i", "add_risk", "Risk"),
+        Binding("s", "add_someday", "Someday"),
+        Binding("p", "promote_someday", "Promote"),
         Binding("l", "show_daily_log", "Daily Log"),
         Binding("?", "show_help", "Help"),
     ]
@@ -45,6 +54,14 @@ class DashboardScreen(Screen):
     CSS = """
     DataTable {
         height: 1fr;
+    }
+
+    .widget-label {
+        height: 1;
+        padding: 0 1;
+        background: $primary;
+        color: $text;
+        text-style: bold;
     }
 
     #metrics {
@@ -56,6 +73,16 @@ class DashboardScreen(Screen):
         height: 12;
         border: solid green;
     }
+
+    #risks {
+        height: 12;
+        border: solid red;
+    }
+
+    #someday {
+        height: 12;
+        border: solid yellow;
+    }
     """
 
     def compose(self):
@@ -63,17 +90,20 @@ class DashboardScreen(Screen):
         yield Horizontal(
 
             Vertical(
-                MetricsWidget(
-                    id="metrics"
-                ),
+                MetricsWidget(id="metrics"),
+                Label("Tasks", classes="widget-label"),
                 TaskTable(),
+                Label("Someday / Future", classes="widget-label"),
+                SomedayTable(id="someday"),
             ),
 
             Vertical(
+                Label("Dependencies", classes="widget-label"),
                 DependencyTable(),
-                AccomplishmentTable(
-                    id="accomplishments"
-                ),
+                Label("Risks", classes="widget-label"),
+                RisksTable(id="risks"),
+                Label("Accomplishments", classes="widget-label"),
+                AccomplishmentTable(id="accomplishments"),
             ),
 
         )
@@ -113,9 +143,13 @@ class DashboardScreen(Screen):
 
         deps.load_dependencies()
 
-        accomplishments = self.query_one(
-            AccomplishmentTable
-        )
+        risks = self.query_one(RisksTable)
+        risks.load_risks()
+
+        someday = self.query_one(SomedayTable)
+        someday.load_items()
+
+        accomplishments = self.query_one(AccomplishmentTable)
 
         accomplishments.load_data()
 
@@ -330,6 +364,70 @@ class DashboardScreen(Screen):
             notes or "",
         )
 
+        self.refresh_data()
+
+    # =====================================================
+    # RISKS
+    # =====================================================
+
+    def action_add_risk(self):
+
+        self.app.push_screen(
+            AddRiskScreen(),
+            self.add_risk_callback
+        )
+
+    def add_risk_callback(self, result):
+
+        if not result:
+            return
+
+        description, owner, severity, tags = result
+
+        if not description:
+            return
+
+        add_risk(description, owner, severity, tags)
+        self.refresh_data()
+
+    # =====================================================
+    # SOMEDAY
+    # =====================================================
+
+    def action_add_someday(self):
+
+        self.app.push_screen(
+            AddSomedayScreen(),
+            self.add_someday_callback
+        )
+
+    def add_someday_callback(self, result):
+
+        if not result:
+            return
+
+        item, owner, tags = result
+
+        if not item:
+            return
+
+        add_someday_item(item, owner, tags)
+        self.refresh_data()
+
+    def action_promote_someday(self):
+
+        table = self.query_one(SomedayTable)
+        row = table.cursor_row
+
+        if row is None:
+            return
+
+        try:
+            item_text = str(table.get_cell_at((row, 0)))
+        except Exception:
+            return
+
+        promote_someday_item(item_text)
         self.refresh_data()
 
     # =====================================================
