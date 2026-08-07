@@ -218,15 +218,15 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            old_task = str(table.get_cell_at((row, 0)))
-            outcome = str(table.get_cell_at((row, 1)))
-        except Exception:
+        from parser import get_accomplishments
+        accomplishments = get_accomplishments()
+        if row >= len(accomplishments):
             return
+        acc = accomplishments[row]
         from screens.add_accomplishment import EditAccomplishmentScreen
         self.app.push_screen(
-            EditAccomplishmentScreen(task=old_task, outcome=outcome),
-            lambda result: self._edit_accomplishment_callback(old_task, result)
+            EditAccomplishmentScreen(task=acc.task, outcome=acc.outcome),
+            lambda result: self._edit_accomplishment_callback(acc.task, result)
         )
 
     def _edit_accomplishment_callback(self, old_task, result):
@@ -266,14 +266,14 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            old_item = str(table.get_cell_at((row, 0)))
-            owner = str(table.get_cell_at((row, 1)))
-        except Exception:
+        from parser import get_dependencies
+        deps = get_dependencies()
+        if row >= len(deps):
             return
+        dep = deps[row]
         self.app.push_screen(
-            AddDependencyScreen(item=old_item, owner=owner),
-            lambda result: self._edit_dependency_callback(old_item, result)
+            AddDependencyScreen(item=dep.item, owner=dep.owner),
+            lambda result: self._edit_dependency_callback(dep.item, result)
         )
 
     def _edit_dependency_callback(self, old_item, result):
@@ -289,15 +289,14 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            old_desc = str(table.get_cell_at((row, 0)))
-            owner = str(table.get_cell_at((row, 1)))
-            severity = str(table.get_cell_at((row, 2)))
-        except Exception:
+        from parser import get_risks
+        risks = get_risks()
+        if row >= len(risks):
             return
+        risk = risks[row]
         self.app.push_screen(
-            AddRiskScreen(description=old_desc, owner=owner, severity=severity),
-            lambda result: self._edit_risk_callback(old_desc, result)
+            AddRiskScreen(description=risk.description, owner=risk.owner, severity=risk.severity),
+            lambda result: self._edit_risk_callback(risk.description, result)
         )
 
     def _edit_risk_callback(self, old_desc, result):
@@ -313,14 +312,14 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            old_item = str(table.get_cell_at((row, 0)))
-            owner = str(table.get_cell_at((row, 1)))
-        except Exception:
+        from parser import get_someday_items
+        items = get_someday_items()
+        if row >= len(items):
             return
+        item = items[row]
         self.app.push_screen(
-            AddSomedayScreen(item=old_item, owner=owner),
-            lambda result: self._edit_someday_callback(old_item, result)
+            AddSomedayScreen(item=item.item, owner=item.owner),
+            lambda result: self._edit_someday_callback(item.item, result)
         )
 
     def _edit_someday_callback(self, old_item, result):
@@ -360,11 +359,11 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            title = str(table.get_cell_at((row, 0)))
-        except Exception:
+        from parser import get_tasks
+        tasks = get_tasks()
+        if row >= len(tasks):
             return
-        delete_task(title)
+        delete_task(tasks[row].title)
         self.refresh_data()
 
     def _delete_dependency(self):
@@ -372,11 +371,11 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            item = str(table.get_cell_at((row, 0)))
-        except Exception:
+        from parser import get_dependencies
+        deps = get_dependencies()
+        if row >= len(deps):
             return
-        delete_dependency(item)
+        delete_dependency(deps[row].item)
         self.refresh_data()
 
     def _delete_risk(self):
@@ -384,11 +383,11 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            desc = str(table.get_cell_at((row, 0)))
-        except Exception:
+        from parser import get_risks
+        risks = get_risks()
+        if row >= len(risks):
             return
-        delete_risk(desc)
+        delete_risk(risks[row].description)
         self.refresh_data()
 
     def _delete_someday(self):
@@ -396,11 +395,11 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            item = str(table.get_cell_at((row, 0)))
-        except Exception:
+        from parser import get_someday_items
+        items = get_someday_items()
+        if row >= len(items):
             return
-        delete_someday_item(item)
+        delete_someday_item(items[row].item)
         self.refresh_data()
 
     def _delete_accomplishment(self):
@@ -408,11 +407,11 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            title = str(table.get_cell_at((row, 0)))
-        except Exception:
+        from parser import get_accomplishments
+        accomplishments = get_accomplishments()
+        if row >= len(accomplishments):
             return
-        delete_accomplishment(title)
+        delete_accomplishment(accomplishments[row].task)
         self.refresh_data()
 
     # =====================================================
