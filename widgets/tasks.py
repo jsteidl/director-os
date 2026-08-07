@@ -7,6 +7,9 @@ from parser import get_tasks
 def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
 
+PRIORITY_GLYPHS = {"A": "▲", "B": "●", "C": "▼"}
+PRIORITY_COLORS = {"A": "red", "B": "yellow", "C": "cyan"}
+
 def _age_color(created):
     if not created:
         return "white"
@@ -41,7 +44,7 @@ class TaskTable(DataTable):
             color = _age_color(task.created)
             self.add_row(
                 Text(_t(task.title), style=color),
-                Text(task.priority or "", style=color),
+                Text(PRIORITY_GLYPHS.get(task.priority, task.priority or ""), style=f"bold {PRIORITY_COLORS.get(task.priority, color)}"),
                 Text(task.due_date or "", style=color),
                 Text(" ".join(f"#{t}" for t in task.tags) if task.tags else "", style=color),
                 Text(task.created or "", style=color),

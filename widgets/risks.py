@@ -6,11 +6,8 @@ from parser import get_risks
 def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
 
-SEVERITY_COLORS = {
-    "high": "red",
-    "medium": "yellow",
-    "low": "green",
-}
+SEVERITY_COLORS = {"H": "red", "M": "yellow", "L": "green"}
+SEVERITY_LABELS = {"H": "● H", "M": "● M", "L": "● L"}
 
 
 class RisksTable(DataTable):
@@ -33,8 +30,9 @@ class RisksTable(DataTable):
 
         for risk in get_risks():
             severity = risk.severity or ""
-            color = SEVERITY_COLORS.get(severity.lower(), "white")
-            severity_text = Text(severity, style=color)
+            color = SEVERITY_COLORS.get(severity, "white")
+            label = SEVERITY_LABELS.get(severity, severity)
+            severity_text = Text(label, style=f"bold {color}")
             self.add_row(
                 _t(risk.description),
                 _t(risk.owner),

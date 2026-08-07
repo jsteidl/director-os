@@ -59,6 +59,8 @@ class DashboardScreen(Screen):
         Binding("p", "promote_someday", "Promote"),
         Binding("l", "show_daily_log", "Daily Log"),
         Binding("W", "weekly_review", "Weekly Review"),
+        Binding("c", "calendar", "Calendar"),
+        Binding("E", "events", "Events"),
         Binding("v", "view_widget", "View"),
         Binding("?", "show_help", "Help"),
     ]
@@ -183,6 +185,8 @@ class DashboardScreen(Screen):
     def on_mount(self):
         self._quote = get_random_quote()
         self.set_interval(1, self._tick_clock)
+        from parser import check_event_notifications
+        check_event_notifications()
 
     def _tick_clock(self):
         clock = datetime.now().strftime("%A, %B %d  %I:%M %p")
@@ -791,6 +795,14 @@ class DashboardScreen(Screen):
 
     def action_weekly_review(self):
         self.app.push_screen(WeeklyReviewScreen())
+
+    def action_events(self):
+        from screens.events import EventsScreen
+        self.app.push_screen(EventsScreen())
+
+    def action_calendar(self):
+        from screens.calendar import CalendarScreen
+        self.app.push_screen(CalendarScreen())
 
     # =====================================================
     # DAILY LOG VIEW

@@ -1,7 +1,7 @@
 import re
 from datetime import datetime, date
 from pathlib import Path
-from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry, Risk, SomedayItem
+from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry, Risk, SomedayItem, Event
 
 
 # ==========================================================
@@ -219,6 +219,11 @@ def get_tasks():
                 tags=tags,
             )
         )
+    priority_order = {"A": 0, "B": 1, "C": 2, None: 3}
+    tasks.sort(key=lambda t: (
+        (0, t.due_date) if t.due_date else (1, ""),
+        priority_order.get(t.priority, 3),
+    ))
     return tasks
 
 
@@ -1146,3 +1151,110 @@ def get_daily_log_text():
         "=========\n\n"
         + log_text
     )
+
+
+# ==========================================================
+# EVENTS
+# ==========================================================
+
+def get_events_file():
+    return Path(__file__).parent / "logs" / "events.md"
+
+
+def get_events() -> list:
+    path = get_events_file()
+    if not path.exists():
+        path.write_text("# Events\n\n", encoding="utf-8")
+    content = path.read_text(encoding="utf-8")
+    events = []
+    for m in re.finditer(
+        r"- (.*?) \| Date: (\d{4}-\d{2}-\d{2}) \| Type: (.*?) \| Location: (.*?) \| RemindDays: (\d+)",
+        content,
+    ):
+        events.append(Event(
+            title=m.group(1),
+            date=m.group(2),
+            type=m.group(3),
+            location=m.group(4),
+            remind_days=int(m.group(5)),
+        ))
+    return events
+
+
+def add_event(title, event_date, type_, location, remind_days=0):
+    path = get_events_file()
+    content = path.read_text(encoding="utf-8")
+    line = f"- {title} | Date: {event_date} | Type: {type_} | Location: {location} | RemindDays: {remind_days}\n"
+    content += line
+    path.write_text(content, encoding="utf-8")
+
+
+def edit_event(old_title, old_date, title, event_date, type_, location, remind_days=0):
+    path = get_events_file()
+    content = path.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r"- " + re.escape(old_title) + r" \| Date: " + re.escape(old_date) + r" \| Type: .*? \| Location: .*? \| RemindDays: \d+\n"
+    )
+    new_line = f"- {title} | Date: {event_date} | Type: {type_} | Location: {location} | RemindDays: {remind_days}\n"
+    content = pattern.sub(new_line, content, count=1)
+    path.write_text(content, encoding="utf-8")
+
+
+def delete_event(title, event_date):
+    path = get_events_file()
+    content = path.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r"- " + re.escape(title) + r" \| Date: " + re.escape(event_date) + r" \| Type: .*? \| Location: .*? \| RemindDays: \d+\n"
+    )
+    content = pattern.sub("", content, count=1)
+    path.write_text(content, encoding="utf-8")
+
+
+def check_event_notifications():
+    """Append event/reminder notations to today's daily log if not already present."""
+    today = date.today()
+    events = get_events()
+    notes_to_add = []
+
+    for e in events:
+        try:
+            event_date = datetime.strptime(e.date, "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        days_away = (event_date - today).days
+        if days_away == 0:
+            notes_to_add.append(f"[Event] {e.title} ({e.type}, {e.location})")
+        elif 0 < days_away <= e.remind_days:
+            notes_to_add.append(f"[Reminder] {e.title} in {days_away}d ({e.type}, {e.location})")
+
+    if not notes_to_add:
+        return
+
+    content = load_log()
+    today_str = today.isoformat()
+
+    for note in notes_to_add:
+        # Skip if already present
+        if note in content:
+            continue
+        # If today's entry exists, append to its Notes section
+        pattern = re.compile(
+            r"(#### " + re.escape(today_str) + r".*?##### Notes\n)(.*?)(?=\n#### |\Z)",
+            re.S,
+        )
+        match = pattern.search(content)
+        if match:
+            content = content[:match.end(2)] + f"- {note}\n" + content[match.end(2):]
+        else:
+            # No entry yet — create a minimal one
+            entry = (
+                f"\n\n#### {today_str}\n\n"
+                f"##### Priorities\n\n"
+                f"##### Accomplished\n\n"
+                f"##### Blocked\n\n"
+                f"##### Notes\n\n"
+                f"- {note}\n"
+            )
+            content += entry
+
+    save_log(content)

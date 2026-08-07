@@ -54,6 +54,15 @@ class ResolvedDependency:
 
 
 @dataclass
+class Event:
+    title: str
+    date: str
+    type: str
+    location: str
+    remind_days: int = 0
+
+
+@dataclass
 class DailyLogEntry:
     date: str
     priorities: list[str]

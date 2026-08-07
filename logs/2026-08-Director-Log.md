@@ -49,6 +49,7 @@
 - Strategy command/system manager workflow replacements | Owner: Jeff | Since: 2026-08-03
 
 ### Risks
+- Staffing to support 24/7 coverage | Owner: Bart | Since: 2026-08-06 | Severity: H #staffing
 
 ### Accomplishments
 
