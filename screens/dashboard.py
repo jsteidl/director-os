@@ -242,15 +242,14 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        try:
-            old_title = str(table.get_cell_at((row, 0)))
-            priority = str(table.get_cell_at((row, 1)))
-            due_date = str(table.get_cell_at((row, 2)))
-        except Exception:
+        from parser import get_tasks
+        tasks = get_tasks()
+        if row >= len(tasks):
             return
+        task = tasks[row]
         self.app.push_screen(
-            AddTaskScreen(title=old_title, priority=priority, due_date=due_date),
-            lambda result: self._edit_task_callback(old_title, result)
+            AddTaskScreen(title=task.title, priority=task.priority or "", due_date=task.due_date or "", tags=task.tags),
+            lambda result: self._edit_task_callback(task.title, result)
         )
 
     def _edit_task_callback(self, old_title, result):

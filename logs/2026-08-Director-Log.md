@@ -3,13 +3,12 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-06 ##Contracts
-- [ ] (A) Send email notification of subscription change Due:2026-08-06 ##MCE
-- [ ] (A) Review D&A roadmap .pptx Due:2026-08-06 #Modernization
+- [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-07 Created:2026-08-06 #Contracts
+- [ ] (A) Send email notification of subscription change Due:2026-08-07 Created:2026-08-06 #MCE
 - [ ] (B) Get Looker commercials Due:2026-08-06 #Modernization
 - [ ] (C) Schedule monthly skip-level meetings with team #Staffing
 - [ ] (A) Q3 BI Engineering Prioritization Due:2026-08-06 #planning
-- [ ] (A) Store EntraID updates #MCE
+- [ ] (A) Store EntraID updates Due:2026-08-10
 - [ ] (A) SQL query for intraday sales and traffic Due:2026-08-07 #storeInsights
 - [ ] (C) Complete workbook for VMWare migration #VMWare
 - [ ] (B) Snowflake MFA account enforcement #Platform @Shrikant
@@ -73,6 +72,10 @@
 
 - Task: Follow up with Sergio/Joel T. on Dustin's laptop …
   Outcome: escalated to support
+  Completed: 2026-08-06
+
+- Task: Review D&A roadmap .pptx
+  Outcome: provided feedback on the much-improved decl
   Completed: 2026-08-06
 
 ### Wins Worth Mentioning

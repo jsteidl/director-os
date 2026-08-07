@@ -9,11 +9,11 @@ from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLo
 # ==========================================================
 
 def extract_tags(text):
-    return re.findall(r"#(\w+)", text)
+    return re.findall(r"#+([\w]+)", text)
 
 
 def strip_tags(text):
-    return re.sub(r"\s*#\w+", "", text).strip()
+    return re.sub(r"\s*#+\w+", "", text).strip()
 
 
 # ==========================================================
@@ -266,11 +266,16 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None):
     if not match:
         return
 
+    created_match = re.search(r"Created:(\d{4}-\d{2}-\d{2})", match.group(0))
+    created = created_match.group(1) if created_match else date.today().isoformat()
+
     new_line_title = f"({priority}) {new_title}" if priority else new_title
     new_line = f"- [ ] {new_line_title}"
 
     if due_date:
         new_line += f" Due:{due_date}"
+
+    new_line += f" Created:{created}"
 
     if tags:
         new_line += " " + " ".join(f"#{t}" for t in tags)
