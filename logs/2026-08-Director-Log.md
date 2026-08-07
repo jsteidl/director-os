@@ -3,173 +3,166 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) Follow-up with Abhijeet on Tableau renewal Due:2026-08-07 Created:2026-08-06 #Contracts
-- [ ] (A) Send email notification of subscription change Due:2026-08-07 Created:2026-08-06 #MCE
-- [ ] (B) Get Looker commercials Due:2026-08-06 #Modernization
-- [ ] (C) Schedule monthly skip-level meetings with team #Staffing
-- [ ] (A) Q3 BI Engineering Prioritization Due:2026-08-06 #planning
-- [ ] (A) Store EntraID updates Due:2026-08-10
-- [ ] (A) SQL query for intraday sales and traffic Due:2026-08-07 #storeInsights
-- [ ] (C) Complete workbook for VMWare migration #VMWare
-- [ ] (B) Snowflake MFA account enforcement #Platform @Shrikant
+- [ ] (A) Finalize Q3 technology roadmap presentation Due:2026-08-12 Created:2026-08-01 #strategy
+- [ ] (A) Review and approve cloud infrastructure budget Due:2026-08-14 Created:2026-08-03 #budget
+- [ ] (A) Complete vendor security assessment for new SaaS tool Due:2026-08-15 Created:2026-08-04 #security
+- [ ] (B) Define OKRs for data platform team Due:2026-08-20 Created:2026-07-28 #planning
+- [ ] (B) Conduct architecture review for microservices migration Due:2026-08-22 Created:2026-07-30 #platform
+- [ ] (B) Follow up on open headcount requisitions Due:2026-08-18 Created:2026-08-05 #staffing
+- [ ] (C) Update team onboarding documentation Created:2026-07-21 #people
+- [ ] (C) Review SLA metrics for Q2 incident report Created:2026-07-15 #operations
+- [ ] (C) Schedule quarterly business review with stakeholders Due:2026-08-28 Created:2026-08-06 #strategy
 
 ### Waiting On
 
-
-
-
-- Snowflake RSA roadmap | Owner: Tor | Since: 2026-08-03
+- Data warehouse capacity report | Owner: Priya | Since: 2026-08-01
+- Legal review of vendor NDA | Owner: Ashlie | Since: 2026-07-28
+- Infra cost breakdown from cloud team | Owner: Marcus | Since: 2026-08-04
+- Approved headcount list from HR | Owner: Dana | Since: 2026-07-25
 
 ### Resolved Dependencies
 
-- Dependency: testing
-  Owner: testing
+- Dependency: SSO integration spec
+  Owner: Dev Team
   Resolved: 2026-08-05
-  Notes: removing test dependency
+  Notes: Spec approved and handed off to engineering
 
-- Dependency: will this work
-  Owner: me
-  Resolved: 2026-08-06
-  Notes: this was a dependency test entry
-
-- Dependency: check snowflake users and accounts
-  Owner: jeff
-  Resolved: 2026-08-06
-  Notes: 
-
-- Dependency: Aimpoint NDA/MSA
-  Owner: Ashlie
-  Resolved: 2026-08-06
-  Notes: 
+- Dependency: Q2 audit findings
+  Owner: Compliance
+  Resolved: 2026-08-03
+  Notes: All findings reviewed; two items added to backlog
 
 ### Someday/Future
-- Standardize Strategy access provisioning | Owner: Jeff | Since: 2026-08-06 #MCE
-- Review service account policies  | Owner: Jeff | Since: 2026-08-06 #security
-- Strategy command/system manager workflow replacements | Owner: Jeff | Since: 2026-08-03
+- Evaluate internal developer portal tooling | Owner: Jeff | Since: 2026-08-01 #platform
+- Explore ML pipeline standardization | Owner: Jeff | Since: 2026-07-20 #dataScience
+- Build executive metrics dashboard | Owner: Jeff | Since: 2026-08-06 #strategy
+- Investigate FinOps tooling for cloud cost visibility | Owner: Jeff | Since: 2026-07-15 #budget
 
 ### Risks
-- Staffing to support 24/7 coverage | Owner: Bart | Since: 2026-08-06 | Severity: H #staffing
+- Key engineer departure risk — retention plan needed | Owner: Jeff | Since: 2026-07-28 | Severity: H #staffing
+- Legacy ETL pipeline instability under peak load | Owner: Marcus | Since: 2026-08-02 | Severity: H #platform
+- Vendor contract renewal deadline approaching | Owner: Ashlie | Since: 2026-08-01 | Severity: M #budget
+- Delayed cloud migration impacting Q4 roadmap | Owner: Jeff | Since: 2026-07-30 | Severity: M #strategy
+- Insufficient test coverage on payment service | Owner: Dev Team | Since: 2026-08-05 | Severity: L #platform
 
 ### Accomplishments
 
-- Task: script working as expected so far
-  Outcome: script working as expected so far
+- Task: Present data strategy to executive leadership
+  Outcome: Well received; greenlit for Q3 investment
+  Completed: 2026-08-05
+
+- Task: Complete annual performance reviews for direct reports
+  Outcome: All reviews submitted on time; feedback positive
   Completed: 2026-08-04
-- Task: this is an effort to put together a useful tool to track work, actions and accomplishments
-  Outcome: this is an effort to put together a useful tool to track work, actions and accomplishments
-  Completed: 2026-08-04
-- Task: discuss store insights timeline with manish and urvi today #storeInsights
-  Outcome: arrived at potential path to reduce timeline; meeting with team 2026-08-06
-  Completed: 2026-08-06
 
-- Task: send meeting times to Brian Williams for 2026-08-07 #Looker
-  Outcome: Sent options; meeting scheduled for Friday
-  Completed: 2026-08-06
+- Task: Resolve P1 incident with reporting pipeline
+  Outcome: Root cause identified and patched; postmortem scheduled
+  Completed: 2026-08-03
 
-- Task: Update comp statuses for August
-  Outcome: updated netsuite to reflect in reporting 2026-08-06
-  Completed: 2026-08-06
+- Task: Negotiate renewal terms with Snowflake
+  Outcome: Secured 15% cost reduction with expanded capacity
+  Completed: 2026-08-01
 
-- Task: Follow up with Sergio/Joel T. on Dustin's laptop …
-  Outcome: escalated to support
-  Completed: 2026-08-06
+- Task: Launch internal tech radar
+  Outcome: Published to confluence; shared with engineering leads
+  Completed: 2026-07-30
 
-- Task: Review D&A roadmap .pptx
-  Outcome: provided feedback on the much-improved decl
-  Completed: 2026-08-06
+- Task: Kick off microservices architecture working group
+  Outcome: Charter approved; first meeting held with 8 attendees
+  Completed: 2026-07-28
 
 ### Wins Worth Mentioning
 
-
 ### Daily Log
 
-#### 2026-08-04
+#### 2026-08-06
 
 ##### Priorities
-- Store EntraID updates #MCE
-- SQL query for intraday sales and traffic #storeInsights
-- Workbook update for infra VMWare migration effort #VMWare
-- Snowflake MFA account enforcement #Platform @Shrikant
-- build an app
-- attend meetings
-- eat lunch
+
+- Finalize Q3 roadmap deck for Thursday review
+- Follow up with Ashlie on vendor NDA status
+- 1:1s with three direct reports
 
 ##### Accomplished
 
-- attended meetings
-- built app
+- Completed Q3 roadmap first draft and shared for feedback
+- Confirmed NDA is in final legal review — expected by EOW
+- Held all three 1:1s; identified two retention concerns to escalate
 
 ##### Blocked
 
-- staffing
+- Cloud cost breakdown still pending from Marcus
 
 ##### Notes
 
-- was this a useful day? history will decide
+- Strong team energy this week despite heavy workload
+- Need to carve out time for strategic thinking — too many reactive meetings
 
 #### 2026-08-05
 
 ##### Priorities
 
-- RBOK Strategy renewal meeting
-- Q3 priority review
-- D&A deck review
-- Balance batch remediation
+- Executive data strategy presentation
+- Review Q2 audit findings with compliance
+- Approve sprint goals for platform team
 
 ##### Accomplished
 
-- closed 2 issues in director OS app
+- Delivered data strategy presentation — strong exec alignment
+- Closed out Q2 audit review with compliance team
+- Sprint goals approved after minor scope adjustment
 
 ##### Blocked
 
-- MCE subscription cutover
+- Headcount approval still sitting with HR
 
 ##### Notes
 
-- lots to do -- take your time and stay focused!
+- Good momentum this week
+- Reminder to self: block focus time on Fridays
 
-
-#### 2026-08-06
+#### 2026-08-04
 
 ##### Priorities
 
-- SPARC Cutover Planning #MCE
-- EntraID updates #MCE
-- Lucky Sales/Traffic Query #StoreInsights
-- Balance Audited Sales remediation #Boomi #Lucky
+- Complete performance reviews
+- Architecture review prep
+- Vendor security assessment kickoff
 
 ##### Accomplished
 
-- Met with Syed's team re: API access request. Set expectation for Syed to meet with R&I to better understand the request
-- Confirmed internal path forward to accelerate Store insights dashboard
-- Corrected ETL script issue which was introduced by employee feed changes
+- All performance reviews submitted
+- Prepped architecture review agenda and pre-read doc
+- Kicked off vendor security assessment with security team
 
 ##### Blocked
 
-- Feedback from Chetan #StoreInsights
+- Waiting on data warehouse capacity numbers from Priya
 
 ##### Notes
 
-- Lot's of meetings today. Stay focused on priorities!!
-- Lucky ETL error this morning related to Balance Audited Sales Boomi process; reports delayed
+- Capacity planning conversation needs to happen soon
+- Team morale good; recognition shoutout in all-hands well received
 
-
-#### 2026-08-06
+#### 2026-08-03
 
 ##### Priorities
 
-
+- Resolve reporting pipeline P1
+- Q2 audit findings review
+- Snowflake renewal negotiation
 
 ##### Accomplished
 
-
+- P1 resolved; postmortem scheduled for next week
+- Audit findings reviewed and triaged
+- Snowflake renewal closed at better terms than expected
 
 ##### Blocked
 
-
+- Nothing significant today
 
 ##### Notes
 
-
-
-
+- Good day overall — cleared three major items
+- Pipeline incident was a good reminder to invest in observability tooling

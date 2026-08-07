@@ -5,7 +5,7 @@ A terminal-based operating system for technology leaders. Built with [Textual](h
 ## Features
 
 - **Executive Summary** — live status bar showing tasks, overdue count, waiting-on count, oldest dependency age, high risk count, and wins this month — color-coded red/green by health
-- **Task tracking** — add, edit, complete, delete, and reopen tasks with priority (A/B/C), due dates, and tags
+- **Task tracking** — add, edit, complete, delete, and reopen tasks with priority (A/B/C), due dates, and tags — priority shown as color-coded glyphs (▲/●/▼), rows age-colored after 7/14 days
 - **Dependency tracking** — track what you're waiting on, by owner and age
 - **Risk tracking** — log risks with severity (H/M/L), owner, and date — severity color-coded in the dashboard
 - **Someday / Future** — capture ideas and future work, promote to active tasks when ready
@@ -13,8 +13,16 @@ A terminal-based operating system for technology leaders. Built with [Textual](h
 - **Daily check-in** — structured daily log with priorities, accomplished, blocked, and notes
 - **Daily log navigator** — browse and review past daily log entries
 - **Today panel** — shows today's check-in priorities, accomplished, and blocked at a glance
+- **Weekly review** — structured weekly summary with accomplishments, open tasks, and notes
+- **Calendar** — Gregorian and NRF 4-5-4 fiscal calendar view with due date, check-in, and event markers; navigate months and fiscal periods
+- **Events** — track holidays, deadlines, OOO, and other events with configurable reminders; notifications appended to daily log on launch
+- **Tag manager** — rename and merge tags across all objects
 - **Widget viewer** — press `v` on any table to open a full-screen read-only expanded view
 - **Monthly log files** — one markdown file per month, auto-scaffolded and rolled over with open tasks and dependencies carried forward
+
+## Screenshot
+
+![director_os dashboard](screenshots/dashboard.svg)
 
 ## Layout
 
@@ -34,7 +42,7 @@ A terminal-based operating system for technology leaders. Built with [Textual](h
 │                          │                                │
 │                          │  Accomplishments               │
 │                          │  [accomplishments table]       │
-├───────────────────────────────── [date & time] ───────────┤
+├── [quote] ─────────────────────────── [date & time] ──────┤
 ```
 
 Left column = immediate action. Right column = situational awareness.
@@ -49,6 +57,7 @@ Left column = immediate action. Right column = situational awareness.
 | `u` | Reopen accomplishment as task |
 | `delete` | Delete selected row |
 | `!` | Daily check-in |
+| `W` | Weekly review |
 | `t` | Tag manager |
 | `w` | Add dependency |
 | `x` | Resolve dependency |
@@ -56,14 +65,16 @@ Left column = immediate action. Right column = situational awareness.
 | `s` | Add someday item |
 | `p` | Promote someday item to task |
 | `l` | Open daily log navigator |
+| `c` | Calendar (Gregorian + NRF fiscal) |
+| `E` | Events |
 | `v` | View focused widget full-screen |
-| `r` | Refresh data |
+| `r` | Refresh data + new quote |
 | `?` | Help |
 | `q` | Quit |
 
 ## Log Format
 
-Logs are stored as markdown files in `logs/YYYY-MM-Director-Log.md`. Each month auto-scaffolds with sections for tasks, dependencies, risks, someday items, accomplishments, and daily log entries. Open tasks and dependencies are carried forward on rollover.
+Logs are stored as markdown files in `logs/YYYY-MM-Director-Log.md`. Each month auto-scaffolds with sections for tasks, dependencies, risks, someday items, accomplishments, and daily log entries. Open tasks and dependencies are carried forward on rollover. Events are stored separately in `logs/events.md`.
 
 ## Built With AI Assistance
 
