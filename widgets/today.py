@@ -13,7 +13,7 @@ class TodayWidget(ScrollableContainer):
         entry = get_today_entry()
 
         if not entry:
-            text = "No check-in for today yet. Press [bold]t[/bold] to add one."
+            text = "No check-in for today yet. Press [bold]![/bold] to add one."
         else:
             lines = []
 
