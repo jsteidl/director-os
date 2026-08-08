@@ -12,3 +12,4 @@ venv/
 # Local data
 logs/*.md
 !logs/.gitkeep
+config.toml

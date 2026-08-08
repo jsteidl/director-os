@@ -1,0 +1,11 @@
+# director_os configuration
+# Copy this file to config.toml and set your paths.
+
+# Path to the directory where log files are stored.
+# Can be absolute or relative to the app directory.
+# Defaults to "logs/" if not set.
+# Examples:
+#   logs_path = "logs"
+#   logs_path = "/home/user/OneDrive/director_os_logs"
+#   logs_path = "C:/Users/username/OneDrive/director_os_logs"
+logs_path = "logs"

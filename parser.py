@@ -1,7 +1,19 @@
 import re
+import tomllib
 from datetime import datetime, date
 from pathlib import Path
 from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry, Risk, SomedayItem, Event
+
+
+def _get_logs_path() -> Path:
+    config_path = Path(__file__).parent / "config.toml"
+    if config_path.exists():
+        with open(config_path, "rb") as f:
+            config = tomllib.load(f)
+        logs_path = config.get("logs_path", "logs")
+        p = Path(logs_path)
+        return p if p.is_absolute() else Path(__file__).parent / p
+    return Path(__file__).parent / "logs"
 
 
 # ==========================================================
@@ -21,34 +33,17 @@ def strip_tags(text):
 # ==========================================================
 
 def get_log_file():
-
-    filename = (
-        f"{date.today():%Y-%m}-Director-Log.md"
-    )
-
-    return (
-        Path(__file__).parent
-        / "logs"
-        / filename
-    )
+    filename = f"{date.today():%Y-%m}-Director-Log.md"
+    return _get_logs_path() / filename
 
 
 def get_prev_log_file():
-
     today = date.today()
-
     if today.month == 1:
         prev = today.replace(year=today.year - 1, month=12, day=1)
     else:
         prev = today.replace(month=today.month - 1, day=1)
-
-    filename = f"{prev:%Y-%m}-Director-Log.md"
-
-    return (
-        Path(__file__).parent
-        / "logs"
-        / filename
-    )
+    return _get_logs_path() / f"{prev:%Y-%m}-Director-Log.md"
 
 
 def scaffold_log(path):
@@ -1163,7 +1158,7 @@ def get_daily_log_text():
 # ==========================================================
 
 def get_events_file():
-    return Path(__file__).parent / "logs" / "events.md"
+    return _get_logs_path() / "events.md"
 
 
 def get_events() -> list:
