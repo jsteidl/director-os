@@ -567,17 +567,10 @@ class DashboardScreen(Screen):
 
         )
 
-    def complete_task_callback(
-        self,
-        task_text,
-        outcome
-    ):
-
-        complete_task(
-            task_text,
-            outcome or task_text
-        )
-
+    def complete_task_callback(self, task_text, outcome):
+        if outcome is None:
+            return
+        complete_task(task_text, outcome or task_text)
         self.refresh_data()
 
     # =====================================================

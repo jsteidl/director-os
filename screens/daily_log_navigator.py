@@ -3,7 +3,7 @@ from textual.screen import Screen
 from textual.containers import Horizontal, VerticalScroll
 from textual.widgets import ListView, ListItem, Label, Markdown
 
-from parser import load_log, parse_daily_log, edit_daily_entry
+from parser import get_all_daily_entries, edit_daily_entry
 from screens.daily_checkin import DailyCheckinScreen
 
 
@@ -30,13 +30,14 @@ class DailyLogNavigator(Screen):
         )
 
     def on_mount(self):
-
-        content = load_log()
-        self.entries = parse_daily_log(content)
+        self.entries = get_all_daily_entries()
         date_list = self.query_one("#dates", ListView)
 
         for entry in self.entries:
-            date_list.append(ListItem(Label(entry.date)))
+            label = entry.date
+            if getattr(entry, "_readonly", False):
+                label += " ◀"
+            date_list.append(ListItem(Label(label)))
 
         if self.entries:
             date_list.index = 0
@@ -44,20 +45,17 @@ class DailyLogNavigator(Screen):
 
     @on(ListView.Highlighted)
     def date_highlighted(self, event):
-
         index = event.list_view.index
-
         if index is None:
             return
-
         self.show_entry(index)
 
     def show_entry(self, index):
-
         entry = self.entries[index]
+        readonly = getattr(entry, "_readonly", False)
+        header = f"# {entry.date}" + (" _(read only)_" if readonly else "")
 
-        markdown = f"""
-# {entry.date}
+        markdown = f"""{header}
 
 ## Priorities
 
@@ -75,17 +73,16 @@ class DailyLogNavigator(Screen):
 
 {self.render_list(entry.notes)}
 """
-
         self.query_one("#details", Markdown).update(markdown)
 
     def action_edit_entry(self):
-
         index = self.query_one("#dates", ListView).index
-
         if index is None or index >= len(self.entries):
             return
 
         entry = self.entries[index]
+        if getattr(entry, "_readonly", False):
+            return
 
         self.app.push_screen(
             DailyCheckinScreen(
@@ -98,7 +95,6 @@ class DailyLogNavigator(Screen):
         )
 
     def edit_entry_callback(self, entry_date, result):
-
         if not result:
             return
 
@@ -110,13 +106,10 @@ class DailyLogNavigator(Screen):
             result["notes"],
         )
 
-        content = load_log()
-        self.entries = parse_daily_log(content)
+        self.entries = get_all_daily_entries()
         self.show_entry(self.query_one("#dates", ListView).index)
 
     def render_list(self, items):
-
         if not items:
             return "_None_"
-
         return "\n".join(f"- {item}" for item in items)

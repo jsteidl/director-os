@@ -1014,6 +1014,21 @@ def parse_daily_log(content):
 # DAILY LOG VIEWER
 # ==========================================================
 
+def get_all_daily_entries():
+    """Return all DailyLogEntry objects across all monthly log files, newest first."""
+    logs_path = _get_logs_path()
+    entries = []
+    current_file = get_log_file()
+    for path in sorted(logs_path.glob("*-Director-Log.md"), reverse=True):
+        content = path.read_text(encoding="utf-8")
+        file_entries = parse_daily_log(content)
+        for entry in file_entries:
+            entry._readonly = (path != current_file)
+        entries.extend(file_entries)
+    entries.sort(key=lambda e: e.date, reverse=True)
+    return entries
+
+
 def get_today_entry():
     """Return today's DailyLogEntry or None."""
 
