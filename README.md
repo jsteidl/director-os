@@ -74,15 +74,28 @@ Left column = immediate action. Right column = situational awareness.
 
 ## Log Format
 
-Logs are stored as markdown files in `logs/YYYY-MM-Director-Log.md`. Each month auto-scaffolds with sections for tasks, dependencies, risks, someday items, accomplishments, and daily log entries. Open tasks and dependencies are carried forward on rollover. Events are stored separately in `logs/events.md`.
+Logs are stored as markdown files in `YYYY-MM-Director-Log.md`. Each month auto-scaffolds with sections for tasks, dependencies, risks, someday items, accomplishments, and daily log entries. Open tasks and dependencies are carried forward on rollover. Events are stored separately in `events.md`.
+
+The log directory is configurable — copy `config.toml.example` to `config.toml` and set `logs_path` to any local or synced directory (e.g. a private git repo, OneDrive folder). If the path is missing on startup, a clear error screen is shown.
 
 ## Built With AI Assistance
 
 This project was developed with the help of AI coding assistants. Initial scaffolding and early features were built using [GitHub Copilot](https://github.com/features/copilot). The majority of the architecture, feature development, and refinement was done in collaboration with [Amazon Q Developer](https://aws.amazon.com/q/developer/), which proved to be the more robust and impactful tool for this kind of iterative, context-heavy development.
 
+## Configuration
+
+Copy `config.toml.example` to `config.toml` and set your logs path:
+
+```toml
+logs_path = "/path/to/your/logs"
+```
+
+`config.toml` is gitignored — each machine has its own. The app falls back to `logs/` if no config is present.
+
 ## Running
 
 ```bash
 pip install -r requirements.txt
+cp config.toml.example config.toml  # then edit logs_path
 python app.py
 ```
