@@ -1,3 +1,4 @@
+import subprocess
 from textual.screen import Screen
 from textual.containers import Horizontal, Vertical
 from textual.binding import Binding
@@ -57,11 +58,13 @@ class DashboardScreen(Screen):
         Binding("i", "add_risk", "Risk"),
         Binding("s", "add_someday", "Someday"),
         Binding("p", "promote_someday", "Promote"),
+        Binding("S", "demote_task", "Move to Someday"),
         Binding("l", "show_daily_log", "Daily Log"),
         Binding("W", "weekly_review", "Weekly Review"),
         Binding("c", "calendar", "Calendar"),
         Binding("E", "events", "Events"),
         Binding("v", "view_widget", "View"),
+        Binding("g", "sync_logs", "Sync Logs"),
         Binding("?", "show_help", "Help"),
     ]
 
@@ -572,6 +575,7 @@ class DashboardScreen(Screen):
             return
         complete_task(task_text, outcome or task_text)
         self.refresh_data()
+        self.app.notify("Task completed ✓", severity="information")
 
     # =====================================================
     # REOPEN TASK
@@ -719,6 +723,7 @@ class DashboardScreen(Screen):
         )
 
         self.refresh_data()
+        self.app.notify("Dependency resolved ✓", severity="information")
 
     # =====================================================
     # RISKS
@@ -776,13 +781,55 @@ class DashboardScreen(Screen):
         if row is None:
             return
 
-        try:
-            item_text = str(table.get_cell_at((row, 0)))
-        except Exception:
+        from parser import get_someday_items
+        items = get_someday_items()
+        if row >= len(items):
+            return
+        item = items[row]
+
+        self.app.push_screen(
+            AddTaskScreen(title=item.item),
+            lambda result: self._promote_someday_callback(item.item, result)
+        )
+
+    def _promote_someday_callback(self, item_text, result):
+        if not result:
+            return
+        new_title, priority, due_date, tag = result
+        tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
+        promote_someday_item(item_text, priority, due_date, tags)
+        self.refresh_data()
+        self.app.notify("Promoted to tasks ✓", severity="information")
+
+    def action_demote_task(self):
+
+        focused = self.focused
+        if not isinstance(focused, TaskTable):
             return
 
-        promote_someday_item(item_text)
+        row = focused.cursor_row
+        if row is None:
+            return
+
+        from parser import get_tasks
+        tasks = get_tasks()
+        if row >= len(tasks):
+            return
+        task = tasks[row]
+
+        self.app.push_screen(
+            AddSomedayScreen(item=task.title),
+            lambda result: self._demote_task_callback(task.title, result)
+        )
+
+    def _demote_task_callback(self, task_title, result):
+        if not result:
+            return
+        item, owner, tags = result
+        delete_task(task_title)
+        add_someday_item(item, owner, tags)
         self.refresh_data()
+        self.app.notify("Moved to Someday ✓", severity="information")
 
     def action_weekly_review(self):
         self.app.push_screen(WeeklyReviewScreen())
@@ -804,3 +851,27 @@ class DashboardScreen(Screen):
         self.app.push_screen(
             DailyLogNavigator()
         )
+
+    # =====================================================
+    # SYNC LOGS
+    # =====================================================
+
+    def action_sync_logs(self):
+        from parser import _get_logs_path
+        logs_path = str(_get_logs_path())
+        try:
+            r = subprocess.run(["git", "-C", logs_path, "add", "-A"], capture_output=True, text=True)
+            if r.returncode != 0:
+                self.app.notify(f"Sync failed: {r.stderr.strip()}", severity="error")
+                return
+            r = subprocess.run(["git", "-C", logs_path, "commit", "-m", "sync"], capture_output=True, text=True)
+            if r.returncode != 0 and "nothing to commit" not in r.stdout:
+                self.app.notify(f"Sync failed: {r.stderr.strip()}", severity="error")
+                return
+            r = subprocess.run(["git", "-C", logs_path, "push"], capture_output=True, text=True)
+            if r.returncode != 0:
+                self.app.notify(f"Push failed: {r.stderr.strip()}", severity="error")
+                return
+            self.app.notify("Logs synced ✓", severity="information")
+        except Exception as e:
+            self.app.notify(f"Sync error: {e}", severity="error")

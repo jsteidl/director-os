@@ -9,6 +9,7 @@ class Task:
     due_date: date | None = None
     created: str | None = None
     tags: list[str] = field(default_factory=list)
+    carried: bool = False
 
 
 @dataclass

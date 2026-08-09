@@ -25,7 +25,7 @@ def extract_tags(text):
 
 
 def strip_tags(text):
-    return re.sub(r"\s*#+\w+", "", text).strip()
+    return re.sub(r"\s*#+\S+", "", text).strip()
 
 
 # ==========================================================
@@ -96,7 +96,8 @@ def rollover_log():
 
     if task_match:
         carried_tasks = "\n".join(
-            line for line in task_match.group(1).splitlines()
+            line + " Carried:true" if not line.strip().endswith("Carried:true") else line
+            for line in task_match.group(1).splitlines()
             if re.match(r"- \[ \]", line.strip())
         )
 
@@ -196,6 +197,10 @@ def get_tasks():
                 f" Created:{created}", ""
             ).strip()
 
+        carried = "Carried:true" in title
+        if carried:
+            title = title.replace(" Carried:true", "").strip()
+
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
 
         if priority_match:
@@ -212,6 +217,7 @@ def get_tasks():
                 due_date=due_date,
                 created=created,
                 tags=tags,
+                carried=carried,
             )
         )
     priority_order = {"A": 0, "B": 1, "C": 2, None: 3}
@@ -667,7 +673,7 @@ def delete_someday_item(item_text):
     save_log(content)
 
 
-def promote_someday_item(item_text):
+def promote_someday_item(item_text, priority="", due_date="", tags=None):
 
     content = load_log()
 
@@ -680,9 +686,18 @@ def promote_someday_item(item_text):
         if item == item_text:
             original = f"- {item} | Owner: {owner} | Since: {since}{rest}"
             content = content.replace(original + "\n", "", 1)
+
+            title = f"({priority}) {item_text}" if priority else item_text
+            task_line = f"- [ ] {title}"
+            if due_date:
+                task_line += f" Due:{due_date}"
+            task_line += f" Created:{date.today()}"
+            if tags:
+                task_line += " " + " ".join(f"#{t}" for t in tags)
+
             content = content.replace(
                 "### High-Priority\n",
-                f"### High-Priority\n- [ ] {item}\n",
+                f"### High-Priority\n{task_line}\n",
                 1,
             )
             save_log(content)

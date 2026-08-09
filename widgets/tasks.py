@@ -42,8 +42,9 @@ class TaskTable(DataTable):
 
         for task in get_tasks():
             color = _age_color(task.created)
+            title = _t(task.title) + (" ↩" if task.carried else "")
             self.add_row(
-                Text(_t(task.title), style=color),
+                Text(title, style=color),
                 Text(PRIORITY_GLYPHS.get(task.priority, task.priority or ""), style=f"bold {PRIORITY_COLORS.get(task.priority, color)}"),
                 Text(task.due_date or "", style=color),
                 Text(" ".join(f"#{t}" for t in task.tags) if task.tags else "", style=color),
