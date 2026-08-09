@@ -1,9 +1,14 @@
 from textual.screen import ModalScreen
-from textual.widgets import DataTable, Button, Label
+from textual.widgets import DataTable, Label
 from textual.containers import Vertical
+from textual.binding import Binding
 
 
 class WidgetViewerScreen(ModalScreen):
+
+    BINDINGS = [
+        Binding("escape", "dismiss", "Close"),
+    ]
 
     def __init__(self, title: str, columns: list[str], rows: list[tuple]):
         super().__init__()
@@ -15,7 +20,6 @@ class WidgetViewerScreen(ModalScreen):
         yield Vertical(
             Label(self._title, id="viewer-title"),
             DataTable(id="viewer-table"),
-            Button("Close", id="close", variant="primary"),
         )
 
     def on_mount(self):
@@ -23,9 +27,6 @@ class WidgetViewerScreen(ModalScreen):
         table.add_columns(*self._columns)
         for row in self._rows:
             table.add_row(*row)
-
-    def on_button_pressed(self, event):
-        self.dismiss()
 
     CSS = """
     WidgetViewerScreen {
@@ -49,10 +50,5 @@ class WidgetViewerScreen(ModalScreen):
 
     #viewer-table {
         height: 1fr;
-    }
-
-    #close {
-        height: 3;
-        dock: bottom;
     }
     """

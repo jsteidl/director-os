@@ -28,6 +28,10 @@ def strip_tags(text):
     return re.sub(r"\s*#+\S+", "", text).strip()
 
 
+def _clean(text: str) -> str:
+    return text.replace("|", "").strip()
+
+
 # ==========================================================
 # FILE HELPERS
 # ==========================================================
@@ -232,6 +236,7 @@ def add_task(task_name, tag="", due_date="", priority=""):
 
     content = load_log()
 
+    task_name = _clean(task_name)
     title = f"({priority}) {task_name}" if priority else task_name
 
     line = f"- [ ] {title}"
@@ -260,6 +265,7 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None):
 
     content = load_log()
 
+    new_title = _clean(new_title)
     search_text = old_title.rstrip("…")
     pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
@@ -354,6 +360,8 @@ def add_dependency(
 
     content = load_log()
 
+    item, owner = _clean(item), _clean(owner)
+
     line = (
         f"- {item} | Owner: {owner} "
         f"| Since: {date.today()}\n"
@@ -383,6 +391,7 @@ def edit_dependency(old_item, new_item, owner):
         return
 
     since = match.group(1)
+    new_item, owner = _clean(new_item), _clean(owner)
     new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
@@ -504,6 +513,8 @@ def add_risk(description, owner, severity, tags=None):
 
     content = load_log()
 
+    description, owner = _clean(description), _clean(owner)
+
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
 
     line = (
@@ -534,6 +545,7 @@ def edit_risk(old_description, new_description, owner, severity, tags=None):
         return
 
     since = match.group(1)
+    new_description, owner = _clean(new_description), _clean(owner)
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
     new_line = (
         f"- {new_description} | Owner: {owner} "
@@ -627,6 +639,8 @@ def add_someday_item(item, owner, tags=None):
 
     content = load_log()
 
+    item, owner = _clean(item), _clean(owner)
+
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
 
     line = (
@@ -656,6 +670,7 @@ def edit_someday_item(old_item, new_item, owner, tags=None):
         return
 
     since = match.group(1)
+    new_item, owner = _clean(new_item), _clean(owner)
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
     new_line = f"- {new_item} | Owner: {owner} | Since: {since}{tag_str}"
     content = content.replace(match.group(0), new_line, 1)
@@ -1214,6 +1229,7 @@ def get_events() -> list:
 def add_event(title, event_date, type_, location, remind_days=0):
     path = get_events_file()
     content = path.read_text(encoding="utf-8")
+    title, location = _clean(title), _clean(location)
     line = f"- {title} | Date: {event_date} | Type: {type_} | Location: {location} | RemindDays: {remind_days}\n"
     content += line
     path.write_text(content, encoding="utf-8")
@@ -1222,6 +1238,7 @@ def add_event(title, event_date, type_, location, remind_days=0):
 def edit_event(old_title, old_date, title, event_date, type_, location, remind_days=0):
     path = get_events_file()
     content = path.read_text(encoding="utf-8")
+    title, location = _clean(title), _clean(location)
     pattern = re.compile(
         r"- " + re.escape(old_title) + r" \| Date: " + re.escape(old_date) + r" \| Type: .*? \| Location: .*? \| RemindDays: \d+\n"
     )

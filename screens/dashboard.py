@@ -716,6 +716,8 @@ class DashboardScreen(Screen):
         dependency_name,
         notes,
     ):
+        if notes is None:
+            return
 
         resolve_dependency(
             dependency_name,

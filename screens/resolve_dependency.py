@@ -43,4 +43,4 @@ class ResolveDependencyScreen(ModalScreen[str]):
         self.dismiss(notes)
 
     def action_cancel(self):
-        self.dismiss("")
+        self.dismiss(None)
