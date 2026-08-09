@@ -20,6 +20,7 @@ director_os is not a note-taking app, a time tracker, or a project management su
 - **Risk tracking** — log risks with severity (H/M/L), owner, and date — severity color-coded in the dashboard
 - **Someday / Future** — capture ideas and future work; promote to active tasks with full metadata (`p`), or move tasks to someday (`S`)
 - **Accomplishments** — auto-logged when tasks are completed, editable, reopenable
+- **Manager update** — generate a structured bullet update since a given date (defaults to last Monday); written to `updates/` in your logs directory
 - **Daily check-in** — structured daily log with priorities, accomplished, blocked, and notes
 - **Daily log navigator** — browse and review past daily log entries
 - **Today panel** — shows today's check-in priorities, accomplished, and blocked at a glance
@@ -81,6 +82,7 @@ Left column = immediate action. Right column = situational awareness.
 | `E` | Events |
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
+| `U` | Manager update generator |
 | `g` | Sync logs (git add/commit/push) |
 | `?` | Help |
 | `q` | Quit |

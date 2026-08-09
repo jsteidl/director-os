@@ -64,6 +64,7 @@ class DashboardScreen(Screen):
         Binding("c", "calendar", "Calendar"),
         Binding("E", "events", "Events"),
         Binding("v", "view_widget", "View"),
+        Binding("U", "manager_update", "Update"),
         Binding("g", "sync_logs", "Sync Logs"),
         Binding("?", "show_help", "Help"),
     ]
@@ -832,6 +833,13 @@ class DashboardScreen(Screen):
         add_someday_item(item, owner, tags)
         self.refresh_data()
         self.app.notify("Moved to Someday ✓", severity="information")
+
+    def action_manager_update(self):
+        from screens.update import UpdateScreen
+        self.app.push_screen(
+            UpdateScreen(),
+            lambda path: self.app.notify(f"Saved to {path}", severity="information") if path else None
+        )
 
     def action_weekly_review(self):
         self.app.push_screen(WeeklyReviewScreen())

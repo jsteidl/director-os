@@ -1137,6 +1137,92 @@ def rename_tag(old_tag, new_tag):
     path.write_text(content, encoding="utf-8")
 
 
+def get_update_data(since_date: str) -> dict:
+    tasks = get_tasks()
+    all_accomplishments = []
+    for path in sorted(_get_logs_path().glob("*-Director-Log.md")):
+        content = path.read_text(encoding="utf-8")
+        pattern = (
+            r"- Task: (.*?)\n"
+            r"  Outcome: (.*?)\n"
+            r"  Completed: (.*?)\n"
+        )
+        for task, outcome, completed in re.findall(pattern, content, re.MULTILINE):
+            all_accomplishments.append(Accomplishment(
+                task=strip_tags(task),
+                outcome=outcome,
+                completed=completed,
+                tags=extract_tags(task),
+            ))
+    accomplishments = [a for a in all_accomplishments if a.completed >= since_date]
+    deps = get_dependencies()
+    risks = [r for r in get_risks() if r.severity.upper() == "H"]
+    entries = [e for e in get_all_daily_entries() if e.date >= since_date]
+    blocked = [(e.date, b) for e in entries for b in e.blocked]
+    return {
+        "since": since_date,
+        "accomplished": accomplishments,
+        "tasks": tasks,
+        "deps": deps,
+        "risks": risks,
+        "blocked": blocked,
+    }
+
+
+def save_update(since_date: str, data: dict) -> str:
+    lines = []
+    lines.append(f"## Update — Since {since_date}\n")
+
+    lines.append("### Accomplished")
+    if data["accomplished"]:
+        for a in data["accomplished"]:
+            lines.append(f"- {a.task}")
+    else:
+        lines.append("- Nothing completed in this period")
+
+    lines.append("\n### In Progress")
+    if data["tasks"]:
+        for t in data["tasks"]:
+            from widgets.tasks import PRIORITY_GLYPHS
+            glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
+            due = f" (due {t.due_date})" if t.due_date else ""
+            lines.append(f"- {glyph}{t.title}{due}")
+    else:
+        lines.append("- No open tasks")
+
+    lines.append("\n### Waiting On")
+    if data["deps"]:
+        for d in data["deps"]:
+            lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
+    else:
+        lines.append("- Nothing pending")
+
+    lines.append("\n### Risks")
+    if data["risks"]:
+        for r in data["risks"]:
+            lines.append(f"- {r.description} (owner: {r.owner})")
+    else:
+        lines.append("- No high severity risks")
+
+    lines.append("\n### Blocked / Notes")
+    if data["blocked"]:
+        seen = set()
+        for d, b in data["blocked"]:
+            if b not in seen:
+                seen.add(b)
+                lines.append(f"- {b} ({d})")
+    else:
+        lines.append("- Nothing blocked")
+
+    content = "\n".join(lines) + "\n"
+    filename = f"update-{date.today().isoformat()}.md"
+    updates_dir = _get_logs_path() / "updates"
+    updates_dir.mkdir(exist_ok=True)
+    path = updates_dir / filename
+    path.write_text(content, encoding="utf-8")
+    return str(path)
+
+
 def get_weekly_summary():
 
     today = date.today()

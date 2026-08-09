@@ -44,8 +44,8 @@ screens/
   calendar.py                 # CalendarScreen — Gregorian + NRF fiscal calendar modal
   events.py                   # EventsScreen — CRUD for events
   add_event.py                # AddEventScreen form
+  update.py                  # UpdateScreen — manager update generator
   weekly_review.py            # WeeklyReviewScreen
-widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar
   tasks.py                    # TaskTable
   dependencies.py             # DependencyTable
@@ -107,6 +107,8 @@ Left column = immediate action. Right column = situational awareness.
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
 - `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` for matching; used by edit/delete/reopen
 - `promote_someday_item(item_text, priority, due_date, tags)` — removes someday item, adds task with full metadata
+- `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked items across all log files since date
+- `save_update(since_date, data)` — writes structured bullet update to `<logs_path>/updates/update-YYYY-MM-DD.md`
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
 
 - `check_event_notifications()` — called on mount; appends reminders to today's daily log
@@ -144,11 +146,11 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - `S` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
 - `g` syncs logs repo via git with toast feedback
 - Toast notifications on: complete task, resolve dependency, promote someday, demote task, log sync
+- `U` opens `UpdateScreen` — manager update generator; since-date input, live preview, writes to `updates/`
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
 - `E` opens `EventsScreen` — lazy imported
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
 - `t` opens `TagManagerScreen` — rename/merge tags across all objects
-- Footer: quote (left, `1fr`) + clock (right, `auto`) in a horizontal container docked bottom
 - Quote rotates on launch and on `r` refresh
 - Executive summary is a single-line metrics bar with red/green health coloring
 
@@ -175,6 +177,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `E` | Events |
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
+| `U` | Manager update generator |
 | `g` | Sync logs (git add/commit/push) |
 | `?` | Help |
 | `q` | Quit |
@@ -183,7 +186,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 
 | # | Title |
 |---|-------|
-| #4 | Manager Update Generator |
+| #4 | ~~Manager Update Generator~~ ✓ |
 | #5 | Copilot Prompt Generator |
 | #8 | Accomplishment Details View |
 | #11 | Theme Configuration |
