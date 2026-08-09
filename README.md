@@ -2,6 +2,16 @@
 
 A terminal-based operating system for technology leaders. Built with [Textual](https://github.com/Textualize/textual).
 
+## Overview
+
+director_os is a terminal-based productivity system designed for technology leaders who need to track tasks, dependencies, risks, and decisions without the overhead of a heavyweight tool.
+
+Most productivity apps store your data in proprietary databases or cloud services — making it difficult to export, search, or own your own history. director_os takes a different approach: everything is stored in plain markdown files, one per month. Your data is readable in any text editor, searchable with standard tools, version-controllable with git, and portable across machines. There is no sync service, no account, and no lock-in.
+
+The tradeoff is intentional. This is a tool for people who want to stay close to their data and work in a terminal.
+
+director_os is not a note-taking app, a time tracker, or a project management suite. It is a low-friction way to manage your work, stay on top of what matters, and report out on status and accomplishments — without leaving the terminal.
+
 ## Features
 
 - **Executive Summary** — live status bar showing tasks, overdue count, waiting-on count, oldest dependency age, high risk count, and wins this month — color-coded red/green by health
