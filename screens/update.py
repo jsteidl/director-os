@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from textual.screen import ModalScreen
-from textual.containers import Vertical, ScrollableContainer
-from textual.widgets import Label, Input, Static
+from textual.containers import Vertical, Horizontal, ScrollableContainer
+from textual.widgets import Label, Input, Static, Switch
 from textual.binding import Binding
 
 from parser import get_update_data, save_update
@@ -44,12 +44,12 @@ class UpdateScreen(ModalScreen):
     #update-preview {
         height: auto;
     }
-    #since-row {
+    .filter-row {
         height: 3;
         padding: 0 1;
         align: left middle;
     }
-    #since-label {
+    .filter-label {
         width: auto;
         padding: 0 1 0 0;
     }
@@ -61,16 +61,18 @@ class UpdateScreen(ModalScreen):
     def __init__(self):
         super().__init__()
         self._since = _last_monday()
+        self._mgr_only = True
         self._data = None
 
     def compose(self):
-        from textual.containers import Horizontal
         yield Vertical(
             Label("Manager Update  [dim]ctrl+s to generate · esc to cancel[/dim]", id="update-title"),
             Horizontal(
-                Label("Since:", id="since-label"),
+                Label("Since:", classes="filter-label"),
                 Input(value=self._since, id="since-input"),
-                id="since-row",
+                Label("  ★ flagged only:", classes="filter-label"),
+                Switch(value=True, id="mgr-switch"),
+                classes="filter-row",
             ),
             ScrollableContainer(
                 Static("", id="update-preview"),
@@ -86,31 +88,42 @@ class UpdateScreen(ModalScreen):
             self._since = event.value
             self._refresh_preview()
 
+    def on_switch_changed(self, event: Switch.Changed):
+        self._mgr_only = event.value
+        self._refresh_preview()
+
+    def _filter(self, items):
+        if not self._mgr_only:
+            return items
+        return [i for i in items if i.mgr]
+
     def _refresh_preview(self):
         try:
             date.fromisoformat(self._since)
         except ValueError:
             return
         self._data = get_update_data(self._since)
+        tasks = self._filter(self._data["tasks"])
+        accomplishments = self._filter(self._data["accomplished"])
         lines = []
 
         lines.append(f"[bold]Since {self._since}[/bold]\n")
 
         lines.append("[bold]Accomplished[/bold]")
-        if self._data["accomplished"]:
-            for a in self._data["accomplished"]:
+        if accomplishments:
+            for a in accomplishments:
                 lines.append(f"  • {a.task}")
         else:
             lines.append("  Nothing completed in this period")
 
         lines.append("\n[bold]In Progress[/bold]")
-        if self._data["tasks"]:
-            for t in self._data["tasks"]:
+        if tasks:
+            for t in tasks:
                 glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
                 due = f" (due {t.due_date})" if t.due_date else ""
                 lines.append(f"  • {glyph}{t.title}{due}")
         else:
-            lines.append("  No open tasks")
+            lines.append("  No flagged tasks" if self._mgr_only else "  No open tasks")
 
         lines.append("\n[bold]Waiting On[/bold]")
         if self._data["deps"]:
@@ -141,7 +154,10 @@ class UpdateScreen(ModalScreen):
     def action_generate(self):
         if not self._data:
             return
-        path = save_update(self._since, self._data)
+        filtered = dict(self._data)
+        filtered["tasks"] = self._filter(self._data["tasks"])
+        filtered["accomplished"] = self._filter(self._data["accomplished"])
+        path = save_update(self._since, filtered)
         self.dismiss(path)
 
     def action_cancel(self):

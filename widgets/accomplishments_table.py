@@ -1,4 +1,5 @@
 from textual.widgets import DataTable
+from rich.text import Text
 
 from parser import get_accomplishments
 
@@ -6,9 +7,7 @@ def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
 
 
-class AccomplishmentTable(
-    DataTable
-):
+class AccomplishmentTable(DataTable):
 
     def on_mount(self):
 
@@ -26,9 +25,9 @@ class AccomplishmentTable(
         self.clear()
 
         for item in get_accomplishments():
-
+            title = _t(item.task) + (" ★" if item.mgr else "")
             self.add_row(
-                _t(item.task),
+                title,
                 _t(item.outcome),
                 item.completed,
             )

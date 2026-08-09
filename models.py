@@ -10,6 +10,7 @@ class Task:
     created: str | None = None
     tags: list[str] = field(default_factory=list)
     carried: bool = False
+    mgr: bool = False
 
 
 @dataclass
@@ -27,6 +28,7 @@ class Accomplishment:
     outcome: str
     completed: str
     tags: list[str] = field(default_factory=list)
+    mgr: bool = False
 
 
 @dataclass

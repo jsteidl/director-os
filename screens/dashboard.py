@@ -64,6 +64,7 @@ class DashboardScreen(Screen):
         Binding("c", "calendar", "Calendar"),
         Binding("E", "events", "Events"),
         Binding("v", "view_widget", "View"),
+        Binding("m", "toggle_mgr", "Mgr flag"),
         Binding("U", "manager_update", "Update"),
         Binding("g", "sync_logs", "Sync Logs"),
         Binding("?", "show_help", "Help"),
@@ -833,6 +834,28 @@ class DashboardScreen(Screen):
         add_someday_item(item, owner, tags)
         self.refresh_data()
         self.app.notify("Moved to Someday ✓", severity="information")
+
+    def action_toggle_mgr(self):
+        from parser import get_tasks, get_accomplishments, toggle_mgr_task, toggle_mgr_accomplishment
+        focused = self.focused
+        if isinstance(focused, TaskTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            tasks = get_tasks()
+            if row >= len(tasks):
+                return
+            toggle_mgr_task(tasks[row].title)
+            self.refresh_data()
+        elif isinstance(focused, AccomplishmentTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            accomplishments = get_accomplishments()
+            if row >= len(accomplishments):
+                return
+            toggle_mgr_accomplishment(accomplishments[row].task)
+            self.refresh_data()
 
     def action_manager_update(self):
         from screens.update import UpdateScreen

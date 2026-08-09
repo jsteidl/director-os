@@ -205,6 +205,10 @@ def get_tasks():
         if carried:
             title = title.replace(" Carried:true", "").strip()
 
+        mgr = "Mgr:true" in title
+        if mgr:
+            title = title.replace(" Mgr:true", "").strip()
+
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
 
         if priority_match:
@@ -222,6 +226,7 @@ def get_tasks():
                 created=created,
                 tags=tags,
                 carried=carried,
+                mgr=mgr,
             )
         )
     priority_order = {"A": 0, "B": 1, "C": 2, None: 3}
@@ -284,11 +289,49 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None):
 
     new_line += f" Created:{created}"
 
+    if match and "Mgr:true" in match.group(0):
+        new_line += " Mgr:true"
+
     if tags:
         new_line += " " + " ".join(f"#{t}" for t in tags)
 
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
+
+
+def toggle_mgr_task(task_title):
+    content = load_log()
+    search_text = task_title.split(" @")[0].rstrip("…")
+    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
+    match = pattern.search(content)
+    if not match:
+        return
+    line = match.group(0)
+    if "Mgr:true" in line:
+        new_line = line.replace(" Mgr:true", "")
+    else:
+        new_line = line + " Mgr:true"
+    content = content.replace(line, new_line, 1)
+    save_log(content)
+
+
+def toggle_mgr_accomplishment(task_title):
+    content = load_log()
+    pattern = re.compile(
+        r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n",
+        re.S,
+    )
+    for match in pattern.finditer(content):
+        raw = match.group(1)
+        if strip_tags(raw.replace(" Mgr:true", "")).strip() == task_title:
+            if "Mgr:true" in raw:
+                new_raw = raw.replace(" Mgr:true", "")
+            else:
+                new_raw = raw + " Mgr:true"
+            new_block = match.group(0).replace(raw, new_raw, 1)
+            content = content.replace(match.group(0), new_block, 1)
+            save_log(content)
+            return
 
 
 def delete_task(task_title):
@@ -741,10 +784,11 @@ def get_accomplishments():
 
     return [
         Accomplishment(
-            task=strip_tags(task),
+            task=strip_tags(task.replace(" Mgr:true", "")),
             outcome=outcome,
             completed=completed,
             tags=extract_tags(task),
+            mgr="Mgr:true" in task,
         )
         for task, outcome, completed in matches
     ]
@@ -757,7 +801,7 @@ def _find_accomplishment_block(content, task_title):
         re.S,
     )
     for match in pattern.finditer(content):
-        if strip_tags(match.group(1)).strip() == task_title:
+        if strip_tags(match.group(1).replace(" Mgr:true", "")).strip() == task_title:
             return match
     return None
 
@@ -809,10 +853,12 @@ def complete_task(
 
     search_text = task_text.rstrip("…")
     pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
+    match = pattern.search(content)
+    mgr = bool(match and "Mgr:true" in match.group(0))
     content = pattern.sub("", content, count=1)
 
     accomplishment = (
-        f"- Task: {task_text}\n"
+        f"- Task: {task_text}{' Mgr:true' if mgr else ''}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {date.today()}\n\n"
     )
@@ -1149,10 +1195,11 @@ def get_update_data(since_date: str) -> dict:
         )
         for task, outcome, completed in re.findall(pattern, content, re.MULTILINE):
             all_accomplishments.append(Accomplishment(
-                task=strip_tags(task),
+                task=strip_tags(task.replace(" Mgr:true", "")),
                 outcome=outcome,
                 completed=completed,
                 tags=extract_tags(task),
+                mgr="Mgr:true" in task,
             ))
     accomplishments = [a for a in all_accomplishments if a.completed >= since_date]
     deps = get_dependencies()
