@@ -89,7 +89,7 @@ Left column = immediate action. Right column = situational awareness.
 
 ### Tag handling
 - `extract_tags(text)` — matches `#+` (handles `##tag` double-hash)
-- `strip_tags(text)` — removes all `#+word` patterns including double-hash
+- `strip_tags(text)` — removes all `#+\S+` patterns including double-hash and malformed tokens like `##j/k`
 
 ### Edit/delete operations
 - All edit and delete handlers in `dashboard.py` read from parser functions by row index (e.g. `get_tasks()[row]`) — never from table cell values, which may be truncated or styled
@@ -106,10 +106,21 @@ Left column = immediate action. Right column = situational awareness.
 - `rename_tag(old, new)` — renames all occurrences in the log file
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
 - `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` for matching; used by edit/delete/reopen
+- `promote_someday_item(item_text, priority, due_date, tags)` — removes someday item, adds task with full metadata
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
+
 - `check_event_notifications()` — called on mount; appends reminders to today's daily log
 
-### complete_task
+### Carry-forward
+- Rolled-over tasks get `Carried:true` appended to their log line at rollover time
+- `get_tasks()` parses and strips `Carried:true`, sets `Task.carried = True`
+- `TaskTable` renders `↩` appended to the title for carried tasks
+- Editing a carried task drops the marker (intentional — once edited, it's no longer a carry-forward)
+
+### Log sync
+- `g` keybind in `dashboard.py` runs `git -C <logs_path> add -A && commit -m "sync" && push`
+- Uses `subprocess.run` with `capture_output=True`; shows toast on success or error
+- "Nothing to commit" is treated as success
 Uses regex `re.compile(r"- \[ \] .*" + re.escape(task_text) + r".*\n")` — not literal string replace — because priority prefixes like `(A)` appear before the task title in the log line.
 
 ### Accomplishment blocks
@@ -128,11 +139,15 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - All DataTables have `zebra_stripes = True`
 - Text fields truncated to 50 chars with `…` via `_t()` helper in each widget file
 - Risk severity color-coded: H=red, M=yellow, L=green using `rich.text.Text`
+- Carried tasks show `↩` glyph appended to title in task table
+- `p` (promote someday) opens `AddTaskScreen` pre-filled with item title for full metadata entry
+- `S` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
+- `g` syncs logs repo via git with toast feedback
+- Toast notifications on: complete task, resolve dependency, promote someday, demote task, log sync
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
 - `E` opens `EventsScreen` — lazy imported
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
 - `t` opens `TagManagerScreen` — rename/merge tags across all objects
-- Title bar: `director_os` docked top, accent background, centered
 - Footer: quote (left, `1fr`) + clock (right, `auto`) in a horizontal container docked bottom
 - Quote rotates on launch and on `r` refresh
 - Executive summary is a single-line metrics bar with red/green health coloring
@@ -153,12 +168,14 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `x` | Resolve dependency |
 | `i` | Add risk |
 | `s` | Add someday item |
-| `p` | Promote someday item to task |
+| `S` | Move focused task to someday |
+| `p` | Promote someday item to task (opens AddTaskScreen pre-filled) |
 | `l` | Open daily log navigator |
 | `c` | Calendar (Gregorian + NRF fiscal) |
 | `E` | Events |
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
+| `g` | Sync logs (git add/commit/push) |
 | `?` | Help |
 | `q` | Quit |
 
@@ -174,7 +191,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | #15 | Export Manager Update |
 | #16 | Package Director OS |
 | #27 | Search / filter across tables |
-| #28 | Carry-forward indicator for rolled-over tasks |
+| #28 | ~~Carry-forward indicator for rolled-over tasks~~ ✓ |
 
 ## Git Workflow
 

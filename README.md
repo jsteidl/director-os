@@ -8,7 +8,7 @@ A terminal-based operating system for technology leaders. Built with [Textual](h
 - **Task tracking** — add, edit, complete, delete, and reopen tasks with priority (A/B/C), due dates, and tags — priority shown as color-coded glyphs (▲/●/▼), rows age-colored after 7/14 days
 - **Dependency tracking** — track what you're waiting on, by owner and age
 - **Risk tracking** — log risks with severity (H/M/L), owner, and date — severity color-coded in the dashboard
-- **Someday / Future** — capture ideas and future work, promote to active tasks when ready
+- **Someday / Future** — capture ideas and future work; promote to active tasks with full metadata (`p`), or move tasks to someday (`S`)
 - **Accomplishments** — auto-logged when tasks are completed, editable, reopenable
 - **Daily check-in** — structured daily log with priorities, accomplished, blocked, and notes
 - **Daily log navigator** — browse and review past daily log entries
@@ -18,7 +18,8 @@ A terminal-based operating system for technology leaders. Built with [Textual](h
 - **Events** — track holidays, deadlines, OOO, and other events with configurable reminders; notifications appended to daily log on launch
 - **Tag manager** — rename and merge tags across all objects
 - **Widget viewer** — press `v` on any table to open a full-screen read-only expanded view
-- **Monthly log files** — one markdown file per month, auto-scaffolded and rolled over with open tasks and dependencies carried forward
+- **Monthly log files** — one markdown file per month, auto-scaffolded and rolled over with open tasks and dependencies carried forward; rolled-over tasks marked with `↩`
+- **Log sync** — push logs git repo from the dashboard with `g`; toast confirms success or shows error
 
 ## Screenshot
 
@@ -63,12 +64,14 @@ Left column = immediate action. Right column = situational awareness.
 | `x` | Resolve dependency |
 | `i` | Add risk |
 | `s` | Add someday item |
-| `p` | Promote someday item to task |
+| `S` | Move focused task to someday |
+| `p` | Promote someday item to task (opens form for metadata) |
 | `l` | Open daily log navigator |
 | `c` | Calendar (Gregorian + NRF fiscal) |
 | `E` | Events |
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
+| `g` | Sync logs (git add/commit/push) |
 | `?` | Help |
 | `q` | Quit |
 
