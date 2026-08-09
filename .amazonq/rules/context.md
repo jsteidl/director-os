@@ -46,6 +46,7 @@ screens/
   add_event.py                # AddEventScreen form
   update.py                  # UpdateScreen — manager update generator
   weekly_review.py            # WeeklyReviewScreen
+widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar
   tasks.py                    # TaskTable
   dependencies.py             # DependencyTable
@@ -107,11 +108,23 @@ Left column = immediate action. Right column = situational awareness.
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
 - `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` for matching; used by edit/delete/reopen
 - `promote_someday_item(item_text, priority, due_date, tags)` — removes someday item, adds task with full metadata
-- `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked items across all log files since date
+- `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked items across all log files since date; accomplishments and tasks include `mgr` flag
 - `save_update(since_date, data)` — writes structured bullet update to `<logs_path>/updates/update-YYYY-MM-DD.md`
+- `toggle_mgr_task(task_title)` — toggles `Mgr:true` on a task line
+- `toggle_mgr_accomplishment(task_title)` — toggles `Mgr:true` on an accomplishment block
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
 
 - `check_event_notifications()` — called on mount; appends reminders to today's daily log
+
+### Mgr flag
+- `Mgr:true` inline field on tasks and accomplishments — same pattern as `Carried:true`
+- `toggle_mgr_task()` / `toggle_mgr_accomplishment()` — toggled via `m` keybind
+- Completing a `Mgr:true` task carries the flag into the accomplishment block
+- `edit_task` preserves `Mgr:true` on the rewritten line
+- `★` glyph rendered in task and accomplishment tables for flagged items
+- Update screen defaults to `★ flagged only`; toggle off to show all
+- `_find_accomplishment_block` strips `Mgr:true` before title comparison
+- `toggle_mgr_task` searches on title prefix before `@mention` to handle tags between title and mention in raw log
 
 ### Carry-forward
 - Rolled-over tasks get `Carried:true` appended to their log line at rollover time
@@ -142,6 +155,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - Text fields truncated to 50 chars with `…` via `_t()` helper in each widget file
 - Risk severity color-coded: H=red, M=yellow, L=green using `rich.text.Text`
 - Carried tasks show `↩` glyph appended to title in task table
+- Mgr-flagged tasks and accomplishments show `★` glyph appended to title
 - `p` (promote someday) opens `AddTaskScreen` pre-filled with item title for full metadata entry
 - `S` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
 - `g` syncs logs repo via git with toast feedback
@@ -177,6 +191,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `E` | Events |
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
+| `m` | Flag task/accomplishment for manager update (`★`) |
 | `U` | Manager update generator |
 | `g` | Sync logs (git add/commit/push) |
 | `?` | Help |
