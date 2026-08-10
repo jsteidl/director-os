@@ -12,6 +12,7 @@ A terminal-based productivity OS for technology leaders, built with Python and [
 - Textual (TUI framework)
 - Rich (text styling inside Textual widgets)
 - `tomllib` (stdlib, Python 3.11+) — reads `config.toml`
+- `tomli-w` — writes `config.toml` from `ConfigScreen`
 - No external data dependencies — all state lives in markdown log files
 
 ## Project Structure
@@ -46,6 +47,7 @@ screens/
   add_event.py                # AddEventScreen form
   update.py                  # UpdateScreen — manager update generator
   weekly_review.py            # WeeklyReviewScreen
+  config.py                   # ConfigScreen — edit logs_path and theme via UI
 widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar
   tasks.py                    # TaskTable
@@ -164,7 +166,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
 - `E` opens `EventsScreen` — lazy imported
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
-- `t` opens `TagManagerScreen` — rename/merge tags across all objects
+- `C` opens `ConfigScreen` — edit `logs_path` and `theme`; saves to `config.toml`, applies theme immediately
 - Quote rotates on launch and on `r` refresh
 - Executive summary is a single-line metrics bar with red/green health coloring
 
@@ -193,6 +195,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `r` | Refresh data + new quote |
 | `m` | Flag task/accomplishment for manager update (`★`) |
 | `U` | Manager update generator |
+| `C` | Config (logs path + theme) |
 | `g` | Sync logs (git add/commit/push) |
 | `?` | Help |
 | `q` | Quit |
@@ -203,10 +206,11 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 |---|-------|
 | #4 | ~~Manager Update Generator~~ ✓ |
 | #5 | Copilot Prompt Generator |
-| #8 | Accomplishment Details View |
-| #11 | Theme Configuration |
+| #8 | ~~Accomplishment Details View~~ ✓ |
+| #11 | ~~Theme Configuration~~ ✓ |
+| #13 | Dependency Aging Dashboard |
 | #14 | Tag Analytics Dashboard |
-| #15 | Export Manager Update |
+| #15 | ~~Export Manager Update~~ ✓ |
 | #16 | Package Director OS |
 | #27 | Search / filter across tables |
 | #28 | ~~Carry-forward indicator for rolled-over tasks~~ ✓ |
