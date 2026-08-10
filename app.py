@@ -1,3 +1,4 @@
+import subprocess
 from textual.app import App
 from textual.binding import Binding
 from textual.screen import Screen
@@ -39,6 +40,17 @@ class DirectorOS(App):
     BINDINGS = [
         Binding("q", "quit", "Quit"),
     ]
+
+    def action_quit(self):
+        logs_path = str(_get_logs_path())
+        try:
+            subprocess.run(["git", "-C", logs_path, "add", "-A"], capture_output=True)
+            r = subprocess.run(["git", "-C", logs_path, "commit", "-m", "sync"], capture_output=True, text=True)
+            if "nothing to commit" not in r.stdout and r.returncode == 0:
+                subprocess.run(["git", "-C", logs_path, "push"], capture_output=True)
+        except Exception:
+            pass
+        self.exit()
 
     def on_mount(self):
         try:
