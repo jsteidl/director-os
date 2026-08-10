@@ -1,12 +1,18 @@
 from textual.screen import ModalScreen
 from textual.containers import Vertical, Horizontal, ScrollableContainer
-from textual.widgets import Label, Input, Button
+from textual.widgets import Label, Input
 from textual.app import ComposeResult
+from textual.binding import Binding
 
 from parser import get_all_tags, rename_tag
 
 
 class TagManagerScreen(ModalScreen):
+
+    BINDINGS = [
+        Binding("ctrl+s", "save", "Save"),
+        Binding("escape", "cancel", "Cancel"),
+    ]
 
     def compose(self) -> ComposeResult:
         self._tags = get_all_tags()
@@ -25,26 +31,19 @@ class TagManagerScreen(ModalScreen):
             )
 
         yield Vertical(
-            Label("Tag Manager — edit to rename or merge", id="tm-title"),
+            Label("Tag Manager — ctrl+s to save, esc to cancel", id="tm-title"),
             ScrollableContainer(*rows, id="tag-list"),
-            Horizontal(
-                Button("Save", id="save", variant="primary"),
-                Button("Cancel", id="cancel"),
-                id="tm-buttons",
-            ),
         )
 
-    def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "cancel":
-            self.dismiss(False)
-            return
-
+    def action_save(self):
         for old_tag, inp in self._inputs.items():
             new_tag = inp.value.strip()
             if new_tag and new_tag != old_tag:
                 rename_tag(old_tag, new_tag)
-
         self.dismiss(True)
+
+    def action_cancel(self):
+        self.dismiss(False)
 
     CSS = """
     TagManagerScreen {
@@ -85,14 +84,5 @@ class TagManagerScreen(ModalScreen):
         width: 1fr;
     }
 
-    #tm-buttons {
-        height: 3;
-        dock: bottom;
-        align: right middle;
-        padding: 0 1;
-    }
 
-    #tm-buttons Button {
-        margin-left: 1;
-    }
     """

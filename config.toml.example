@@ -9,3 +9,7 @@
 #   logs_path = "/home/user/OneDrive/director_os_logs"
 #   logs_path = "C:/Users/username/OneDrive/director_os_logs"
 logs_path = "logs"
+
+# Textual theme. Options: textual-dark, textual-light, gruvbox, nord, monokai, dracula, tokyo-night, solarized-light
+# Defaults to gruvbox if not set.
+theme = "gruvbox"

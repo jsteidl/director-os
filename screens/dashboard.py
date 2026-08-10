@@ -67,6 +67,7 @@ class DashboardScreen(Screen):
         Binding("m", "toggle_mgr", "Mgr flag"),
         Binding("U", "manager_update", "Update"),
         Binding("g", "sync_logs", "Sync Logs"),
+        Binding("C", "config", "Config"),
         Binding("?", "show_help", "Help"),
     ]
 
@@ -888,6 +889,10 @@ class DashboardScreen(Screen):
     # =====================================================
     # SYNC LOGS
     # =====================================================
+
+    def action_config(self):
+        from screens.config import ConfigScreen
+        self.app.push_screen(ConfigScreen())
 
     def action_sync_logs(self):
         from parser import _get_logs_path
