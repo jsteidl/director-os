@@ -65,6 +65,18 @@ class DirectorOS(App):
             self.push_screen(ConfigErrorScreen(logs_path))
         else:
             self.push_screen(DashboardScreen())
+            self._pull_logs()
+
+    def _pull_logs(self):
+        logs_path = str(_get_logs_path())
+        try:
+            r = subprocess.run(["git", "-C", logs_path, "pull"], capture_output=True, text=True)
+            if r.returncode != 0:
+                self.notify(f"Pull failed: {r.stderr.strip()}", severity="warning")
+            else:
+                self.notify("Logs up to date ✓", severity="information")
+        except Exception as e:
+            self.notify(f"Pull error: {e}", severity="warning")
 
 
 if __name__ == "__main__":
