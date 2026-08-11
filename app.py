@@ -1,4 +1,5 @@
 import subprocess
+from pathlib import Path
 from textual.app import App
 from textual.binding import Binding
 from textual.screen import Screen
@@ -77,6 +78,18 @@ class DirectorOS(App):
                 self.notify("Logs up to date ✓", severity="information")
         except Exception as e:
             self.notify(f"Pull error: {e}", severity="warning")
+
+        app_path = str(Path(__file__).parent)
+        try:
+            subprocess.run(["git", "-C", app_path, "fetch", "origin"], capture_output=True)
+            r = subprocess.run(
+                ["git", "-C", app_path, "rev-list", "HEAD..origin/master", "--count"],
+                capture_output=True, text=True
+            )
+            if r.returncode == 0 and r.stdout.strip() not in ("0", ""):
+                self.notify("App update available — run git pull to update", severity="warning", timeout=10)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
