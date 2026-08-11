@@ -12,6 +12,8 @@ SEVERITY_LABELS = {"H": "● H", "M": "● M", "L": "● L"}
 
 class RisksTable(DataTable):
 
+    personal_filter = "all"
+
     def on_mount(self):
 
         self.zebra_stripes = True
@@ -29,12 +31,17 @@ class RisksTable(DataTable):
         self.clear()
 
         for risk in get_risks():
+            if self.personal_filter == "personal" and not risk.personal:
+                continue
+            if self.personal_filter == "work" and risk.personal:
+                continue
             severity = risk.severity or ""
             color = SEVERITY_COLORS.get(severity, "white")
             label = SEVERITY_LABELS.get(severity, severity)
             severity_text = Text(label, style=f"bold {color}")
+            desc = _t(risk.description) + (" ♦" if risk.personal else "")
             self.add_row(
-                _t(risk.description),
+                desc,
                 _t(risk.owner),
                 severity_text,
                 risk.since,

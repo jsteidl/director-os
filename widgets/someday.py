@@ -8,6 +8,8 @@ def _t(text, n=50):
 
 class SomedayTable(DataTable):
 
+    personal_filter = "all"
+
     def on_mount(self):
 
         self.zebra_stripes = True
@@ -24,9 +26,12 @@ class SomedayTable(DataTable):
         self.clear()
 
         for item in get_someday_items():
-
+            if self.personal_filter == "personal" and not item.personal:
+                continue
+            if self.personal_filter == "work" and item.personal:
+                continue
             self.add_row(
-                _t(item.item),
+                _t(item.item) + (" ♦" if item.personal else ""),
                 _t(item.owner),
                 item.since,
             )

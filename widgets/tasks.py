@@ -23,6 +23,8 @@ def _age_color(created):
 
 class TaskTable(DataTable):
 
+    personal_filter = "all"  # all | personal | work
+
     def on_mount(self):
 
         self.zebra_stripes = True
@@ -41,8 +43,12 @@ class TaskTable(DataTable):
         self.clear()
 
         for task in get_tasks():
+            if self.personal_filter == "personal" and not task.personal:
+                continue
+            if self.personal_filter == "work" and task.personal and not task.mgr:
+                continue
             color = _age_color(task.created)
-            title = _t(task.title) + (" ↩" if task.carried else "") + (" ★" if task.mgr else "")
+            title = _t(task.title) + (" ↩" if task.carried else "") + (" ★" if task.mgr else "") + (" ♦" if task.personal else "")
             self.add_row(
                 Text(title, style=color),
                 Text(PRIORITY_GLYPHS.get(task.priority, task.priority or ""), style=f"bold {PRIORITY_COLORS.get(task.priority, color)}"),

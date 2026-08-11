@@ -209,6 +209,10 @@ def get_tasks():
         if mgr:
             title = title.replace(" Mgr:true", "").strip()
 
+        personal = "Personal:true" in title
+        if personal:
+            title = title.replace(" Personal:true", "").strip()
+
         priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
 
         if priority_match:
@@ -227,6 +231,7 @@ def get_tasks():
                 tags=tags,
                 carried=carried,
                 mgr=mgr,
+                personal=personal,
             )
         )
     priority_order = {"A": 0, "B": 1, "C": 2, None: 3}
@@ -292,6 +297,9 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None):
     if match and "Mgr:true" in match.group(0):
         new_line += " Mgr:true"
 
+    if match and "Personal:true" in match.group(0):
+        new_line += " Personal:true"
+
     if tags:
         new_line += " " + " ".join(f"#{t}" for t in tags)
 
@@ -313,6 +321,35 @@ def toggle_mgr_task(task_title):
         new_line = line + " Mgr:true"
     content = content.replace(line, new_line, 1)
     save_log(content)
+
+
+def toggle_personal_task(task_title):
+    content = load_log()
+    search_text = task_title.split(" @")[0].rstrip("…")
+    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
+    match = pattern.search(content)
+    if not match:
+        return
+    line = match.group(0)
+    new_line = line.replace(" Personal:true", "") if "Personal:true" in line else line + " Personal:true"
+    content = content.replace(line, new_line, 1)
+    save_log(content)
+
+
+def toggle_personal_accomplishment(task_title):
+    content = load_log()
+    pattern = re.compile(
+        r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n",
+        re.S,
+    )
+    for match in pattern.finditer(content):
+        raw = match.group(1)
+        if strip_tags(raw.replace(" Mgr:true", "").replace(" Personal:true", "")).strip() == task_title:
+            new_raw = raw.replace(" Personal:true", "") if "Personal:true" in raw else raw + " Personal:true"
+            new_block = match.group(0).replace(raw, new_raw, 1)
+            content = content.replace(match.group(0), new_block, 1)
+            save_log(content)
+            return
 
 
 def toggle_mgr_accomplishment(task_title):
@@ -538,6 +575,9 @@ def get_risks():
     ):
         description, owner, since, severity, rest = line
         tags = extract_tags(rest)
+        personal = "Personal:true" in rest
+        rest_clean = rest.replace(" Personal:true", "")
+        tags = extract_tags(rest_clean)
 
         risks.append(
             Risk(
@@ -546,24 +586,26 @@ def get_risks():
                 since=since,
                 severity=severity,
                 tags=tags,
+                personal=personal,
             )
         )
 
     return risks
 
 
-def add_risk(description, owner, severity, tags=None):
+def add_risk(description, owner, severity, tags=None, personal=False):
 
     content = load_log()
 
     description, owner = _clean(description), _clean(owner)
 
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+    personal_str = " Personal:true" if personal else ""
 
     line = (
         f"- {description} | Owner: {owner} "
         f"| Since: {date.today()} "
-        f"| Severity: {severity.upper()}{tag_str}\n"
+        f"| Severity: {severity.upper()}{personal_str}{tag_str}\n"
     )
 
     content = content.replace(
@@ -593,8 +635,11 @@ def edit_risk(old_description, new_description, owner, severity, tags=None):
     new_line = (
         f"- {new_description} | Owner: {owner} "
         f"| Since: {since} "
-        f"| Severity: {severity.upper()}{tag_str}"
+        f"| Severity: {severity.upper()}"
     )
+    if match and "Personal:true" in match.group(0):
+        new_line += " Personal:true"
+    new_line += tag_str
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
@@ -664,7 +709,9 @@ def get_someday_items():
         match.group(1),
     ):
         item, owner, since, rest = line
-        tags = extract_tags(rest)
+        personal = "Personal:true" in rest
+        rest_clean = rest.replace(" Personal:true", "")
+        tags = extract_tags(rest_clean)
 
         items.append(
             SomedayItem(
@@ -672,23 +719,39 @@ def get_someday_items():
                 owner=owner,
                 since=since,
                 tags=tags,
+                personal=personal,
             )
         )
 
     return items
 
 
-def add_someday_item(item, owner, tags=None):
+def toggle_personal_risk(description):
+    content = load_log()
+    pattern = re.compile(
+        r"- " + re.escape(description) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2} \| Severity:\s*[HML].*"
+    )
+    match = pattern.search(content)
+    if not match:
+        return
+    line = match.group(0)
+    new_line = line.replace(" Personal:true", "") if "Personal:true" in line else line + " Personal:true"
+    content = content.replace(line, new_line, 1)
+    save_log(content)
+
+
+def add_someday_item(item, owner, tags=None, personal=False):
 
     content = load_log()
 
     item, owner = _clean(item), _clean(owner)
 
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+    personal_str = " Personal:true" if personal else ""
 
     line = (
         f"- {item} | Owner: {owner} "
-        f"| Since: {date.today()}{tag_str}\n"
+        f"| Since: {date.today()}{personal_str}{tag_str}\n"
     )
 
     content = content.replace(
@@ -715,7 +778,10 @@ def edit_someday_item(old_item, new_item, owner, tags=None):
     since = match.group(1)
     new_item, owner = _clean(new_item), _clean(owner)
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
-    new_line = f"- {new_item} | Owner: {owner} | Since: {since}{tag_str}"
+    new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
+    if match and "Personal:true" in match.group(0):
+        new_line += " Personal:true"
+    new_line += tag_str
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
@@ -728,6 +794,20 @@ def delete_someday_item(item_text):
         r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*\n"
     )
     content = pattern.sub("", content, count=1)
+    save_log(content)
+
+
+def toggle_personal_someday(item_text):
+    content = load_log()
+    pattern = re.compile(
+        r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*"
+    )
+    match = pattern.search(content)
+    if not match:
+        return
+    line = match.group(0)
+    new_line = line.replace(" Personal:true", "") if "Personal:true" in line else line + " Personal:true"
+    content = content.replace(line, new_line, 1)
     save_log(content)
 
 
@@ -784,11 +864,12 @@ def get_accomplishments():
 
     return [
         Accomplishment(
-            task=strip_tags(task.replace(" Mgr:true", "")),
+            task=strip_tags(task.replace(" Mgr:true", "").replace(" Personal:true", "")),
             outcome=outcome,
             completed=completed,
             tags=extract_tags(task),
             mgr="Mgr:true" in task,
+            personal="Personal:true" in task,
         )
         for task, outcome, completed in matches
     ]
@@ -801,7 +882,7 @@ def _find_accomplishment_block(content, task_title):
         re.S,
     )
     for match in pattern.finditer(content):
-        if strip_tags(match.group(1).replace(" Mgr:true", "")).strip() == task_title:
+        if strip_tags(match.group(1).replace(" Mgr:true", "").replace(" Personal:true", "")).strip() == task_title:
             return match
     return None
 
@@ -855,10 +936,15 @@ def complete_task(
     pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
     match = pattern.search(content)
     mgr = bool(match and "Mgr:true" in match.group(0))
+    personal = bool(match and "Personal:true" in match.group(0))
     content = pattern.sub("", content, count=1)
 
+    flags = ("".join([
+        " Mgr:true" if mgr else "",
+        " Personal:true" if personal else "",
+    ]))
     accomplishment = (
-        f"- Task: {task_text}{' Mgr:true' if mgr else ''}\n"
+        f"- Task: {task_text}{flags}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {date.today()}\n\n"
     )

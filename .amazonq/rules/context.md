@@ -118,6 +118,16 @@ Left column = immediate action. Right column = situational awareness.
 
 - `check_event_notifications()` — called on mount; appends reminders to today's daily log
 
+### Personal flag
+- `Personal:true` inline field on tasks, accomplishments, risks, and someday items
+- `toggle_personal_task()`, `toggle_personal_accomplishment()`, `toggle_personal_risk()`, `toggle_personal_someday()` — toggled via `h` keybind
+- `♦` glyph rendered in all four widget tables for flagged items
+- `P` cycles `_personal_filter` on `DashboardScreen`: `all` → `personal` → `work` → `all`
+- Current filter shown in title bar as `director_os (All)` etc.
+- Work view hides personal items unless also `Mgr:true` (tasks/accomplishments only)
+- `_filtered_tasks()`, `_filtered_accomplishments()`, `_filtered_risks()`, `_filtered_someday()` helpers on `DashboardScreen` mirror widget filter logic — all row-index operations use these to avoid index mismatch
+- Personal flag is independent of mgr flag — items can carry both
+
 ### Mgr flag
 - `Mgr:true` inline field on tasks and accomplishments — same pattern as `Carried:true`
 - `toggle_mgr_task()` / `toggle_mgr_accomplishment()` — toggled via `m` keybind
@@ -160,6 +170,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - Risk severity color-coded: H=red, M=yellow, L=green using `rich.text.Text`
 - Carried tasks show `↩` glyph appended to title in task table
 - Mgr-flagged tasks and accomplishments show `★` glyph appended to title
+- Personal-flagged items show `♦` glyph appended to title in all four widget tables
 - `p` (promote someday) opens `AddTaskScreen` pre-filled with item title for full metadata entry
 - `S` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
 - `g` syncs logs repo via git with toast feedback; auto-syncs silently on quit
@@ -197,6 +208,8 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
 | `m` | Flag task/accomplishment for manager update (`★`) |
+| `h` | Toggle personal flag on focused item (♦) |
+| `P` | Cycle personal filter (All → Personal only → Work only) |
 | `U` | Manager update generator |
 | `C` | Config (logs path + theme) |
 | `g` | Sync logs (git add/commit/push); auto-syncs on quit |

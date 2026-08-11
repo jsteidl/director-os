@@ -24,6 +24,8 @@ from parser import (
     add_risk, edit_risk, delete_risk, resolve_risk,
     add_someday_item, edit_someday_item, delete_someday_item, promote_someday_item,
     delete_accomplishment, edit_accomplishment,
+    toggle_personal_task, toggle_personal_accomplishment,
+    toggle_personal_risk, toggle_personal_someday,
 )
 
 from screens.task_complete import CompleteTaskScreen
@@ -44,6 +46,12 @@ from screens.tag_manager import TagManagerScreen
 
 class DashboardScreen(Screen):
 
+    PERSONAL_FILTERS = ["all", "personal", "work"]
+    PERSONAL_FILTER_LABELS = {"all": "All", "personal": "Personal only", "work": "Work only"}
+
+    def __init__(self):
+        super().__init__()
+        self._personal_filter = "all"
     BINDINGS = [
         Binding("a", "add_task", "Add Task"),
         Binding("e", "edit_selected", "Edit"),
@@ -65,6 +73,8 @@ class DashboardScreen(Screen):
         Binding("E", "events", "Events"),
         Binding("v", "view_widget", "View"),
         Binding("m", "toggle_mgr", "Mgr flag"),
+        Binding("h", "toggle_personal", "Personal flag"),
+        Binding("P", "toggle_personal_filter", "Personal filter"),
         Binding("U", "manager_update", "Update"),
         Binding("g", "sync_logs", "Sync Logs"),
         Binding("C", "config", "Config"),
@@ -224,8 +234,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_accomplishments
-        accomplishments = get_accomplishments()
+        accomplishments = self._filtered_accomplishments()
         if row >= len(accomplishments):
             return
         acc = accomplishments[row]
@@ -242,14 +251,41 @@ class DashboardScreen(Screen):
         edit_accomplishment(old_task, new_task, outcome)
         self.refresh_data()
 
+    def _filtered_tasks(self):
+        from parser import get_tasks
+        f = self._personal_filter
+        return [t for t in get_tasks()
+                if not (f == "personal" and not t.personal)
+                and not (f == "work" and t.personal and not t.mgr)]
+
+    def _filtered_accomplishments(self):
+        from parser import get_accomplishments
+        f = self._personal_filter
+        return [a for a in get_accomplishments()
+                if not (f == "personal" and not a.personal)
+                and not (f == "work" and a.personal and not a.mgr)]
+
+    def _filtered_risks(self):
+        from parser import get_risks
+        f = self._personal_filter
+        return [r for r in get_risks()
+                if not (f == "personal" and not r.personal)
+                and not (f == "work" and r.personal)]
+
+    def _filtered_someday(self):
+        from parser import get_someday_items
+        f = self._personal_filter
+        return [s for s in get_someday_items()
+                if not (f == "personal" and not s.personal)
+                and not (f == "work" and s.personal)]
+
     def _edit_task(self):
 
         table = self.query_one(TaskTable)
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_tasks
-        tasks = get_tasks()
+        tasks = self._filtered_tasks()
         if row >= len(tasks):
             return
         task = tasks[row]
@@ -295,8 +331,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_risks
-        risks = get_risks()
+        risks = self._filtered_risks()
         if row >= len(risks):
             return
         risk = risks[row]
@@ -318,8 +353,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_someday_items
-        items = get_someday_items()
+        items = self._filtered_someday()
         if row >= len(items):
             return
         item = items[row]
@@ -365,8 +399,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_tasks
-        tasks = get_tasks()
+        tasks = self._filtered_tasks()
         if row >= len(tasks):
             return
         delete_task(tasks[row].title)
@@ -389,8 +422,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_risks
-        risks = get_risks()
+        risks = self._filtered_risks()
         if row >= len(risks):
             return
         delete_risk(risks[row].description)
@@ -401,8 +433,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_someday_items
-        items = get_someday_items()
+        items = self._filtered_someday()
         if row >= len(items):
             return
         delete_someday_item(items[row].item)
@@ -413,8 +444,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_accomplishments
-        accomplishments = get_accomplishments()
+        accomplishments = self._filtered_accomplishments()
         if row >= len(accomplishments):
             return
         delete_accomplishment(accomplishments[row].task)
@@ -468,33 +498,33 @@ class DashboardScreen(Screen):
 
     def refresh_data(self):
 
-        metrics = self.query_one(
-            MetricsWidget
-        )
-
+        metrics = self.query_one(MetricsWidget)
         metrics.update_metrics()
 
         tasks = self.query_one(TaskTable)
+        tasks.personal_filter = self._personal_filter
         tasks.load_tasks()
 
-        deps = self.query_one(
-            DependencyTable
-        )
-
+        deps = self.query_one(DependencyTable)
         deps.load_dependencies()
 
         today = self.query_one(TodayWidget)
         today.load_today()
 
         risks = self.query_one(RisksTable)
+        risks.personal_filter = self._personal_filter
         risks.load_risks()
 
         someday = self.query_one(SomedayTable)
+        someday.personal_filter = self._personal_filter
         someday.load_items()
 
         accomplishments = self.query_one(AccomplishmentTable)
-
+        accomplishments.personal_filter = self._personal_filter
         accomplishments.load_data()
+
+        label = self.PERSONAL_FILTER_LABELS[self._personal_filter]
+        self.query_one("#app-title", Label).update(f"director_os  [dim]({label})[/dim]")
 
         self._quote = get_random_quote()
         self.query_one("#app-quote", Label).update(self._quote)
@@ -786,8 +816,7 @@ class DashboardScreen(Screen):
         if row is None:
             return
 
-        from parser import get_someday_items
-        items = get_someday_items()
+        items = self._filtered_someday()
         if row >= len(items):
             return
         item = items[row]
@@ -816,8 +845,7 @@ class DashboardScreen(Screen):
         if row is None:
             return
 
-        from parser import get_tasks
-        tasks = get_tasks()
+        tasks = self._filtered_tasks()
         if row >= len(tasks):
             return
         task = tasks[row]
@@ -836,14 +864,58 @@ class DashboardScreen(Screen):
         self.refresh_data()
         self.app.notify("Moved to Someday ✓", severity="information")
 
-    def action_toggle_mgr(self):
-        from parser import get_tasks, get_accomplishments, toggle_mgr_task, toggle_mgr_accomplishment
+    def action_toggle_personal_filter(self):
+        idx = self.PERSONAL_FILTERS.index(self._personal_filter)
+        self._personal_filter = self.PERSONAL_FILTERS[(idx + 1) % len(self.PERSONAL_FILTERS)]
+        self.refresh_data()
+
+    def action_toggle_personal(self):
         focused = self.focused
         if isinstance(focused, TaskTable):
             row = focused.cursor_row
             if row is None:
                 return
-            tasks = get_tasks()
+            tasks = self._filtered_tasks()
+            if row >= len(tasks):
+                return
+            toggle_personal_task(tasks[row].title)
+            self.refresh_data()
+        elif isinstance(focused, AccomplishmentTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            accomplishments = self._filtered_accomplishments()
+            if row >= len(accomplishments):
+                return
+            toggle_personal_accomplishment(accomplishments[row].task)
+            self.refresh_data()
+        elif isinstance(focused, RisksTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            risks = self._filtered_risks()
+            if row >= len(risks):
+                return
+            toggle_personal_risk(risks[row].description)
+            self.refresh_data()
+        elif isinstance(focused, SomedayTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            items = self._filtered_someday()
+            if row >= len(items):
+                return
+            toggle_personal_someday(items[row].item)
+            self.refresh_data()
+
+    def action_toggle_mgr(self):
+        from parser import toggle_mgr_task, toggle_mgr_accomplishment
+        focused = self.focused
+        if isinstance(focused, TaskTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            tasks = self._filtered_tasks()
             if row >= len(tasks):
                 return
             toggle_mgr_task(tasks[row].title)
@@ -852,7 +924,7 @@ class DashboardScreen(Screen):
             row = focused.cursor_row
             if row is None:
                 return
-            accomplishments = get_accomplishments()
+            accomplishments = self._filtered_accomplishments()
             if row >= len(accomplishments):
                 return
             toggle_mgr_accomplishment(accomplishments[row].task)

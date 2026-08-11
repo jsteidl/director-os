@@ -11,6 +11,7 @@ class Task:
     tags: list[str] = field(default_factory=list)
     carried: bool = False
     mgr: bool = False
+    personal: bool = False
 
 
 @dataclass
@@ -29,6 +30,7 @@ class Accomplishment:
     completed: str
     tags: list[str] = field(default_factory=list)
     mgr: bool = False
+    personal: bool = False
 
 
 @dataclass
@@ -38,6 +40,7 @@ class Risk:
     since: str
     severity: str
     tags: list[str] = field(default_factory=list)
+    personal: bool = False
 
 
 @dataclass
@@ -46,6 +49,7 @@ class SomedayItem:
     owner: str
     since: str
     tags: list[str] = field(default_factory=list)
+    personal: bool = False
 
 
 @dataclass

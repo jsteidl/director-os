@@ -27,6 +27,7 @@ director_os is not a note-taking app, a time tracker, or a project management su
 - **Weekly review** — structured weekly summary with accomplishments, open tasks, and notes
 - **Calendar** — Gregorian and NRF 4-5-4 fiscal calendar view with due date, check-in, and event markers; navigate months and fiscal periods
 - **Events** — track holidays, deadlines, OOO, and other events with configurable reminders; notifications appended to daily log on launch
+- **Personal flag** — mark tasks, accomplishments, risks, and someday items as personal (♦); cycle dashboard view between All / Personal only / Work only with `P`; toggle flag with `h`; personal+mgr items always visible in work view
 - **Tag manager** — rename and merge tags across all objects
 - **Widget viewer** — press `v` on any table to open a full-screen read-only expanded view
 - **Monthly log files** — one markdown file per month, auto-scaffolded and rolled over with open tasks and dependencies carried forward; rolled-over tasks marked with `↩`
@@ -84,6 +85,8 @@ Left column = immediate action. Right column = situational awareness.
 | `v` | View focused widget full-screen |
 | `r` | Refresh data + new quote |
 | `m` | Flag task/accomplishment for manager update (`★`) |
+| `h` | Toggle personal flag on focused item (♦) |
+| `P` | Cycle personal filter (All → Personal only → Work only) |
 | `U` | Manager update generator |
 | `g` | Sync logs (git add/commit/push); auto-syncs on quit |
 | `?` | Help (grouped by widget/screen) |
