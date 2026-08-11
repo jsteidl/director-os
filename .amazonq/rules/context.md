@@ -138,6 +138,8 @@ Left column = immediate action. Right column = situational awareness.
 - `g` keybind in `dashboard.py` runs `git -C <logs_path> add -A && commit -m "sync" && push`
 - Uses `subprocess.run` with `capture_output=True`; shows toast on success or error
 - "Nothing to commit" is treated as success
+- `action_quit` in `app.py` overrides Textual's default to auto-sync silently before exit; errors are swallowed
+- Any git remote works — not GitHub-specific
 Uses regex `re.compile(r"- \[ \] .*" + re.escape(task_text) + r".*\n")` — not literal string replace — because priority prefixes like `(A)` appear before the task title in the log line.
 
 ### Accomplishment blocks
@@ -160,7 +162,8 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - Mgr-flagged tasks and accomplishments show `★` glyph appended to title
 - `p` (promote someday) opens `AddTaskScreen` pre-filled with item title for full metadata entry
 - `S` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
-- `g` syncs logs repo via git with toast feedback
+- `g` syncs logs repo via git with toast feedback; auto-syncs silently on quit
+- `?` opens `HelpScreen` — two-column static layout grouped by widget/screen area (Tasks, Dependencies, Risks, Someday, Accomplishments, Views & Navigation, System)
 - Toast notifications on: complete task, resolve dependency, promote someday, demote task, log sync
 - `U` opens `UpdateScreen` — manager update generator; since-date input, live preview, writes to `updates/`
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
@@ -196,8 +199,8 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `m` | Flag task/accomplishment for manager update (`★`) |
 | `U` | Manager update generator |
 | `C` | Config (logs path + theme) |
-| `g` | Sync logs (git add/commit/push) |
-| `?` | Help |
+| `g` | Sync logs (git add/commit/push); auto-syncs on quit |
+| `?` | Help (grouped by widget/screen) |
 | `q` | Quit |
 
 ## Open Issues
