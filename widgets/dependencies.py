@@ -23,6 +23,7 @@ class DependencyTable(DataTable):
             "Dependency",
             "Owner",
             "Age",
+            "Expected",
         )
 
         self.load_dependencies()
@@ -37,4 +38,5 @@ class DependencyTable(DataTable):
                 Text(_t(dep.item), style=color),
                 Text(_t(dep.owner), style=color),
                 Text(f"{dep.age}d", style=color),
+                Text(dep.expected_date or "", style=color),
             )

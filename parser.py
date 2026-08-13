@@ -400,25 +400,24 @@ def get_dependencies():
         return []
 
     matches = re.findall(
-        r"- (.*?) \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2})",
+        r"- (.*?) \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2})(.*)",
         match.group(1),
     )
 
     dependencies = []
 
-    for item, owner, since in matches:
+    for item, owner, since, rest in matches:
 
-        since_date = datetime.strptime(
-            since,
-            "%Y-%m-%d"
-        ).date()
-
-        age = (
-            date.today() - since_date
-        ).days
-
-        tags = extract_tags(item)
+        since_date = datetime.strptime(since, "%Y-%m-%d").date()
+        age = (date.today() - since_date).days
+        tags = extract_tags(rest)
         clean_item = strip_tags(item)
+
+        handoff_match = re.search(r"HandoffFrom:([^|\n]+)", rest)
+        handoff_from = handoff_match.group(1).strip() if handoff_match else None
+
+        expected_match = re.search(r"Expected:\s*(\d{4}-\d{2}-\d{2})", rest)
+        expected_date = expected_match.group(1) if expected_match else None
 
         dependencies.append(
             Dependency(
@@ -427,38 +426,33 @@ def get_dependencies():
                 since,
                 age,
                 tags,
+                handoff_from=handoff_from,
+                expected_date=expected_date,
             )
         )
 
     return dependencies
 
 
-def add_dependency(
-    item,
-    owner,
-):
+def add_dependency(item, owner, handoff_from=None, expected_date=None):
 
     content = load_log()
 
     item, owner = _clean(item), _clean(owner)
 
-    line = (
-        f"- {item} | Owner: {owner} "
-        f"| Since: {date.today()}\n"
-    )
+    line = f"- {item} | Owner: {owner} | Since: {date.today()}"
+    if handoff_from:
+        line += f" | HandoffFrom: {handoff_from}"
+    if expected_date:
+        line += f" | Expected: {expected_date}"
+    line += "\n"
 
     marker = "### Waiting On\n"
-
-    content = content.replace(
-        marker,
-        marker + line,
-        1,
-    )
-
+    content = content.replace(marker, marker + line, 1)
     save_log(content)
 
 
-def edit_dependency(old_item, new_item, owner):
+def edit_dependency(old_item, new_item, owner, expected_date=None):
 
     content = load_log()
 
@@ -472,7 +466,12 @@ def edit_dependency(old_item, new_item, owner):
 
     since = match.group(1)
     new_item, owner = _clean(new_item), _clean(owner)
+    handoff_match = re.search(r"HandoffFrom:([^|\n]+)", match.group(0))
     new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
+    if handoff_match:
+        new_line += f" | HandoffFrom: {handoff_match.group(1).strip()}"
+    if expected_date:
+        new_line += f" | Expected: {expected_date}"
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 

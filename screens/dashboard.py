@@ -314,15 +314,15 @@ class DashboardScreen(Screen):
             return
         dep = deps[row]
         self.app.push_screen(
-            AddDependencyScreen(item=dep.item, owner=dep.owner),
+            AddDependencyScreen(item=dep.item, owner=dep.owner, expected_date=dep.expected_date or ""),
             lambda result: self._edit_dependency_callback(dep.item, result)
         )
 
     def _edit_dependency_callback(self, old_item, result):
         if not result:
             return
-        new_item, owner = result
-        edit_dependency(old_item, new_item, owner)
+        new_item, owner, expected_date = result
+        edit_dependency(old_item, new_item, owner, expected_date=expected_date or None)
         self.refresh_data()
 
     def _edit_risk(self):
@@ -590,25 +590,22 @@ class DashboardScreen(Screen):
             return
 
         self.app.push_screen(
-
-            CompleteTaskScreen(
-                task_text
-            ),
-
-            lambda outcome:
-                self.complete_task_callback(
-                    task_text,
-                    outcome
-                )
-
+            CompleteTaskScreen(task_text),
+            lambda result: self.complete_task_callback(task_text, result)
         )
 
-    def complete_task_callback(self, task_text, outcome):
-        if outcome is None:
+    def complete_task_callback(self, task_text, result):
+        if result is None:
             return
+        outcome, handoff = result
         complete_task(task_text, outcome or task_text)
+        if handoff:
+            item, owner, expected_date = handoff
+            add_dependency(item, owner, handoff_from=task_text, expected_date=expected_date or None)
+            self.app.notify("Task completed + dependency created ✓", severity="information")
+        else:
+            self.app.notify("Task completed ✓", severity="information")
         self.refresh_data()
-        self.app.notify("Task completed ✓", severity="information")
 
     # =====================================================
     # REOPEN TASK
@@ -699,66 +696,52 @@ class DashboardScreen(Screen):
         )
 
 
-    def add_dependency_callback(
-        self,
-        result
-    ):
-
+    def add_dependency_callback(self, result):
         if not result:
             return
-
-        dependency, owner = result
-
+        dependency, owner, expected_date = result
         if not dependency:
             return
-
-        add_dependency(
-            dependency,
-            owner
-        )
-
+        add_dependency(dependency, owner, expected_date=expected_date or None)
         self.refresh_data()
 
     def action_resolve_dependency(self):
 
-        table = self.query_one(
-            DependencyTable
-        )
-
+        table = self.query_one(DependencyTable)
         row = table.cursor_row
-
         if row is None:
             return
-
-        dependency_name = str(
-            table.get_cell_at(
-                (row, 0)
-            )
-        )
+        from parser import get_dependencies
+        deps = get_dependencies()
+        if row >= len(deps):
+            return
+        dependency_name = deps[row].item
 
         self.app.push_screen(
             ResolveDependencyScreen(),
-            lambda notes:
-                self.resolve_dependency_callback(
-                    dependency_name,
-                    notes
-                )
+            lambda result: self.resolve_dependency_callback(dependency_name, result)
         )
-    def resolve_dependency_callback(
-        self,
-        dependency_name,
-        notes,
-    ):
-        if notes is None:
+    def resolve_dependency_callback(self, dependency_name, result):
+        if result is None:
             return
-
-        resolve_dependency(
-            dependency_name,
-            notes or "",
-        )
-
+        notes, reopen = result
+        resolve_dependency(dependency_name, notes or "")
         self.refresh_data()
         self.app.notify("Dependency resolved ✓", severity="information")
+        if reopen:
+            self.app.push_screen(
+                AddTaskScreen(title=dependency_name),
+                lambda r: self._reopen_from_dependency_callback(r)
+            )
+
+    def _reopen_from_dependency_callback(self, result):
+        if not result:
+            return
+        task_name, priority, due_date, tag = result
+        tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
+        add_task(task_name, " ".join(f"#{t}" for t in tags), due_date, priority)
+        self.refresh_data()
+        self.app.notify("Task reopened ✓", severity="information")
 
     # =====================================================
     # RISKS

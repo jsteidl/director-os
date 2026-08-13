@@ -30,10 +30,11 @@ class AddDependencyScreen(ModalScreen[tuple]):
     }
     """
 
-    def __init__(self, item="", owner=""):
+    def __init__(self, item="", owner="", expected_date=""):
         super().__init__()
         self._item = item
         self._owner = owner
+        self._expected_date = expected_date
 
     def compose(self):
         yield Vertical(
@@ -41,12 +42,15 @@ class AddDependencyScreen(ModalScreen[tuple]):
             Input(id="dependency", placeholder="Dependency", value=self._item),
             Label("Owner"),
             Input(id="owner", placeholder="Owner", value=self._owner),
+            Label("Expected date"),
+            Input(id="expected", placeholder="YYYY-MM-DD", value=self._expected_date),
         )
 
     def action_save(self):
         dependency = self.query_one("#dependency", Input).value
         owner = self.query_one("#owner", Input).value
-        self.dismiss((dependency, owner))
+        expected = self.query_one("#expected", Input).value
+        self.dismiss((dependency, owner, expected or None))
 
     def action_cancel(self):
         self.dismiss(None)

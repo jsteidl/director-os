@@ -144,6 +144,26 @@ Left column = immediate action. Right column = situational awareness.
 - `TaskTable` renders `↩` appended to the title for carried tasks
 - Editing a carried task drops the marker (intentional — once edited, it's no longer a carry-forward)
 
+### Task-dependency handoff
+- Completing a task (`d`) shows optional "Hand off to someone?" checkbox
+- If checked, captures waiting-on item (pre-filled with task title), owner, and expected date
+- Creates dependency with `HandoffFrom:` and `Expected:` fields in the log line
+- `CompleteTaskScreen` dismisses `(outcome, handoff_tuple_or_None)`
+- Glyphs stripped from `task_name` before pre-filling handoff item field
+
+### Dependency-to-task reopen
+- Resolving a dependency (`x`) shows optional "Reopen as task?" checkbox
+- If checked, opens `AddTaskScreen` pre-filled with dependency item after resolving
+- `ResolveDependencyScreen` dismisses `(notes, reopen_bool)`
+- `action_resolve_dependency` reads item from `get_dependencies()[row]` — not cell value — to avoid truncation mismatch
+
+### Dependency model
+- `Dependency.handoff_from` — optional, parsed from `HandoffFrom:` field in log line
+- `Dependency.expected_date` — optional, parsed from `Expected:\s*(\d{4}-\d{2}-\d{2})` in log line
+- `AddDependencyScreen` includes expected date field for all new dependencies
+- `edit_dependency` preserves `HandoffFrom` and writes `Expected` on save
+- `DependencyTable` shows `Expected` as a fourth column
+
 ### Log sync
 - `g` keybind in `dashboard.py` runs `git -C <logs_path> add -A && commit -m "sync" && push`
 - Uses `subprocess.run` with `capture_output=True`; shows toast on success or error

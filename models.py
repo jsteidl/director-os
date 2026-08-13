@@ -21,6 +21,8 @@ class Dependency:
     since: str
     age: int
     tags: list[str] = field(default_factory=list)
+    handoff_from: str | None = None
+    expected_date: str | None = None
 
 
 @dataclass

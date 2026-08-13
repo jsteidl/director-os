@@ -31,6 +31,8 @@ director_os is not a note-taking app, a time tracker, or a project management su
 - **Tag manager** — rename and merge tags across all objects
 - **Widget viewer** — press `v` on any table to open a full-screen read-only expanded view
 - **Monthly log files** — one markdown file per month, auto-scaffolded and rolled over with open tasks and dependencies carried forward; rolled-over tasks marked with `↩`
+- **Task-to-dependency handoff** — complete a task and optionally hand off to a dependency in one flow; captures owner, waiting-on item, and expected date; dependency tracks `HandoffFrom` for context
+- **Dependency-to-task reopen** — resolve a dependency and optionally reopen as a task with full metadata
 - **Log sync** — push logs to any git remote from the dashboard with `g`; auto-syncs silently on quit; toast confirms success or shows error
 - **Help** — grouped keyboard shortcut reference by widget/screen area; two-column layout
 

@@ -69,25 +69,30 @@ class DirectorOS(App):
             self._pull_logs()
 
     def _pull_logs(self):
+        self.run_worker(self._pull_logs_worker, thread=True)
+
+    def _pull_logs_worker(self):
         logs_path = str(_get_logs_path())
         try:
-            r = subprocess.run(["git", "-C", logs_path, "pull"], capture_output=True, text=True)
+            r = subprocess.run(["git", "-C", logs_path, "pull"], capture_output=True, text=True, timeout=10)
             if r.returncode != 0:
-                self.notify(f"Pull failed: {r.stderr.strip()}", severity="warning")
+                self.call_from_thread(self.notify, f"Pull failed: {r.stderr.strip()}", severity="warning")
             else:
-                self.notify("Logs up to date ✓", severity="information")
+                self.call_from_thread(self.notify, "Logs up to date \u2713", severity="information")
+        except subprocess.TimeoutExpired:
+            self.call_from_thread(self.notify, "Log pull timed out", severity="warning")
         except Exception as e:
-            self.notify(f"Pull error: {e}", severity="warning")
+            self.call_from_thread(self.notify, f"Pull error: {e}", severity="warning")
 
         app_path = str(Path(__file__).parent)
         try:
-            subprocess.run(["git", "-C", app_path, "fetch", "origin"], capture_output=True)
+            subprocess.run(["git", "-C", app_path, "fetch", "origin"], capture_output=True, timeout=10)
             r = subprocess.run(
                 ["git", "-C", app_path, "rev-list", "HEAD..origin/master", "--count"],
-                capture_output=True, text=True
+                capture_output=True, text=True, timeout=5
             )
             if r.returncode == 0 and r.stdout.strip() not in ("0", ""):
-                self.notify("App update available — run git pull to update", severity="warning", timeout=10)
+                self.call_from_thread(self.notify, "App update available \u2014 run git pull to update", severity="warning", timeout=10)
         except Exception:
             pass
 
