@@ -931,7 +931,7 @@ def complete_task(
 
     content = load_log()
 
-    search_text = task_text.rstrip("…")
+    search_text = task_text.rstrip("…").replace(" ↩", "").replace(" ★", "").replace(" ♦", "")
     pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
     match = pattern.search(content)
     mgr = bool(match and "Mgr:true" in match.group(0))
