@@ -6,7 +6,7 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 
 ## Screenshot
 
-![director_os dashboard](screenshots/dashboard.svg)
+![director_os dashboard](screenshots/director_os_dashboard.png)
 
 ## Features
 
