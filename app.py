@@ -54,13 +54,7 @@ class DirectorOS(App):
         self.exit()
 
     def on_mount(self):
-        try:
-            import tomllib
-            with open("config.toml", "rb") as f:
-                config = tomllib.load(f)
-            self.theme = config.get("theme", "gruvbox")
-        except Exception:
-            self.theme = "gruvbox"
+        self.theme = "gruvbox"
         logs_path = _get_logs_path()
         if not logs_path.exists():
             self.push_screen(ConfigErrorScreen(logs_path))
