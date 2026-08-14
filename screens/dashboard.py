@@ -87,20 +87,20 @@ class DashboardScreen(Screen):
         height: 1;
         width: 100%;
         padding: 0 1;
-        background: $accent;
+        background: $accent-darken-2;
         color: $background;
         layout: horizontal;
     }
 
     #app-quote {
         width: 1fr;
-        background: $accent;
+        background: $accent-darken-2;
         color: $background;
     }
 
     #app-clock {
         width: auto;
-        background: $accent;
+        background: $accent-darken-2;
         color: $background;
         text-align: right;
     }
@@ -110,7 +110,7 @@ class DashboardScreen(Screen):
         height: 1;
         width: 100%;
         padding: 0 1;
-        background: $accent;
+        background: $accent-darken-2;
         color: $background;
         text-style: bold;
         text-align: center;
