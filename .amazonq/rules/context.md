@@ -47,7 +47,7 @@ screens/
   add_event.py                # AddEventScreen form
   update.py                  # UpdateScreen — manager update generator
   weekly_review.py            # WeeklyReviewScreen
-  config.py                   # ConfigScreen — edit logs_path and theme via UI
+  config.py                   # ConfigScreen — edit logs_path via UI
 widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar
   tasks.py                    # TaskTable
@@ -170,7 +170,9 @@ Left column = immediate action. Right column = situational awareness.
 - "Nothing to commit" is treated as success
 - `action_quit` in `app.py` overrides Textual's default to auto-sync silently before exit; errors are swallowed
 - Any git remote works — not GitHub-specific
-Uses regex `re.compile(r"- \[ \] .*" + re.escape(task_text) + r".*\n")` — not literal string replace — because priority prefixes like `(A)` appear before the task title in the log line.
+### complete_task glyph stripping
+- `complete_task` in `parser.py` strips `↩`, `★`, `♦` glyphs from `task_text` before building the search regex — cell values may have glyphs appended that would cause the pattern to not match
+- Uses regex `re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")` — not literal string replace — because priority prefixes like `(A)` appear before the task title in the log line
 
 ### Accomplishment blocks
 Stored as structured blocks:
@@ -183,11 +185,17 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 
 ## UI Conventions
 
-- Priority glyphs: `▲/●/▼` color-coded red/yellow/cyan — stored as `A/B/C` in log, rendered in `tasks.py`
-- Task rows age-colored after 7 days (yellow) and 14 days (red)
+- Priority glyphs: `▲/●/▼` color-coded using `C_BAD/C_WARN/C_DEFAULT` constants — stored as `A/B/C` in log, rendered in `tasks.py`
+- Task rows age-colored after 7 days (`C_WARN`) and 14 days (`C_BAD`)
 - All DataTables have `zebra_stripes = True`
 - Text fields truncated to 50 chars with `…` via `_t()` helper in each widget file
-- Risk severity color-coded: H=red, M=yellow, L=green using `rich.text.Text`
+- Risk severity color-coded: H=`C_BAD`, M=`C_WARN`, L=`C_GOOD` using `rich.text.Text`
+- Color constants `C_GOOD`, `C_WARN`, `C_BAD`, `C_DEFAULT` defined at top of each widget file for easy adjustment
+- Dashboard screen background set to `$panel` to match DataTable default background
+- All widget borders use `$accent` token — theme-aware, consistent across all panels
+- Header (`#app-title`) and footer (`#app-footer`) use `$accent` background with `$background` text
+- Widget section labels (Tasks, Dependencies, etc.) unstyled — blend into dashboard background
+- Theme hardcoded to `gruvbox` in `app.py` — Rich color strings are not theme-aware so other themes produce mismatched results
 - Carried tasks show `↩` glyph appended to title in task table
 - Mgr-flagged tasks and accomplishments show `★` glyph appended to title
 - Personal-flagged items show `♦` glyph appended to title in all four widget tables
@@ -200,7 +208,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
 - `E` opens `EventsScreen` — lazy imported
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
-- `C` opens `ConfigScreen` — edit `logs_path` and `theme`; saves to `config.toml`, applies theme immediately
+- `C` opens `ConfigScreen` — edit `logs_path`; saves to `config.toml`
 - Quote rotates on launch and on `r` refresh
 - Executive summary is a single-line metrics bar with red/green health coloring
 
@@ -231,7 +239,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `h` | Toggle personal flag on focused item (♦) |
 | `P` | Cycle personal filter (All → Personal only → Work only) |
 | `U` | Manager update generator |
-| `C` | Config (logs path + theme) |
+| `C` | Config (logs path) |
 | `g` | Sync logs (git add/commit/push); auto-syncs on quit |
 | `?` | Help (grouped by widget/screen) |
 | `q` | Quit |
@@ -243,7 +251,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | #4 | ~~Manager Update Generator~~ ✓ |
 | #5 | Copilot Prompt Generator |
 | #8 | ~~Accomplishment Details View~~ ✓ |
-| #11 | ~~Theme Configuration~~ ✓ |
+| #11 | ~~Theme Configuration~~ (removed — locked to gruvbox) |
 | #13 | Dependency Aging Dashboard |
 | #14 | Tag Analytics Dashboard |
 | #15 | ~~Export Manager Update~~ ✓ |

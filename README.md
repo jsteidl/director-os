@@ -91,6 +91,7 @@ Left column = immediate action. Right column = situational awareness.
 | `P` | Cycle personal filter (All → Personal only → Work only) |
 | `U` | Manager update generator |
 | `g` | Sync logs (git add/commit/push); auto-syncs on quit |
+| `C` | Config (logs path) |
 | `?` | Help (grouped by widget/screen) |
 | `q` | Quit |
 
@@ -112,7 +113,7 @@ Copy `config.toml.example` to `config.toml` and set your logs path:
 logs_path = "/path/to/your/logs"
 ```
 
-`config.toml` is gitignored — each machine has its own. The app falls back to `logs/` if no config is present.
+`config.toml` is gitignored — each machine has its own. The app falls back to `logs/` if no config is present. Theme is hardcoded to `gruvbox`.
 
 ## Running
 
