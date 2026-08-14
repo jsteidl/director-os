@@ -4,38 +4,36 @@ from datetime import date, datetime
 
 from parser import get_tasks
 
+C_GOOD = "green"
+C_WARN = "yellow"
+C_BAD = "red"
+C_DEFAULT = "default"
+
 def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
 
 PRIORITY_GLYPHS = {"A": "▲", "B": "●", "C": "▼"}
-PRIORITY_COLORS = {"A": "red", "B": "yellow", "C": "cyan"}
+PRIORITY_COLORS = {"A": C_BAD, "B": C_WARN, "C": "cyan"}
 
 def _age_color(created):
     if not created:
-        return "white"
+        return C_DEFAULT
     age = (date.today() - datetime.strptime(created, "%Y-%m-%d").date()).days
     if age >= 14:
-        return "red"
+        return C_BAD
     if age >= 7:
-        return "yellow"
-    return "white"
+        return C_WARN
+    return C_DEFAULT
 
 
 class TaskTable(DataTable):
 
-    personal_filter = "all"  # all | personal | work
+    personal_filter = "all"
 
     def on_mount(self):
 
         self.zebra_stripes = True
-        self.add_columns(
-            "Task",
-            "Priority",
-            "Due",
-            "Tags",
-            "Created",
-        )
-
+        self.add_columns("Task", "Priority", "Due", "Tags", "Created")
         self.load_tasks()
 
     def load_tasks(self):

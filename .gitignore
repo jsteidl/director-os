@@ -13,3 +13,5 @@ venv/
 logs/*.md
 !logs/.gitkeep
 config.toml
+__pycache__/
+*.pyc

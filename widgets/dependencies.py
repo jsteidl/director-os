@@ -3,15 +3,19 @@ from rich.text import Text
 
 from parser import get_dependencies
 
+C_WARN = "yellow"
+C_BAD = "red"
+C_DEFAULT = "default"
+
 def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
 
 def _age_color(age):
     if age >= 14:
-        return "red"
+        return C_BAD
     if age >= 7:
-        return "yellow"
-    return "white"
+        return C_WARN
+    return C_DEFAULT
 
 
 class DependencyTable(DataTable):
@@ -19,13 +23,7 @@ class DependencyTable(DataTable):
     def on_mount(self):
 
         self.zebra_stripes = True
-        self.add_columns(
-            "Dependency",
-            "Owner",
-            "Age",
-            "Expected",
-        )
-
+        self.add_columns("Dependency", "Owner", "Age", "Expected")
         self.load_dependencies()
 
     def load_dependencies(self):

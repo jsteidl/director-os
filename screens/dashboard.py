@@ -88,20 +88,20 @@ class DashboardScreen(Screen):
         width: 100%;
         padding: 0 1;
         background: $accent;
-        color: $text;
+        color: $background;
         layout: horizontal;
     }
 
     #app-quote {
         width: 1fr;
-        color: $text;
         background: $accent;
+        color: $background;
     }
 
     #app-clock {
         width: auto;
-        color: $text;
         background: $accent;
+        color: $background;
         text-align: right;
     }
 
@@ -111,9 +111,13 @@ class DashboardScreen(Screen):
         width: 100%;
         padding: 0 1;
         background: $accent;
-        color: $text;
+        color: $background;
         text-style: bold;
         text-align: center;
+    }
+
+    DashboardScreen {
+        background: $panel;
     }
 
     DataTable {
@@ -123,46 +127,44 @@ class DashboardScreen(Screen):
     .widget-label {
         height: 1;
         padding: 0 1;
-        background: $primary;
-        color: $text;
         text-style: bold;
     }
 
     #metrics {
         height: 3;
-        border: solid green;
+        border: solid $accent;
         padding: 0 1;
     }
 
     #tasks {
         height: 1fr;
-        border: solid green;
+        border: solid $accent;
     }
 
     #today {
         height: 12;
-        border: solid cyan;
+        border: solid $accent;
         padding: 0 1;
     }
 
     #dependencies {
         height: 1fr;
-        border: solid green;
+        border: solid $accent;
     }
 
     #risks {
         height: 1fr;
-        border: solid red;
+        border: solid $accent;
     }
 
     #someday {
         height: 1fr;
-        border: solid yellow;
+        border: solid $accent;
     }
 
     #accomplishments {
         height: 1fr;
-        border: solid green;
+        border: solid $accent;
     }
     """
 

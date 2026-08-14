@@ -3,10 +3,14 @@ from rich.text import Text
 
 from parser import get_metrics
 
+C_GOOD = "green"
+C_WARN = "yellow"
+C_BAD = "red"
+
 
 def _colored(value, label, bad_if_nonzero=False):
     t = Text()
-    color = "red" if (bad_if_nonzero and value > 0) else "green"
+    color = C_BAD if (bad_if_nonzero and value > 0) else C_GOOD
     t.append(str(value), style=f"bold {color}")
     t.append(f" {label}")
     return t
