@@ -257,7 +257,7 @@ def add_task(task_name, tag="", due_date="", priority=""):
     line += f" Created:{date.today()}"
 
     if tag:
-        line += f" #{tag}"
+        line += " " + " ".join(f"#{t}" for t in tag.split() if t)
     line += "\n"
 
     marker = "### High-Priority\n"
@@ -927,12 +927,16 @@ def delete_accomplishment(task_title):
 def complete_task(
     task_text,
     outcome,
+    created=None,
 ):
 
     content = load_log()
 
-    search_text = task_text.rstrip("…").replace(" ↩", "").replace(" ★", "").replace(" ♦", "")
-    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
+    if created:
+        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
+    else:
+        search_text = task_text.rstrip("…").replace(" ↩", "").replace(" ★", "").replace(" ♦", "")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
     match = pattern.search(content)
     mgr = bool(match and "Mgr:true" in match.group(0))
     personal = bool(match and "Personal:true" in match.group(0))

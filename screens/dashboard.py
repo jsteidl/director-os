@@ -571,36 +571,25 @@ class DashboardScreen(Screen):
 
     def action_complete_task(self):
 
-        table = self.query_one(
-            TaskTable
-        )
-
+        table = self.query_one(TaskTable)
         row = table.cursor_row
-
         if row is None:
             return
-
-        try:
-
-            task_text = str(
-                table.get_cell_at(
-                    (row, 0)
-                )
-            )
-
-        except Exception:
+        tasks = self._filtered_tasks()
+        if row >= len(tasks):
             return
+        task = tasks[row]
 
         self.app.push_screen(
-            CompleteTaskScreen(task_text),
-            lambda result: self.complete_task_callback(task_text, result)
+            CompleteTaskScreen(task.title),
+            lambda result: self.complete_task_callback(task.title, task.created, result)
         )
 
-    def complete_task_callback(self, task_text, result):
+    def complete_task_callback(self, task_text, created, result):
         if result is None:
             return
         outcome, handoff = result
-        complete_task(task_text, outcome or task_text)
+        complete_task(task_text, outcome or task_text, created=created)
         if handoff:
             item, owner, expected_date = handoff
             add_dependency(item, owner, handoff_from=task_text, expected_date=expected_date or None)
