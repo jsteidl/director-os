@@ -12,6 +12,8 @@ GROUPS_LEFT = [
         ("delete", "Delete"),
         ("S", "Move to Someday"),
         ("m", "Flag for manager update (★)"),
+        ("u", "Reopen completed task"),
+        ("h", "Toggle personal flag (♦)"),
     ]),
     ("Dependencies", [
         ("w", "Add dependency"),
@@ -40,6 +42,7 @@ GROUPS_RIGHT = [
         ("delete", "Delete"),
     ]),
     ("Views & Navigation", [
+        ("P", "Cycle personal filter"),
         ("v", "View widget full-screen"),
         ("!", "Daily check-in"),
         ("l", "Daily log navigator"),

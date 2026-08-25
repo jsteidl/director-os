@@ -170,9 +170,14 @@ Left column = immediate action. Right column = situational awareness.
 - "Nothing to commit" is treated as success
 - `action_quit` in `app.py` overrides Textual's default to auto-sync silently before exit; errors are swallowed
 - Any git remote works — not GitHub-specific
-### complete_task glyph stripping
-- `complete_task` in `parser.py` strips `↩`, `★`, `♦` glyphs from `task_text` before building the search regex — cell values may have glyphs appended that would cause the pattern to not match
-- Uses regex `re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")` — not literal string replace — because priority prefixes like `(A)` appear before the task title in the log line
+### Task matching by Created: date
+- `complete_task(task_text, outcome, created=None)` and `edit_task(old_title, new_title, ..., created=None)` both accept an optional `created` date
+- When `created` is provided, matching uses `Created:YYYY-MM-DD` as the unique key — avoids regex mismatch when tags appear between the title and other text (e.g. `#Tag @mention`) in the raw log line
+- `action_complete_task` and `_edit_task` in `dashboard.py` pass `task.created` from the parsed `Task` object
+- Fallback (no `created`): title-based match, splitting on ` @` before building the regex — same approach as `toggle_mgr_task`
+- All tasks added via `add_task` include `Created:` so new tasks always match by date
+- Tasks without `Created:` in the raw log (e.g. manually entered or old entries) should have it added manually to ensure reliable edit/complete
+- `add_task` writes each space-separated tag word as its own `#tag` — the tag field accepts space-separated words without `#`
 
 ### Accomplishment blocks
 Stored as structured blocks:
