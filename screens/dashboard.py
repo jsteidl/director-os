@@ -293,15 +293,15 @@ class DashboardScreen(Screen):
         task = tasks[row]
         self.app.push_screen(
             AddTaskScreen(title=task.title, priority=task.priority or "", due_date=task.due_date or "", tags=task.tags),
-            lambda result: self._edit_task_callback(task.title, result)
+            lambda result: self._edit_task_callback(task.title, task.created, result)
         )
 
-    def _edit_task_callback(self, old_title, result):
+    def _edit_task_callback(self, old_title, created, result):
         if not result:
             return
         new_title, priority, due_date, tag = result
         tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
-        edit_task(old_title, new_title, priority, due_date, tags)
+        edit_task(old_title, new_title, priority, due_date, tags, created=created)
         self.refresh_data()
 
     def _edit_dependency(self):

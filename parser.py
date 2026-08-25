@@ -271,13 +271,16 @@ def add_task(task_name, tag="", due_date="", priority=""):
     save_log(content)
 
 
-def edit_task(old_title, new_title, priority="", due_date="", tags=None):
+def edit_task(old_title, new_title, priority="", due_date="", tags=None, created=None):
 
     content = load_log()
 
     new_title = _clean(new_title)
-    search_text = old_title.rstrip("…")
-    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
+    if created:
+        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+    else:
+        search_text = old_title.split(" @")[0].rstrip("…")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
 
     if not match:
