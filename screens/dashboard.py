@@ -404,7 +404,8 @@ class DashboardScreen(Screen):
         tasks = self._filtered_tasks()
         if row >= len(tasks):
             return
-        delete_task(tasks[row].title)
+        t = tasks[row]
+        delete_task(t.title, created=t.created)
         self.refresh_data()
 
     def _delete_dependency(self):
@@ -604,25 +605,14 @@ class DashboardScreen(Screen):
 
     def action_reopen_task(self):
 
-        table = self.query_one(
-            AccomplishmentTable
-        )
-
+        table = self.query_one(AccomplishmentTable)
         row = table.cursor_row
-
         if row is None:
             return
-
-        try:
-
-            task_title = str(
-                table.get_cell_at(
-                    (row, 0)
-                )
-            )
-
-        except Exception:
+        accomplishments = self._filtered_accomplishments()
+        if row >= len(accomplishments):
             return
+        task_title = accomplishments[row].task
 
         self.app.push_screen(
             ReopenTaskScreen(task_title),
@@ -826,14 +816,14 @@ class DashboardScreen(Screen):
 
         self.app.push_screen(
             AddSomedayScreen(item=task.title),
-            lambda result: self._demote_task_callback(task.title, result)
+            lambda result: self._demote_task_callback(task.title, task.created, result)
         )
 
-    def _demote_task_callback(self, task_title, result):
+    def _demote_task_callback(self, task_title, created, result):
         if not result:
             return
         item, owner, tags = result
-        delete_task(task_title)
+        delete_task(task_title, created=created)
         add_someday_item(item, owner, tags)
         self.refresh_data()
         self.app.notify("Moved to Someday ✓", severity="information")

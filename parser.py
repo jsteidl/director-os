@@ -374,12 +374,14 @@ def toggle_mgr_accomplishment(task_title):
             return
 
 
-def delete_task(task_title):
+def delete_task(task_title, created=None):
 
     content = load_log()
 
-    search_text = task_title.rstrip("…")
-    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
+    if created:
+        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
+    else:
+        pattern = re.compile(r"- \[ \] .*" + re.escape(task_title.rstrip("…")) + r".*\n")
     content = pattern.sub("", content, count=1)
     save_log(content)
 
@@ -938,19 +940,20 @@ def complete_task(
     if created:
         pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
     else:
-        search_text = task_text.rstrip("…").replace(" ↩", "").replace(" ★", "").replace(" ♦", "")
+        search_text = task_text.rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
     match = pattern.search(content)
     mgr = bool(match and "Mgr:true" in match.group(0))
     personal = bool(match and "Personal:true" in match.group(0))
     content = pattern.sub("", content, count=1)
 
+    clean_title = task_text.rstrip("…")
     flags = ("".join([
         " Mgr:true" if mgr else "",
         " Personal:true" if personal else "",
     ]))
     accomplishment = (
-        f"- Task: {task_text}{flags}\n"
+        f"- Task: {clean_title}{flags}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {date.today()}\n\n"
     )
