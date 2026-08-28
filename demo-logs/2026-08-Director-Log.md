@@ -3,9 +3,8 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) Finalize Q3 roadmap with engineering leads Due:2026-08-13 Created:2026-08-02 Mgr:true
-- [ ] (A) Review and approve headcount request Due:2026-08-16 Created:2026-08-03
-- [ ] (B) Prepare architecture review presentation Created:2026-07-28 Carried:true #platform
+- [ ] (A) T1 Due:tomorrow Created:2026-08-27 #test
+- [ ] (A) Review and approve headcount request Due:2026-08-16 Created:2026-08-03 Mgr:true
 - [ ] (B) Define SLO targets for new API gateway Due:2026-08-20 Created:2026-08-05 #platform
 - [ ] (B) Complete mid-year performance reviews Created:2026-08-01 Mgr:true #people
 - [ ] (C) Update team onboarding documentation Created:2026-08-04 #people
@@ -26,6 +25,7 @@
   Notes: Delivered ahead of schedule, ready for eng handoff
 
 ### Someday/Future
+- T1 | Owner: me | Since: 2026-08-27 #test
 
 - Explore internal developer portal options | Owner: me | Since: 2026-07-15 #platform
 - Build out incident retrospective process | Owner: me | Since: 2026-08-01 #process
@@ -55,6 +55,18 @@
 - Task: Closed vendor contract renewal
   Outcome: Renewed at 8% reduction, added SLA enforcement clause
   Completed: 2026-07-29
+
+- Task: P0
+  Outcome: test del
+  Completed: 2026-08-27
+
+- Task: P2 Mgr:true
+  Outcome: P2
+  Completed: 2026-08-27
+
+- Task: Prepare architecture review presentation
+  Outcome: Prepare architecture review presentation
+  Completed: 2026-08-27
 
 ### Wins Worth Mentioning
 
@@ -104,3 +116,25 @@
 ##### Notes
 
 - Good sync with Sarah on API timeline
+
+
+#### 2026-08-27
+
+##### Priorities
+
+- P0
+- P1
+- P2
+
+##### Accomplished
+
+- A1
+
+##### Blocked
+
+- B1
+
+##### Notes
+
+
+

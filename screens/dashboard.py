@@ -664,6 +664,13 @@ class DashboardScreen(Screen):
                 result["notes"],
             )
 
+        if result.get("add_tasks"):
+            existing_titles = {t.title.lower() for t in self._filtered_tasks()}
+            for line in result["priorities"].splitlines():
+                line = line.strip().lstrip("- ").strip()
+                if line and line.lower() not in existing_titles:
+                    add_task(line)
+
         self.refresh_data()
         
     # =====================================================
@@ -842,7 +849,8 @@ class DashboardScreen(Screen):
             tasks = self._filtered_tasks()
             if row >= len(tasks):
                 return
-            toggle_personal_task(tasks[row].title)
+            t = tasks[row]
+            toggle_personal_task(t.title, created=t.created)
             self.refresh_data()
         elif isinstance(focused, AccomplishmentTable):
             row = focused.cursor_row
@@ -882,7 +890,8 @@ class DashboardScreen(Screen):
             tasks = self._filtered_tasks()
             if row >= len(tasks):
                 return
-            toggle_mgr_task(tasks[row].title)
+            t = tasks[row]
+            toggle_mgr_task(t.title, created=t.created)
             self.refresh_data()
         elif isinstance(focused, AccomplishmentTable):
             row = focused.cursor_row

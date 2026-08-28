@@ -32,6 +32,11 @@ class TodayWidget(ScrollableContainer):
                 for b in entry.blocked:
                     lines.append(f"  • {b}")
 
+            if entry.notes:
+                lines.append("\n[bold]Notes[/bold]")
+                for n in entry.notes:
+                    lines.append(f"  • {n}")
+
             text = "\n".join(lines) if lines else "No items logged today."
 
         try:

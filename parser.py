@@ -310,26 +310,29 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
     save_log(content)
 
 
-def toggle_mgr_task(task_title):
+def toggle_mgr_task(task_title, created=None):
     content = load_log()
-    search_text = task_title.split(" @")[0].rstrip("…")
-    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
+    if created:
+        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+    else:
+        search_text = task_title.split(" @")[0].rstrip("…")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
     if not match:
         return
     line = match.group(0)
-    if "Mgr:true" in line:
-        new_line = line.replace(" Mgr:true", "")
-    else:
-        new_line = line + " Mgr:true"
+    new_line = line.replace(" Mgr:true", "") if "Mgr:true" in line else line + " Mgr:true"
     content = content.replace(line, new_line, 1)
     save_log(content)
 
 
-def toggle_personal_task(task_title):
+def toggle_personal_task(task_title, created=None):
     content = load_log()
-    search_text = task_title.split(" @")[0].rstrip("…")
-    pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
+    if created:
+        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+    else:
+        search_text = task_title.split(" @")[0].rstrip("…")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
     if not match:
         return
@@ -382,8 +385,11 @@ def delete_task(task_title, created=None):
         pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
     else:
         pattern = re.compile(r"- \[ \] .*" + re.escape(task_title.rstrip("…")) + r".*\n")
+    if not pattern.search(content):
+        return False
     content = pattern.sub("", content, count=1)
     save_log(content)
+    return True
 
 
 # ==========================================================
