@@ -72,7 +72,7 @@ class AddTaskScreen(ModalScreen[tuple]):
             Label("Priority"),
             Input(id="priority", placeholder="A, B, or C", value=self._priority),
             Label("Due Date"),
-            Input(id="due_date", value=self._due_date),
+            Input(id="due_date", value=self._due_date, placeholder="YYYY-MM-DD · t · tm · w · 2w · +N"),
             Label("Tags"),
             Input(id="tag", placeholder="optional, space-separated without #", value=self._tags),
         )
@@ -83,7 +83,11 @@ class AddTaskScreen(ModalScreen[tuple]):
         if priority and priority not in ("A", "B", "C"):
             self.query_one("#priority", Input).border_subtitle = "Must be A, B, or C"
             return
-        due_date = self.query_one("#due_date", Input).value
+        due_raw = self.query_one("#due_date", Input).value
+        due_date, valid = _resolve_due(due_raw)
+        if not valid:
+            self.query_one("#due_date", Input).border_subtitle = "Use YYYY-MM-DD, t, tm, w, 2w, or +N"
+            return
         tag = self.query_one("#tag", Input).value
         self.dismiss((task, priority, due_date, tag))
 

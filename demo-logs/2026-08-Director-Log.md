@@ -3,9 +3,9 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) T1 Due:tomorrow Created:2026-08-27 #test
+- [ ] (A) T1 Due:2026-09-10 Created:2026-08-27 #test
 - [ ] (A) Review and approve headcount request Due:2026-08-16 Created:2026-08-03 Mgr:true
-- [ ] (B) Define SLO targets for new API gateway Due:2026-08-20 Created:2026-08-05 #platform
+- [ ] (B) Define SLO targets for new API gateway Due:2026-09-03 Created:2026-08-05 #platform
 - [ ] (B) Complete mid-year performance reviews Created:2026-08-01 Mgr:true #people
 - [ ] (C) Update team onboarding documentation Created:2026-08-04 #people
 - [ ] (C) Evaluate observability tooling options Created:2026-08-06 #platform
