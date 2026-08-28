@@ -15,6 +15,9 @@ GROUPS_LEFT = [
         ("u", "Reopen completed task"),
         ("h", "Toggle personal flag (♦)"),
     ]),
+    ("Executive Summary", [
+        ("→", "Jump to oldest task"),
+    ]),
     ("Dependencies", [
         ("w", "Add dependency"),
         ("e", "Edit selected"),
@@ -49,6 +52,7 @@ GROUPS_RIGHT = [
         ("W", "Weekly review"),
         ("c", "Calendar"),
         ("E", "Events"),
+        ("B", "Briefing (metrics + events)"),
     ]),
     ("System", [
         ("r", "Refresh + new quote"),

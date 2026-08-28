@@ -77,6 +77,7 @@ class DashboardScreen(Screen):
         Binding("P", "toggle_personal_filter", "Personal filter"),
         Binding("U", "manager_update", "Update"),
         Binding("g", "sync_logs", "Sync Logs"),
+        Binding("B", "briefing", "Briefing"),
         Binding("C", "config", "Config"),
         Binding("?", "show_help", "Help"),
     ]
@@ -934,6 +935,10 @@ class DashboardScreen(Screen):
     # =====================================================
     # SYNC LOGS
     # =====================================================
+
+    def action_briefing(self):
+        from screens.splash import BriefingScreen
+        self.app.push_screen(BriefingScreen())
 
     def action_config(self):
         from screens.config import ConfigScreen

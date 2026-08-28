@@ -1,11 +1,9 @@
-from textual.screen import Screen
+from textual.screen import ModalScreen
 from textual.widgets import Label, Static
 from textual.containers import Vertical, Center
 from textual.binding import Binding
 from datetime import date
 
-# ── Style ─────────────────────────────────────────────────────────────────────
-# Options: "block", "slim", "minimal"
 STYLE = "minimal"
 
 _ART_BLOCK = """\
@@ -18,7 +16,6 @@ _ART_BLOCK = """\
   ╚═════╝ ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═╝    ╚═════╝ ╚═╝  ╚═╝     ╚═════╝ ╚══════╝
 [/bold cyan]"""
 
-# Slim: lighter line-art font, bold green
 _ART_SLIM = """\
 [bold green]
    ___ ___ ___ ___ ___ _____ ___  ___     ___  ___
@@ -27,7 +24,6 @@ _ART_SLIM = """\
   |___/___|_|_\___\___| |_| \___/|_|_\   \___/|___/
 [/bold green]"""
 
-# Minimal: decorated header with rule lines
 _ART_MINIMAL = """\
 [bold green]──────────────────────────────────────────────────────[/bold green]
 [bold white]                    director_os[/bold white]
@@ -37,14 +33,13 @@ _ARTS = {"block": _ART_BLOCK, "slim": _ART_SLIM, "minimal": _ART_MINIMAL}
 _WIDTHS = {"block": 92, "slim": 60, "minimal": 60}
 
 
-class SplashScreen(Screen):
+class BriefingScreen(ModalScreen):
 
-    BINDINGS = [Binding("escape", "dismiss_splash", show=False)]
+    BINDINGS = [Binding("escape", "dismiss_briefing", show=False)]
 
     DEFAULT_CSS = """
-    SplashScreen {
+    BriefingScreen {
         align: center middle;
-        background: $background;
     }
     #splash-outer {
         height: auto;
@@ -81,7 +76,7 @@ class SplashScreen(Screen):
     """
 
     def on_key(self, event) -> None:
-        self.action_dismiss_splash()
+        self.action_dismiss_briefing()
 
     def compose(self):
         from parser import get_metrics, get_events
@@ -148,7 +143,7 @@ class SplashScreen(Screen):
                     for days_away, e in sorted(reminders, key=lambda x: x[0]):
                         yield Label(f"🔔  {e.title} in {days_away}d  [{e.type}]", classes="splash-row")
 
-                yield Label("[dim]press any key to continue[/dim]", id="splash-hint")
+                yield Label("[dim]press any key to close[/dim]", id="splash-hint")
 
-    def action_dismiss_splash(self):
+    def action_dismiss_briefing(self):
         self.dismiss()
