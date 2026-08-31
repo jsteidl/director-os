@@ -277,7 +277,11 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
 
     new_title = _clean(new_title)
     if created:
-        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+        search_text = re.escape(old_title.split(" @")[0].rstrip("…"))
+        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*")
+        if not pattern.search(content):
+            # fallback: match by created date only
+            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
     else:
         search_text = old_title.split(" @")[0].rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
@@ -313,7 +317,10 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
 def toggle_mgr_task(task_title, created=None):
     content = load_log()
     if created:
-        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+        search_text = re.escape(task_title.split(" @")[0].rstrip("…"))
+        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*")
+        if not pattern.search(content):
+            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
     else:
         search_text = task_title.split(" @")[0].rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
@@ -329,7 +336,10 @@ def toggle_mgr_task(task_title, created=None):
 def toggle_personal_task(task_title, created=None):
     content = load_log()
     if created:
-        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+        search_text = re.escape(task_title.split(" @")[0].rstrip("…"))
+        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*")
+        if not pattern.search(content):
+            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
     else:
         search_text = task_title.split(" @")[0].rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
@@ -382,7 +392,10 @@ def delete_task(task_title, created=None):
     content = load_log()
 
     if created:
-        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
+        search_text = re.escape(task_title.rstrip("…"))
+        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*\n")
+        if not pattern.search(content):
+            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
     else:
         pattern = re.compile(r"- \[ \] .*" + re.escape(task_title.rstrip("…")) + r".*\n")
     if not pattern.search(content):
@@ -935,19 +948,17 @@ def delete_accomplishment(task_title):
 # COMPLETE TASK
 # ==========================================================
 
-def complete_task(
-    task_text,
-    outcome,
-    created=None,
-):
+def complete_task(task_text, outcome, created=None):
 
     content = load_log()
 
     if created:
-        pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
+        search_text = re.escape(task_text.rstrip("…"))
+        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*\n")
+        if not pattern.search(content):
+            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
     else:
-        search_text = task_text.rstrip("…")
-        pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(task_text.rstrip("…")) + r".*\n")
     match = pattern.search(content)
     mgr = bool(match and "Mgr:true" in match.group(0))
     personal = bool(match and "Personal:true" in match.group(0))

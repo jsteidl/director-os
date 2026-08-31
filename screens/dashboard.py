@@ -292,9 +292,10 @@ class DashboardScreen(Screen):
         if row >= len(tasks):
             return
         task = tasks[row]
+        title, created = task.title, task.created
         self.app.push_screen(
-            AddTaskScreen(title=task.title, priority=task.priority or "", due_date=task.due_date or "", tags=task.tags),
-            lambda result: self._edit_task_callback(task.title, task.created, result)
+            AddTaskScreen(title=title, priority=task.priority or "", due_date=task.due_date or "", tags=task.tags),
+            lambda result: self._edit_task_callback(title, created, result)
         )
 
     def _edit_task_callback(self, old_title, created, result):
@@ -671,6 +672,7 @@ class DashboardScreen(Screen):
                 line = line.strip().lstrip("- ").strip()
                 if line and line.lower() not in existing_titles:
                     add_task(line)
+                    existing_titles.add(line.lower())
 
         self.refresh_data()
         
