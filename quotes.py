@@ -31,6 +31,8 @@ QUOTES = [
     "It is a mistake to think you can solve any major problems just with potatoes.",
     "Space is big. Really big. You just won't believe how vastly, hugely, mind-bogglingly big it is.",
     "Would it save you a lot of time if I just gave up and went mad now?",
+    "Why should I want to make anything up? Life's bad enough as it is without wanting to invent any more of it.",
+    "Life! Don't talk to me about life!" 
 ]
 
 
