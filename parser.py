@@ -95,9 +95,7 @@ def rollover_log():
         prev_content,
         re.S,
     )
-
     carried_tasks = ""
-
     if task_match:
         carried_tasks = "\n".join(
             line + " Carried:true" if not line.strip().endswith("Carried:true") else line
@@ -105,19 +103,46 @@ def rollover_log():
             if re.match(r"- \[ \]", line.strip())
         )
 
-    # Carry over open dependencies
-    dep_matches = re.findall(
-        r"- (.*?) \| Owner: (.*?) \| Since: (\d{4}-\d{2}-\d{2})",
+    # Carry over open dependencies (full line preserved)
+    dep_match = re.search(
+        r"### Waiting On(.*?)### Resolved Dependencies",
         prev_content,
+        re.S,
     )
+    carried_deps = ""
+    if dep_match:
+        carried_deps = "\n".join(
+            line for line in dep_match.group(1).splitlines()
+            if re.match(r"- .+ \| Owner:", line.strip())
+        )
 
-    carried_deps = "\n".join(
-        f"- {item} | Owner: {owner} | Since: {since}"
-        for item, owner, since in dep_matches
+    # Carry over someday items
+    someday_match = re.search(
+        r"### Someday/Future(.*?)### Risks",
+        prev_content,
+        re.S,
     )
+    carried_someday = ""
+    if someday_match:
+        carried_someday = "\n".join(
+            line for line in someday_match.group(1).splitlines()
+            if re.match(r"- .+ \| Owner:", line.strip())
+        )
+
+    # Carry over risks
+    risk_match = re.search(
+        r"### Risks(.*?)### Accomplishments",
+        prev_content,
+        re.S,
+    )
+    carried_risks = ""
+    if risk_match:
+        carried_risks = "\n".join(
+            line for line in risk_match.group(1).splitlines()
+            if re.match(r"- .+ \| Owner:.+ \| Severity:", line.strip())
+        )
 
     scaffold_log(current)
-
     content = current.read_text(encoding="utf-8")
 
     if carried_tasks:
@@ -126,11 +151,22 @@ def rollover_log():
             f"### High-Priority\n{carried_tasks}\n",
             1,
         )
-
     if carried_deps:
         content = content.replace(
             "### Waiting On\n",
             f"### Waiting On\n{carried_deps}\n",
+            1,
+        )
+    if carried_someday:
+        content = content.replace(
+            "### Someday/Future\n",
+            f"### Someday/Future\n{carried_someday}\n",
+            1,
+        )
+    if carried_risks:
+        content = content.replace(
+            "### Risks\n",
+            f"### Risks\n{carried_risks}\n",
             1,
         )
 
