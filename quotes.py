@@ -32,7 +32,11 @@ QUOTES = [
     "Space is big. Really big. You just won't believe how vastly, hugely, mind-bogglingly big it is.",
     "Would it save you a lot of time if I just gave up and went mad now?",
     "Why should I want to make anything up? Life's bad enough as it is without wanting to invent any more of it.",
-    "Life! Don't talk to me about life!" 
+    "Life! Don't talk to me about life!",
+    "So long, and thanks for all the fish.",
+    "We can't win against obsession. They care, we don't. They win.",
+    "There is no point in using the word 'impossible' to describe something that has clearly happened.",
+    "To summarize the summary of the summary: people are a problem.","The quality of any advice anybody has to offer has to be judged against the quality of life they actually lead."
 ]
 
 
