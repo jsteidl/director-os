@@ -1,6 +1,6 @@
 from textual.widgets import DataTable
 from rich.text import Text
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from parser import get_tasks
 
@@ -8,6 +8,8 @@ C_GOOD = "green"
 C_WARN = "yellow"
 C_BAD = "red"
 C_DEFAULT = "default"
+C_DIM = "dim"
+C_TODAY = "cyan"
 
 def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
@@ -24,6 +26,24 @@ def _age_color(created):
     if age >= 7:
         return C_WARN
     return C_DEFAULT
+
+
+def _due_color(due_date):
+    if not due_date:
+        return C_DEFAULT
+    today = date.today()
+    due = datetime.strptime(due_date, "%Y-%m-%d").date()
+    end_of_week = today + timedelta(days=(6 - today.weekday()))
+    end_of_next_week = end_of_week + timedelta(days=7)
+    if due < today:
+        return C_BAD
+    if due == today:
+        return C_TODAY
+    if due <= end_of_week:
+        return C_WARN
+    if due <= end_of_next_week:
+        return C_GOOD
+    return C_DIM
 
 
 class TaskTable(DataTable):
@@ -45,7 +65,7 @@ class TaskTable(DataTable):
                 continue
             if self.personal_filter == "work" and task.personal and not task.mgr:
                 continue
-            color = _age_color(task.created)
+            color = _due_color(task.due_date) if task.due_date else _age_color(task.created)
             title = _t(task.title) + (" ↩" if task.carried else "") + (" ★" if task.mgr else "") + (" ♦" if task.personal else "")
             self.add_row(
                 Text(title, style=color),

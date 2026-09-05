@@ -5,15 +5,27 @@ from pathlib import Path
 from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry, Risk, SomedayItem, Event
 
 
-def _get_logs_path() -> Path:
+def _load_config() -> dict:
     config_path = Path(__file__).parent / "config.toml"
     if config_path.exists():
         with open(config_path, "rb") as f:
-            config = tomllib.load(f)
-        logs_path = config.get("logs_path", "logs")
-        p = Path(logs_path)
-        return p if p.is_absolute() else Path(__file__).parent / p
-    return Path(__file__).parent / "logs"
+            return tomllib.load(f)
+    return {}
+
+
+def _get_logs_path() -> Path:
+    config = _load_config()
+    logs_path = config.get("logs_path", "logs")
+    p = Path(logs_path)
+    return p if p.is_absolute() else Path(__file__).parent / p
+
+
+def get_terminal_size() -> tuple[int, int] | None:
+    config = _load_config()
+    size = config.get("terminal_size")
+    if isinstance(size, list) and len(size) == 2:
+        return (int(size[0]), int(size[1]))
+    return None
 
 
 # ==========================================================

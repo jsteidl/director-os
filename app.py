@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 from textual.app import App
 from textual.binding import Binding
@@ -7,7 +8,7 @@ from textual.widgets import Label
 from textual.containers import Vertical
 
 from screens.dashboard import DashboardScreen
-from parser import _get_logs_path
+from parser import _get_logs_path, get_terminal_size
 
 
 class ConfigErrorScreen(Screen):
@@ -92,5 +93,9 @@ class DirectorOS(App):
 
 
 if __name__ == "__main__":
-
+    size = get_terminal_size()
+    if size and sys.stdout.isatty():
+        cols, rows = size
+        sys.stdout.write(f"\033[8;{rows};{cols}t")
+        sys.stdout.flush()
     DirectorOS().run()

@@ -10,6 +10,9 @@
 #   logs_path = "C:/Users/username/OneDrive/director_os_logs"
 logs_path = "logs"
 
+# Optional: set terminal size as [width, height]. Omit to use the current terminal size.
+# terminal_size = [220, 50]
+
 # Textual theme. Options: textual-dark, textual-light, gruvbox, nord, monokai, dracula, tokyo-night, solarized-light
 # Defaults to gruvbox if not set.
 theme = "gruvbox"

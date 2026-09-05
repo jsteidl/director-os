@@ -63,6 +63,7 @@ class DashboardScreen(Screen):
         Binding("!", "daily_checkin", "Check-in"),
         Binding("w", "add_dependency", "Dependency"),
         Binding("x", "resolve_dependency", "Resolve"),
+        Binding("R", "dep_to_risk", "Dep → Risk"),
         Binding("i", "add_risk", "Risk"),
         Binding("s", "add_someday", "Someday"),
         Binding("p", "promote_someday", "Promote"),
@@ -712,6 +713,32 @@ class DashboardScreen(Screen):
             ResolveDependencyScreen(),
             lambda result: self.resolve_dependency_callback(dependency_name, result)
         )
+    def action_dep_to_risk(self):
+        focused = self.focused
+        if not isinstance(focused, DependencyTable):
+            return
+        row = focused.cursor_row
+        if row is None:
+            return
+        from parser import get_dependencies
+        deps = get_dependencies()
+        if row >= len(deps):
+            return
+        dep = deps[row]
+        self.app.push_screen(
+            AddRiskScreen(description=dep.item, owner=dep.owner),
+            lambda result: self._dep_to_risk_callback(dep.item, result)
+        )
+
+    def _dep_to_risk_callback(self, dep_item, result):
+        if not result:
+            return
+        description, owner, severity, tags = result
+        delete_dependency(dep_item)
+        add_risk(description, owner, severity, tags)
+        self.refresh_data()
+        self.app.notify("Moved to Risks ✓", severity="information")
+
     def resolve_dependency_callback(self, dependency_name, result):
         if result is None:
             return

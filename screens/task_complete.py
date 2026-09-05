@@ -2,6 +2,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Input, Label, Checkbox
 from textual.containers import Vertical
 from textual.binding import Binding
+from screens.due_date import resolve_due, DUE_PLACEHOLDER, DUE_ERROR
 
 
 class CompleteTaskScreen(ModalScreen):
@@ -54,7 +55,7 @@ class CompleteTaskScreen(ModalScreen):
                 Label("Owner"),
                 Input(id="handoff-owner", placeholder="Owner"),
                 Label("Expected date"),
-                Input(id="handoff-date", placeholder="YYYY-MM-DD"),
+                Input(id="handoff-date", placeholder=DUE_PLACEHOLDER),
                 id="handoff-fields",
             ),
         )
@@ -72,7 +73,11 @@ class CompleteTaskScreen(ModalScreen):
         if self.query_one("#handoff-toggle", Checkbox).value:
             item = self.query_one("#handoff-item", Input).value.strip()
             owner = self.query_one("#handoff-owner", Input).value.strip()
-            expected = self.query_one("#handoff-date", Input).value.strip()
+            expected_raw = self.query_one("#handoff-date", Input).value.strip()
+            expected, valid = resolve_due(expected_raw)
+            if not valid:
+                self.query_one("#handoff-date", Input).border_subtitle = DUE_ERROR
+                return
             if item and owner:
                 handoff = (item, owner, expected or None)
         self.dismiss((outcome, handoff))

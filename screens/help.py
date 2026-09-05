@@ -22,6 +22,7 @@ GROUPS_LEFT = [
         ("w", "Add dependency"),
         ("e", "Edit selected"),
         ("x", "Resolve dependency"),
+        ("R", "Move to Risk"),
         ("delete", "Delete"),
     ]),
     ("Risks", [

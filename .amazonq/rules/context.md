@@ -31,6 +31,7 @@ screens/
   add_task.py
   task_complete.py
   add_dependency.py
+  due_date.py                 # Shared due date resolution: resolve_due(), DUE_PLACEHOLDER, DUE_ERROR
   resolve_dependency.py
   add_risk.py
   add_someday.py
@@ -89,6 +90,8 @@ Left column = immediate action. Right column = situational awareness.
 - All file functions (`get_log_file`, `get_prev_log_file`, `get_events_file`) use `_get_logs_path()`
 - `config.toml` is gitignored — each machine has its own; `config.toml.example` is committed
 - `app.py` checks `_get_logs_path().exists()` on startup and shows `ConfigErrorScreen` if missing
+- `config.toml` supports optional `terminal_size = [width, height]` — emits xterm resize escape on launch via `sys.stdout.write(f"\033[8;{rows};{cols}t")` before `App.run()`
+- `get_terminal_size()` in `parser.py` reads this value; no-op if not set or not a tty
 
 ### Tag handling
 - `extract_tags(text)` — matches `#+` (handles `##tag` double-hash)
@@ -144,12 +147,22 @@ Left column = immediate action. Right column = situational awareness.
 - `TaskTable` renders `↩` appended to the title for carried tasks
 - Editing a carried task drops the marker (intentional — once edited, it's no longer a carry-forward)
 
+### Due date shorthands
+- Shared module `screens/due_date.py` exports `resolve_due(value)`, `DUE_PLACEHOLDER`, `DUE_ERROR`
+- Shorthands: `t`/`today`=today, `tm`/`tomorrow`=+1d, `w`/`week`=+7d, `2w`=+14d, `+N`=+N days, `YYYY-MM-DD`=literal
+- Used in `AddTaskScreen`, `AddDependencyScreen`, and `CompleteTaskScreen` (handoff expected date)
+
 ### Task-dependency handoff
 - Completing a task (`d`) shows optional "Hand off to someone?" checkbox
-- If checked, captures waiting-on item (pre-filled with task title), owner, and expected date
+- If checked, captures waiting-on item (pre-filled with task title), owner, and expected date (supports due date shorthands)
 - Creates dependency with `HandoffFrom:` and `Expected:` fields in the log line
 - `CompleteTaskScreen` dismisses `(outcome, handoff_tuple_or_None)`
 - Glyphs stripped from `task_name` before pre-filling handoff item field
+
+### Dependency-to-risk
+- `R` keybind on `DependencyTable` opens `AddRiskScreen` pre-filled with dependency item and owner
+- On save: deletes the dependency, adds the risk
+- Severity field is blank — must be filled in manually
 
 ### Dependency-to-task reopen
 - Resolving a dependency (`x`) shows optional "Reopen as task?" checkbox
@@ -191,7 +204,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 ## UI Conventions
 
 - Priority glyphs: `▲/●/▼` color-coded using `C_BAD/C_WARN/C_DEFAULT` constants — stored as `A/B/C` in log, rendered in `tasks.py`
-- Task rows age-colored after 7 days (`C_WARN`) and 14 days (`C_BAD`)
+- Task rows color-coded by due date when present: overdue=red, today=cyan, this week=yellow, next week=green, future=dim; falls back to age-based coloring (7d=yellow, 14d=red) when no due date
 - All DataTables have `zebra_stripes = True`
 - Text fields truncated to 50 chars with `…` via `_t()` helper in each widget file
 - Risk severity color-coded: H=`C_BAD`, M=`C_WARN`, L=`C_GOOD` using `rich.text.Text`
@@ -231,6 +244,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `t` | Tag manager |
 | `w` | Add dependency |
 | `x` | Resolve dependency |
+| `R` | Move focused dependency to risk |
 | `i` | Add risk |
 | `s` | Add someday item |
 | `S` | Move focused task to someday |
