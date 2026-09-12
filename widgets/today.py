@@ -1,5 +1,6 @@
 from textual.widgets import Static
 from textual.containers import ScrollableContainer
+from textual.css.query import NoMatches
 
 from parser import get_today_entry
 
@@ -41,5 +42,5 @@ class TodayWidget(ScrollableContainer):
 
         try:
             self.query_one("#today-content", Static).update(text)
-        except Exception:
+        except NoMatches:
             self.mount(Static(text, id="today-content"))

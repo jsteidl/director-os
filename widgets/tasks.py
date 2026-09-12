@@ -1,6 +1,6 @@
 from textual.widgets import DataTable
 from rich.text import Text
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 from parser import get_tasks
 
@@ -20,7 +20,7 @@ PRIORITY_COLORS = {"A": C_BAD, "B": C_WARN, "C": "cyan"}
 def _age_color(created):
     if not created:
         return C_DEFAULT
-    age = (date.today() - datetime.strptime(created, "%Y-%m-%d").date()).days
+    age = (date.today() - date.fromisoformat(created)).days
     if age >= 14:
         return C_BAD
     if age >= 7:
@@ -32,7 +32,7 @@ def _due_color(due_date):
     if not due_date:
         return C_DEFAULT
     today = date.today()
-    due = datetime.strptime(due_date, "%Y-%m-%d").date()
+    due = date.fromisoformat(due_date)
     end_of_week = today + timedelta(days=(6 - today.weekday()))
     end_of_next_week = end_of_week + timedelta(days=7)
     if due < today:

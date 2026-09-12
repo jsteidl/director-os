@@ -1,6 +1,6 @@
 import re
 import tomllib
-from datetime import datetime, date
+from datetime import date, timedelta
 from pathlib import Path
 from models import Task, Dependency, Accomplishment, ResolvedDependency, DailyLogEntry, Risk, SomedayItem, Event
 
@@ -480,7 +480,7 @@ def get_dependencies():
 
     for item, owner, since, rest in matches:
 
-        since_date = datetime.strptime(since, "%Y-%m-%d").date()
+        since_date = date.fromisoformat(since)
         age = (date.today() - since_date).days
         tags = extract_tags(rest)
         clean_item = strip_tags(item)
@@ -1289,13 +1289,13 @@ def get_metrics():
 
     overdue = sum(
         1 for t in tasks
-        if t.due_date and datetime.strptime(t.due_date, "%Y-%m-%d").date() < today
+        if t.due_date and date.fromisoformat(t.due_date) < today
     )
 
     oldest_dep = max((d.age for d in deps), default=0)
 
     oldest_task = max(
-        ((today - datetime.strptime(t.created, "%Y-%m-%d").date()).days
+        ((today - date.fromisoformat(t.created)).days
          for t in tasks if t.created),
         default=0
     )
@@ -1433,7 +1433,7 @@ def save_update(since_date: str, data: dict) -> str:
 def get_weekly_summary():
 
     today = date.today()
-    week_start = today - __import__('datetime').timedelta(days=today.weekday())
+    week_start = today - timedelta(days=today.weekday())
     week_ago = week_start
     content = load_log()
     entries = parse_daily_log(content)
@@ -1558,7 +1558,7 @@ def check_event_notifications():
 
     for e in events:
         try:
-            event_date = datetime.strptime(e.date, "%Y-%m-%d").date()
+            event_date = date.fromisoformat(e.date)
         except ValueError:
             continue
         days_away = (event_date - today).days

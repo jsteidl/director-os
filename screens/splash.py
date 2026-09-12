@@ -81,8 +81,6 @@ class BriefingScreen(ModalScreen):
     def compose(self):
         from parser import get_metrics, get_events
         from fiscal import get_fiscal_info
-        from datetime import datetime
-
         metrics = get_metrics()
         today = date.today()
         fiscal = get_fiscal_info(today)
@@ -91,7 +89,7 @@ class BriefingScreen(ModalScreen):
         todays_events, reminders = [], []
         for e in get_events():
             try:
-                edate = datetime.strptime(e.date, "%Y-%m-%d").date()
+                edate = date.fromisoformat(e.date)
                 days_away = (edate - today).days
                 if days_away == 0:
                     todays_events.append(e)

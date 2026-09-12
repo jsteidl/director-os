@@ -1,5 +1,6 @@
 import tomllib
 import tomli_w
+from tomllib import TOMLDecodeError
 from pathlib import Path
 from textual.screen import ModalScreen
 from textual.containers import Vertical
@@ -14,7 +15,7 @@ def _load_config() -> dict:
     try:
         with open(CONFIG_PATH, "rb") as f:
             return tomllib.load(f)
-    except Exception:
+    except (FileNotFoundError, TOMLDecodeError):
         return {}
 
 

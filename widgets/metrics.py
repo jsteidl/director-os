@@ -1,6 +1,6 @@
 from textual.widgets import Static
 from rich.text import Text
-from datetime import date, datetime
+from datetime import date
 
 from parser import get_metrics
 
@@ -42,14 +42,13 @@ class MetricsWidget(Static, can_focus=True):
         if event.key != "right":
             return
         from parser import get_tasks
-        from datetime import date, datetime
         tasks = get_tasks()
         if not tasks:
             return
         oldest_idx = max(
             range(len(tasks)),
             key=lambda i: (
-                (date.today() - datetime.strptime(tasks[i].created, "%Y-%m-%d").date()).days
+                (date.today() - date.fromisoformat(tasks[i].created)).days
                 if tasks[i].created else 0
             )
         )
