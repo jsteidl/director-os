@@ -13,7 +13,7 @@ def _colored(value, label, bad_if_nonzero=False):
     t = Text()
     color = C_BAD if (bad_if_nonzero and value > 0) else C_GOOD
     t.append(str(value), style=f"bold {color}")
-    t.append(f" {label}")
+    t.append_text(Text.from_markup(f" {label}"))
     return t
 
 
