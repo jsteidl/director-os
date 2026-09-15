@@ -505,6 +505,7 @@ class DashboardScreen(Screen):
     def refresh_data(self):
 
         metrics = self.query_one(MetricsWidget)
+        metrics.personal_filter = self._personal_filter
         metrics.update_metrics()
 
         tasks = self.query_one(TaskTable)
