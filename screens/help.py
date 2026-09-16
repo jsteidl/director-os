@@ -59,6 +59,7 @@ GROUPS_RIGHT = [
         ("r", "Refresh + new quote"),
         ("t", "Tag manager"),
         ("U", "Manager update"),
+        ("N", "Scratch pad"),
         ("g", "Sync logs (git push)"),
         ("C", "Config"),
         ("?", "Help"),

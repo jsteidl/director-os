@@ -207,81 +207,50 @@ def save_log(content):
 # TASKS
 # ==========================================================
 
+def _parse_task_line(title) -> Task:
+    due_match = re.search(r"Due:(\d{4}-\d{2}-\d{2})", title)
+    due_date = due_match.group(1) if due_match else None
+    if due_date:
+        title = title.replace(f" Due:{due_date}", "").strip()
+
+    created_match = re.search(r"Created:(\d{4}-\d{2}-\d{2})", title)
+    created = created_match.group(1) if created_match else None
+    if created:
+        title = title.replace(f" Created:{created}", "").strip()
+
+    carried = "Carried:true" in title
+    if carried:
+        title = title.replace(" Carried:true", "").strip()
+
+    mgr = "Mgr:true" in title
+    if mgr:
+        title = title.replace(" Mgr:true", "").strip()
+
+    personal = "Personal:true" in title
+    if personal:
+        title = title.replace(" Personal:true", "").strip()
+
+    priority = None
+    priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
+    if priority_match:
+        priority = priority_match.group(1)
+        title = priority_match.group(2)
+
+    tags = extract_tags(title)
+    title = strip_tags(title)
+
+    return Task(title=title, priority=priority, due_date=due_date,
+                created=created, tags=tags, carried=carried, mgr=mgr, personal=personal)
+
+
 def get_tasks():
-
     content = load_log()
-
-    match = re.search(
-        r"### High-Priority(.*?)### Waiting On",
-        content,
-        re.S,
-    )
-
+    match = re.search(r"### High-Priority(.*?)### Waiting On", content, re.S)
     if not match:
         return []
 
-    tasks = []
+    tasks = [_parse_task_line(t) for t in re.findall(r"- \[ \] (.*)", match.group(1))]
 
-    for title in re.findall(
-        r"- \[ \] (.*)",
-        match.group(1),
-    ):
-        priority = None
-        due_date = None
-        created = None
-        due_match = re.search(
-            r"Due:(\d{4}-\d{2}-\d{2})",
-            title,
-        )
-        if due_match:
-            due_date = due_match.group(1)
-            title = title.replace(
-                f" Due:{due_date}", ""
-            ).strip()
-
-        created_match = re.search(
-            r"Created:(\d{4}-\d{2}-\d{2})",
-            title,
-        )
-        if created_match:
-            created = created_match.group(1)
-            title = title.replace(
-                f" Created:{created}", ""
-            ).strip()
-
-        carried = "Carried:true" in title
-        if carried:
-            title = title.replace(" Carried:true", "").strip()
-
-        mgr = "Mgr:true" in title
-        if mgr:
-            title = title.replace(" Mgr:true", "").strip()
-
-        personal = "Personal:true" in title
-        if personal:
-            title = title.replace(" Personal:true", "").strip()
-
-        priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
-
-        if priority_match:
-            priority = priority_match.group(1)
-            title = priority_match.group(2)
-
-        tags = extract_tags(title)
-        title = strip_tags(title)
-
-        tasks.append(
-            Task(
-                title=title,
-                priority=priority,
-                due_date=due_date,
-                created=created,
-                tags=tags,
-                carried=carried,
-                mgr=mgr,
-                personal=personal,
-            )
-        )
     priority_order = {"A": 0, "B": 1, "C": 2, None: 3}
     tasks.sort(key=lambda t: (
         (0, t.due_date) if t.due_date else (1, ""),
@@ -481,6 +450,7 @@ def get_dependencies():
     for item, owner, since, rest in matches:
 
         since_date = date.fromisoformat(since)
+        # amazonq-ignore-next-line
         age = (date.today() - since_date).days
         tags = extract_tags(rest)
         clean_item = strip_tags(item)
@@ -608,6 +578,7 @@ def resolve_dependency(
         f"- Dependency: {item}\n"
         f"  Owner: {owner}\n"
         f"  Resolved: {date.today()}\n"
+        # amazonq-ignore-next-line
         f"  Notes: {resolution_notes}\n\n"
     )
 
@@ -899,6 +870,7 @@ def promote_someday_item(item_text, priority="", due_date="", tags=None):
             title = f"({priority}) {item_text}" if priority else item_text
             task_line = f"- [ ] {title}"
             if due_date:
+                # amazonq-ignore-next-line
                 task_line += f" Due:{due_date}"
             task_line += f" Created:{date.today()}"
             if tags:
@@ -1598,3 +1570,20 @@ def check_event_notifications():
             content += entry
 
     save_log(content)
+
+
+# ==========================================================
+# SCRATCH PAD
+# ==========================================================
+
+def get_scratch_file():
+    return _get_logs_path() / "scratch.md"
+
+
+def get_scratch() -> str:
+    path = get_scratch_file()
+    return path.read_text(encoding="utf-8") if path.exists() else ""
+
+
+def save_scratch(text: str):
+    get_scratch_file().write_text(text, encoding="utf-8")

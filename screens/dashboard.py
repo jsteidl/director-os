@@ -79,6 +79,7 @@ class DashboardScreen(Screen):
         Binding("U", "manager_update", "Update"),
         Binding("g", "sync_logs", "Sync Logs"),
         Binding("B", "briefing", "Briefing"),
+        Binding("N", "scratch_pad", "Scratch Pad"),
         Binding("C", "config", "Config"),
         Binding("?", "show_help", "Help"),
     ]
@@ -965,6 +966,10 @@ class DashboardScreen(Screen):
     # =====================================================
     # SYNC LOGS
     # =====================================================
+
+    def action_scratch_pad(self):
+        from screens.scratch import ScratchPadScreen
+        self.app.push_screen(ScratchPadScreen())
 
     def action_briefing(self):
         from screens.splash import BriefingScreen
