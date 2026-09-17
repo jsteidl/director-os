@@ -969,7 +969,7 @@ class DashboardScreen(Screen):
 
     def action_scratch_pad(self):
         from screens.scratch import ScratchPadScreen
-        self.app.push_screen(ScratchPadScreen())
+        self.app.push_screen(ScratchPadScreen(), lambda _: self.refresh_data())
 
     def action_briefing(self):
         from screens.splash import BriefingScreen
