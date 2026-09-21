@@ -236,11 +236,16 @@ def _parse_task_line(title) -> Task:
         priority = priority_match.group(1)
         title = priority_match.group(2)
 
+    project_match = re.search(r"\+([\w]+)", title)
+    project = project_match.group(1) if project_match else None
+    if project:
+        title = re.sub(r"\s*\+[\w]+", "", title).strip()
+
     tags = extract_tags(title)
     title = strip_tags(title)
 
     return Task(title=title, priority=priority, due_date=due_date,
-                created=created, tags=tags, carried=carried, mgr=mgr, personal=personal)
+                created=created, tags=tags, carried=carried, mgr=mgr, personal=personal, project=project)
 
 
 def get_tasks():
@@ -259,7 +264,7 @@ def get_tasks():
     return tasks
 
 
-def add_task(task_name, tag="", due_date="", priority=""):
+def add_task(task_name, tag="", due_date="", priority="", project=""):
 
     content = load_log()
 
@@ -273,6 +278,8 @@ def add_task(task_name, tag="", due_date="", priority=""):
 
     line += f" Created:{date.today()}"
 
+    if project:
+        line += f" +{project}"
     if tag:
         line += " " + " ".join(f"#{t}" for t in tag.split() if t)
     line += "\n"
@@ -288,7 +295,7 @@ def add_task(task_name, tag="", due_date="", priority=""):
     save_log(content)
 
 
-def edit_task(old_title, new_title, priority="", due_date="", tags=None, created=None):
+def edit_task(old_title, new_title, priority="", due_date="", tags=None, created=None, project=""):
 
     content = load_log()
 
@@ -323,6 +330,9 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
 
     if match and "Personal:true" in match.group(0):
         new_line += " Personal:true"
+
+    if project:
+        new_line += f" +{project}"
 
     if tags:
         new_line += " " + " ".join(f"#{t}" for t in tags)
@@ -853,7 +863,7 @@ def toggle_personal_someday(item_text):
     save_log(content)
 
 
-def promote_someday_item(item_text, priority="", due_date="", tags=None):
+def promote_someday_item(item_text, priority="", due_date="", tags=None, project=""):
 
     content = load_log()
 
@@ -873,6 +883,8 @@ def promote_someday_item(item_text, priority="", due_date="", tags=None):
                 # amazonq-ignore-next-line
                 task_line += f" Due:{due_date}"
             task_line += f" Created:{date.today()}"
+            if project:
+                task_line += f" +{project}"
             if tags:
                 task_line += " " + " ".join(f"#{t}" for t in tags)
 
@@ -907,12 +919,13 @@ def get_accomplishments():
 
     return [
         Accomplishment(
-            task=strip_tags(task.replace(" Mgr:true", "").replace(" Personal:true", "")),
+            task=strip_tags(re.sub(r"\s*\+[\w]+", "", task.replace(" Mgr:true", "").replace(" Personal:true", ""))),
             outcome=outcome,
             completed=completed,
             tags=extract_tags(task),
             mgr="Mgr:true" in task,
             personal="Personal:true" in task,
+            project=re.search(r"\+([\w]+)", task).group(1) if re.search(r"\+([\w]+)", task) else None,
         )
         for task, outcome, completed in matches
     ]
@@ -925,7 +938,7 @@ def _find_accomplishment_block(content, task_title):
         re.S,
     )
     for match in pattern.finditer(content):
-        if strip_tags(match.group(1).replace(" Mgr:true", "").replace(" Personal:true", "")).strip() == task_title:
+        if strip_tags(re.sub(r"\s*\+[\w]+", "", match.group(1).replace(" Mgr:true", "").replace(" Personal:true", ""))).strip() == task_title:
             return match
     return None
 
@@ -982,12 +995,17 @@ def complete_task(task_text, outcome, created=None):
     match = pattern.search(content)
     mgr = bool(match and "Mgr:true" in match.group(0))
     personal = bool(match and "Personal:true" in match.group(0))
+    project_match = re.search(r"\+([\w]+)", match.group(0)) if match else None
+    project = project_match.group(1) if project_match else None
+    carried_tags = extract_tags(match.group(0)) if match else []
     content = pattern.sub("", content, count=1)
 
     clean_title = task_text.rstrip("…")
     flags = ("".join([
         " Mgr:true" if mgr else "",
         " Personal:true" if personal else "",
+        f" +{project}" if project else "",
+        (" " + " ".join(f"#{t}" for t in carried_tags)) if carried_tags else "",
     ]))
     accomplishment = (
         f"- Task: {clean_title}{flags}\n"

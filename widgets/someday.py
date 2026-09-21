@@ -9,6 +9,7 @@ def _t(text, n=50):
 class SomedayTable(DataTable):
 
     personal_filter = "all"
+    tag_filter = ""
 
     def on_mount(self):
 
@@ -29,6 +30,8 @@ class SomedayTable(DataTable):
             if self.personal_filter == "personal" and not item.personal:
                 continue
             if self.personal_filter == "work" and item.personal:
+                continue
+            if self.tag_filter and self.tag_filter not in item.tags:
                 continue
             self.add_row(
                 _t(item.item) + (" ♦" if item.personal else ""),

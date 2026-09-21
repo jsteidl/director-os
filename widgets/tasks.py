@@ -55,7 +55,7 @@ class TaskTable(DataTable):
     def on_mount(self):
 
         self.zebra_stripes = True
-        self.add_columns("Task", "Priority", "Due", "Tags", "Created")
+        self.add_columns("Task", "Priority", "Due", "Tags", "Project")
         self.load_tasks()
 
     def load_tasks(self):
@@ -69,6 +69,8 @@ class TaskTable(DataTable):
                 continue
             if self.tag_filter and self.tag_filter not in task.tags:
                 continue
+            if self.project_filter and task.project != self.project_filter:
+                continue
             color = _due_color(task.due_date) if task.due_date else _age_color(task.created)
             title = _t(task.title) + (" ↩" if task.carried else "") + (" ★" if task.mgr else "") + (" ♦" if task.personal else "")
             self.add_row(
@@ -76,5 +78,5 @@ class TaskTable(DataTable):
                 Text(PRIORITY_GLYPHS.get(task.priority, task.priority or ""), style=f"bold {PRIORITY_COLORS.get(task.priority, color)}"),
                 Text(task.due_date or "", style=color),
                 Text(" ".join(f"#{t}" for t in task.tags) if task.tags else "", style=color),
-                Text(task.created or "", style=color),
+                Text(f"+{task.project}" if task.project else "", style=color),
             )

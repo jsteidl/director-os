@@ -9,7 +9,9 @@ def _t(text, n=50):
 
 class AccomplishmentTable(DataTable):
 
-    personal_filter = "all"  # all | personal | work
+    personal_filter = "all"
+    tag_filter = ""
+    project_filter = ""
 
     def on_mount(self):
 
@@ -18,6 +20,8 @@ class AccomplishmentTable(DataTable):
             "Task",
             "Outcome",
             "Completed",
+            "Project",
+            "Tags",
         )
 
         self.load_data()
@@ -31,9 +35,15 @@ class AccomplishmentTable(DataTable):
                 continue
             if self.personal_filter == "work" and item.personal and not item.mgr:
                 continue
+            if self.tag_filter and self.tag_filter not in item.tags:
+                continue
+            if self.project_filter and item.project != self.project_filter:
+                continue
             title = _t(item.task) + (" ★" if item.mgr else "") + (" ♦" if item.personal else "")
             self.add_row(
                 title,
                 _t(item.outcome),
                 item.completed,
+                f"+{item.project}" if item.project else "",
+                " ".join(f"#{t}" for t in item.tags) if item.tags else "",
             )

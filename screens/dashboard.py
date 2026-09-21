@@ -53,6 +53,8 @@ class DashboardScreen(Screen):
     def __init__(self):
         super().__init__()
         self._personal_filter = "all"
+        self._tag_filter = ""
+        self._project_filter = ""
     BINDINGS = [
         Binding("a", "add", "Add"),
         Binding("e", "edit_selected", "Edit"),
@@ -300,23 +302,21 @@ class DashboardScreen(Screen):
     # =====================================================
 
     def action_cycle_project_filter(self):
-        projects = [""] + sorted({t.project for t in self._filtered_tasks() if getattr(t, 'project', None)})
-        table = self.query_one(TaskTable)
-        current = table.project_filter
-        idx = projects.index(current) if current in projects else 0
-        table.project_filter = projects[(idx + 1) % len(projects)]
-        table.load_tasks()
-        label = f"+{table.project_filter}" if table.project_filter else "All projects"
+        from parser import get_tasks, get_accomplishments
+        projects = [""] + sorted({t.project for t in get_tasks() if t.project} | {a.project for a in get_accomplishments() if a.project})
+        idx = projects.index(self._project_filter) if self._project_filter in projects else 0
+        self._project_filter = projects[(idx + 1) % len(projects)]
+        self.refresh_data()
+        label = f"+{self._project_filter}" if self._project_filter else "All projects"
         self.app.notify(f"Project filter: {label}", timeout=2)
 
     def action_cycle_project_filter_reverse(self):
-        projects = [""] + sorted({t.project for t in self._filtered_tasks() if getattr(t, 'project', None)})
-        table = self.query_one(TaskTable)
-        current = table.project_filter
-        idx = projects.index(current) if current in projects else 0
-        table.project_filter = projects[(idx - 1) % len(projects)]
-        table.load_tasks()
-        label = f"+{table.project_filter}" if table.project_filter else "All projects"
+        from parser import get_tasks, get_accomplishments
+        projects = [""] + sorted({t.project for t in get_tasks() if t.project} | {a.project for a in get_accomplishments() if a.project})
+        idx = projects.index(self._project_filter) if self._project_filter in projects else 0
+        self._project_filter = projects[(idx - 1) % len(projects)]
+        self.refresh_data()
+        label = f"+{self._project_filter}" if self._project_filter else "All projects"
         self.app.notify(f"Project filter: {label}", timeout=2)
 
     # =====================================================
@@ -401,16 +401,16 @@ class DashboardScreen(Screen):
         task = tasks[row]
         title, created = task.title, task.created
         self.app.push_screen(
-            AddTaskScreen(title=title, priority=task.priority or "", due_date=task.due_date or "", tags=task.tags),
+            AddTaskScreen(title=title, priority=task.priority or "", due_date=task.due_date or "", tags=task.tags, project=task.project or ""),
             lambda result: self._edit_task_callback(title, created, result)
         )
 
     def _edit_task_callback(self, old_title, created, result):
         if not result:
             return
-        new_title, priority, due_date, tag = result
+        new_title, priority, due_date, tag, project = result
         tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
-        edit_task(old_title, new_title, priority, due_date, tags, created=created)
+        edit_task(old_title, new_title, priority, due_date, tags, created=created, project=project)
         self.refresh_data()
 
     def _edit_dependency(self):
@@ -616,9 +616,12 @@ class DashboardScreen(Screen):
 
         tasks = self.query_one(TaskTable)
         tasks.personal_filter = self._personal_filter
+        tasks.tag_filter = self._tag_filter
+        tasks.project_filter = self._project_filter
         tasks.load_tasks()
 
         deps = self.query_one(DependencyTable)
+        deps.tag_filter = self._tag_filter
         deps.load_dependencies()
 
         today = self.query_one(TodayWidget)
@@ -626,18 +629,24 @@ class DashboardScreen(Screen):
 
         risks = self.query_one(RisksTable)
         risks.personal_filter = self._personal_filter
+        risks.tag_filter = self._tag_filter
         risks.load_risks()
 
         someday = self.query_one(SomedayTable)
         someday.personal_filter = self._personal_filter
+        someday.tag_filter = self._tag_filter
         someday.load_items()
 
         accomplishments = self.query_one(AccomplishmentTable)
         accomplishments.personal_filter = self._personal_filter
+        accomplishments.tag_filter = self._tag_filter
+        accomplishments.project_filter = self._project_filter
         accomplishments.load_data()
 
         label = self.PERSONAL_FILTER_LABELS[self._personal_filter]
-        self.query_one("#app-title", Label).update(f"director_os  [dim]({label})[/dim]")
+        tag_label = f" #{self._tag_filter}" if self._tag_filter else ""
+        project_label = f" +{self._project_filter}" if self._project_filter else ""
+        self.query_one("#app-title", Label).update(f"director_os  [dim]({label}{tag_label}{project_label})[/dim]")
 
         self._quote = get_random_quote()
         self.query_one("#app-quote", Label).update(self._quote)
@@ -655,18 +664,12 @@ class DashboardScreen(Screen):
         if not result:
             return
 
-        task_name, priority, due_date, tag = result
+        task_name, priority, due_date, tag, project = result
 
         if not task_name:
             return
 
-        add_task(
-            task_name,
-            tag,
-            due_date,
-            priority,
-        )
-
+        add_task(task_name, tag, due_date, priority, project)
         self.refresh_data()
 
     # =====================================================
@@ -850,9 +853,9 @@ class DashboardScreen(Screen):
     def _reopen_from_dependency_callback(self, result):
         if not result:
             return
-        task_name, priority, due_date, tag = result
+        task_name, priority, due_date, tag, project = result
         tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
-        add_task(task_name, " ".join(f"#{t}" for t in tags), due_date, priority)
+        add_task(task_name, " ".join(f"#{t}" for t in tags), due_date, priority, project)
         self.refresh_data()
         self.app.notify("Task reopened ✓", severity="information")
 
@@ -913,9 +916,9 @@ class DashboardScreen(Screen):
     def _promote_someday_callback(self, item_text, result):
         if not result:
             return
-        new_title, priority, due_date, tag = result
+        new_title, priority, due_date, tag, project = result
         tags = [t.strip() for t in tag.split() if t.strip()] if tag else []
-        promote_someday_item(item_text, priority, due_date, tags)
+        promote_someday_item(item_text, priority, due_date, tags, project)
         self.refresh_data()
         self.app.notify("Promoted to tasks ✓", severity="information")
 
@@ -1047,23 +1050,19 @@ class DashboardScreen(Screen):
     def action_cycle_tag_filter(self):
         from parser import get_all_tags
         tags = [""] + get_all_tags()
-        table = self.query_one(TaskTable)
-        current = table.tag_filter
-        idx = tags.index(current) if current in tags else 0
-        table.tag_filter = tags[(idx + 1) % len(tags)]
-        table.load_tasks()
-        label = f"#{table.tag_filter}" if table.tag_filter else "All tags"
+        idx = tags.index(self._tag_filter) if self._tag_filter in tags else 0
+        self._tag_filter = tags[(idx + 1) % len(tags)]
+        self.refresh_data()
+        label = f"#{self._tag_filter}" if self._tag_filter else "All tags"
         self.app.notify(f"Tag filter: {label}", timeout=2)
 
     def action_cycle_tag_filter_reverse(self):
         from parser import get_all_tags
         tags = [""] + get_all_tags()
-        table = self.query_one(TaskTable)
-        current = table.tag_filter
-        idx = tags.index(current) if current in tags else 0
-        table.tag_filter = tags[(idx - 1) % len(tags)]
-        table.load_tasks()
-        label = f"#{table.tag_filter}" if table.tag_filter else "All tags"
+        idx = tags.index(self._tag_filter) if self._tag_filter in tags else 0
+        self._tag_filter = tags[(idx - 1) % len(tags)]
+        self.refresh_data()
+        label = f"#{self._tag_filter}" if self._tag_filter else "All tags"
         self.app.notify(f"Tag filter: {label}", timeout=2)
 
     def action_scratch_pad(self):

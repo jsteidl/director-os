@@ -31,12 +31,13 @@ class AddTaskScreen(ModalScreen[tuple]):
     }
     """
 
-    def __init__(self, title="", priority="", due_date="", tags=None):
+    def __init__(self, title="", priority="", due_date="", tags=None, project=""):
         super().__init__()
         self._title = title
         self._priority = priority
         self._due_date = due_date
         self._tags = " ".join(tags) if tags else ""
+        self._project = project
 
     def compose(self):
         yield Vertical(
@@ -48,6 +49,8 @@ class AddTaskScreen(ModalScreen[tuple]):
             Input(id="due_date", value=self._due_date, placeholder=DUE_PLACEHOLDER),
             Label("Tags"),
             Input(id="tag", placeholder="optional, space-separated without #", value=self._tags),
+            Label("Project"),
+            Input(id="project", placeholder="optional, without +", value=self._project),
         )
 
     def action_save(self):
@@ -62,7 +65,8 @@ class AddTaskScreen(ModalScreen[tuple]):
             self.query_one("#due_date", Input).border_subtitle = DUE_ERROR
             return
         tag = self.query_one("#tag", Input).value
-        self.dismiss((task, priority, due_date, tag))
+        project = self.query_one("#project", Input).value.strip()
+        self.dismiss((task, priority, due_date, tag, project))
 
     def action_cancel(self):
         self.dismiss(None)

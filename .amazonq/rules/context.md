@@ -46,17 +46,18 @@ screens/
   calendar.py                 # CalendarScreen — Gregorian + NRF fiscal calendar modal
   events.py                   # EventsScreen — CRUD for events
   add_event.py                # AddEventScreen form
-  update.py                  # UpdateScreen — manager update generator
+  update.py                   # UpdateScreen — manager update generator
   weekly_review.py            # WeeklyReviewScreen
   config.py                   # ConfigScreen — edit logs_path via UI
   scratch.py                  # ScratchPadScreen — markdown scratch pad with checkbox navigation and promote-to-task
+  command.py                  # CommandScreen — command palette modal (:sync, :config, :tags, :update, :weekly, :events)
 widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar; personal_filter attribute; computes filtered metrics inline (does not call get_metrics())
-  tasks.py                    # TaskTable
-  dependencies.py             # DependencyTable
-  risks.py                    # RisksTable
-  someday.py                  # SomedayTable
-  accomplishments_table.py    # AccomplishmentTable
+  tasks.py                    # TaskTable — tag_filter, project_filter, personal_filter attributes
+  dependencies.py             # DependencyTable — tag_filter attribute
+  risks.py                    # RisksTable — tag_filter, personal_filter attributes
+  someday.py                  # SomedayTable — tag_filter, personal_filter attributes
+  accomplishments_table.py    # AccomplishmentTable — tag_filter, project_filter, personal_filter attributes; Project and Tags columns
   today.py                    # TodayWidget — scrollable, shows today's check-in
 ```
 
@@ -110,34 +111,31 @@ Left column = immediate action. Right column = situational awareness.
 - `get_tasks()`, `get_dependencies()`, `get_risks()`, `get_someday_items()`, `get_accomplishments()` — all return lists of dataclass objects
 - `get_metrics()` — returns a dict with: `tasks`, `overdue`, `deps`, `oldest_dep`, `high_risks`, `accomplishments`, `month_wins` — no longer called by `MetricsWidget` (which computes filtered metrics inline)
 - `get_scratch()` / `save_scratch()` — read/write `scratch.md` in logs directory
-- `_parse_task_line(line)` — helper extracted from `get_tasks()`; parses all inline fields (due, created, carried, mgr, personal, priority, tags) from a raw task line
+- `_parse_task_line(line)` — helper extracted from `get_tasks()`; parses all inline fields (due, created, carried, mgr, personal, priority, tags, project) from a raw task line
 - `get_all_tags()` — returns sorted unique tags across all object types
 - `rename_tag(old, new)` — renames all occurrences in the log file
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
-- `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` for matching; used by edit/delete/reopen
-- `promote_someday_item(item_text, priority, due_date, tags)` — removes someday item, adds task with full metadata
+- `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` and strips `+project` before title comparison; used by edit/delete/reopen
+- `promote_someday_item(item_text, priority, due_date, tags, project)` — removes someday item, adds task with full metadata
 - `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked items across all log files since date; accomplishments and tasks include `mgr` flag
 - `save_update(since_date, data)` — writes structured bullet update to `<logs_path>/updates/update-YYYY-MM-DD.md`
 - `toggle_mgr_task(task_title)` — toggles `Mgr:true` on a task line
 - `toggle_mgr_accomplishment(task_title)` — toggles `Mgr:true` on an accomplishment block
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
-
 - `check_event_notifications()` — called on mount; appends reminders to today's daily log
 
 ### Personal flag
 - `Personal:true` inline field on tasks, accomplishments, risks, and someday items
-- `toggle_personal_task()`, `toggle_personal_accomplishment()`, `toggle_personal_risk()`, `toggle_personal_someday()` — toggled via `h` keybind
-- `♦` glyph rendered in all four widget tables for flagged items
+- `toggle_personal_task()`, `toggle_personal_accomplishment()`, `toggle_personal_risk()`, `toggle_personal_someday()` — toggled via `H` keybind
+- `♦` glyph rendered in all widget tables for flagged items
 - `P` cycles `_personal_filter` on `DashboardScreen`: `all` → `personal` → `work` → `all`
-- `f` cycles `tag_filter` on `TaskTable`: `all` → `#tag1` → `#tag2` → ... → `all`; pulls live tag list from `get_all_tags()`; active filter shown via toast
-- Current filter shown in title bar as `director_os (All)` etc.
 - Work view hides personal items unless also `Mgr:true` (tasks/accomplishments only)
 - `_filtered_tasks()`, `_filtered_accomplishments()`, `_filtered_risks()`, `_filtered_someday()` helpers on `DashboardScreen` mirror widget filter logic — all row-index operations use these to avoid index mismatch
 - Personal flag is independent of mgr flag — items can carry both
 
 ### Mgr flag
 - `Mgr:true` inline field on tasks and accomplishments — same pattern as `Carried:true`
-- `toggle_mgr_task()` / `toggle_mgr_accomplishment()` — toggled via `m` keybind
+- `toggle_mgr_task()` / `toggle_mgr_accomplishment()` — toggled via `M` keybind
 - Completing a `Mgr:true` task carries the flag into the accomplishment block
 - `edit_task` preserves `Mgr:true` on the rewritten line
 - `★` glyph rendered in task and accomplishment tables for flagged items
@@ -145,11 +143,33 @@ Left column = immediate action. Right column = situational awareness.
 - `_find_accomplishment_block` strips `Mgr:true` before title comparison
 - `toggle_mgr_task` searches on title prefix before `@mention` to handle tags between title and mention in raw log
 
+### Project field
+- `+ProjectName` inline field on tasks and accomplishments
+- `Task.project` and `Accomplishment.project` — `str | None`, parsed by `_parse_task_line` and `get_accomplishments`
+- `add_task(... project="")` and `edit_task(... project="")` write `+project` after `Personal:true`, before tags
+- `complete_task` carries `+project` forward from the task line into the accomplishment block
+- `promote_someday_item(... project="")` writes `+project` on the new task line
+- `AddTaskScreen` has a Project input field; dismisses 5-tuple `(task, priority, due_date, tag, project)`
+- `[`/`]` cycles global project filter forward/reverse on `DashboardScreen`
+- Project filter applies to `TaskTable` and `AccomplishmentTable` (only objects with a project field)
+- `TaskTable` renders project as `+ProjectName` in the Project column (replaces Created column)
+- `AccomplishmentTable` renders project in a Project column alongside Tags column
+- `_find_accomplishment_block` strips `+project` before title comparison
+
+### Global tag and project filters
+- Filter state lives on `DashboardScreen` as `_tag_filter: str` and `_project_filter: str`
+- `refresh_data()` pushes both filters to all widgets on every refresh
+- `f`/`F` cycles tag filter forward/reverse — applies to all widgets (tasks, deps, risks, someday, accomplishments)
+- `[`/`]` cycles project filter forward/reverse — applies to tasks and accomplishments only
+- Active filters shown in title bar: `director_os (All #active +DataPlatform)`
+- Tag list for cycling pulled from `get_all_tags()` (all object types); project list from tasks + accomplishments combined
+
 ### Carry-forward
 - Rolled-over tasks get `Carried:true` appended to their log line at rollover time
 - `get_tasks()` parses and strips `Carried:true`, sets `Task.carried = True`
 - `TaskTable` renders `↩` appended to the title for carried tasks
 - Editing a carried task drops the marker (intentional — once edited, it's no longer a carry-forward)
+- `complete_task` carries `Mgr:true`, `Personal:true`, `+project`, and tags forward into the accomplishment block
 
 ### Due date shorthands
 - Shared module `screens/due_date.py` exports `resolve_due(value)`, `DUE_PLACEHOLDER`, `DUE_ERROR`
@@ -157,19 +177,19 @@ Left column = immediate action. Right column = situational awareness.
 - Used in `AddTaskScreen`, `AddDependencyScreen`, and `CompleteTaskScreen` (handoff expected date)
 
 ### Task-dependency handoff
-- Completing a task (`d`) shows optional "Hand off to someone?" checkbox
+- Completing a task (`x` on TaskTable) shows optional "Hand off to someone?" checkbox
 - If checked, captures waiting-on item (pre-filled with task title), owner, and expected date (supports due date shorthands)
 - Creates dependency with `HandoffFrom:` and `Expected:` fields in the log line
 - `CompleteTaskScreen` dismisses `(outcome, handoff_tuple_or_None)`
 - Glyphs stripped from `task_name` before pre-filling handoff item field
 
 ### Dependency-to-risk
-- `R` keybind on `DependencyTable` opens `AddRiskScreen` pre-filled with dependency item and owner
+- `r` keybind on `DependencyTable` opens `AddRiskScreen` pre-filled with dependency item and owner
 - On save: deletes the dependency, adds the risk
-- Severity field is blank — must be filled in manually
+- Severity field is blank — must be filled in manually; `get_risks()` regex requires `[HML]` — blank severity causes silent parse failure
 
 ### Dependency-to-task reopen
-- Resolving a dependency (`x`) shows optional "Reopen as task?" checkbox
+- Resolving a dependency (`x` on DependencyTable) shows optional "Reopen as task?" checkbox
 - If checked, opens `AddTaskScreen` pre-filled with dependency item after resolving
 - `ResolveDependencyScreen` dismisses `(notes, reopen_bool)`
 - `action_resolve_dependency` reads item from `get_dependencies()[row]` — not cell value — to avoid truncation mismatch
@@ -177,42 +197,48 @@ Left column = immediate action. Right column = situational awareness.
 ### Dependency model
 - `Dependency.handoff_from` — optional, parsed from `HandoffFrom:` field in log line
 - `Dependency.expected_date` — optional, parsed from `Expected:\s*(\d{4}-\d{2}-\d{2})` in log line
-- `AddDependencyScreen` includes expected date field for all new dependencies
+- `AddDependencyScreen` includes expected date field; no tags or project field yet (planned in `feature/metadata-parity`)
 - `edit_dependency` preserves `HandoffFrom` and writes `Expected` on save
 - `DependencyTable` shows `Expected` as a fourth column
 
 ### Log sync
-- `g` keybind in `dashboard.py` runs `git -C <logs_path> add -A && commit -m "sync" && push`
+- `G` keybind in `dashboard.py` runs `git -C <logs_path> add -A && commit -m "sync" && push`
 - Uses `subprocess.run` with `capture_output=True`; shows toast on success or error
 - "Nothing to commit" is treated as success
 - `action_quit` in `app.py` overrides Textual's default to auto-sync silently before exit; errors are swallowed
 - Any git remote works — not GitHub-specific
+
 ### Task matching by Created: date
 - `complete_task(task_text, outcome, created=None)` and `edit_task(old_title, new_title, ..., created=None)` both accept an optional `created` date
-- When `created` is provided, matching uses `Created:YYYY-MM-DD` as the unique key — avoids regex mismatch when tags appear between the title and other text (e.g. `#Tag @mention`) in the raw log line
+- When `created` is provided, matching uses `Created:YYYY-MM-DD` as the unique key — avoids regex mismatch when tags appear between the title and other text
 - `action_complete_task` and `_edit_task` in `dashboard.py` pass `task.created` from the parsed `Task` object
-- Fallback (no `created`): title-based match, splitting on ` @` before building the regex — same approach as `toggle_mgr_task`
+- Fallback (no `created`): title-based match, splitting on ` @` before building the regex
 - All tasks added via `add_task` include `Created:` so new tasks always match by date
-- Tasks without `Created:` in the raw log (e.g. manually entered or old entries) should have it added manually to ensure reliable edit/complete
 - `add_task` writes each space-separated tag word as its own `#tag` — the tag field accepts space-separated words without `#`
 
 ### Scratch pad
-- `N` opens `ScratchPadScreen` — persistent markdown scratch pad stored as `scratch.md` in logs directory
+- `n` opens `ScratchPadScreen` — persistent markdown scratch pad stored as `scratch.md` in logs directory
 - Default view mode renders `Markdown`; `e` switches to `TextArea` edit mode; `ctrl+s` saves and returns to view; `esc` closes from either mode
 - `_to_md(text, cursor)` — converts single line breaks to hard breaks, plain bullets to `•`, injects `›` cursor marker next to selected checkbox item
 - Checkbox navigation: `j`/`k` move `_cursor` over `- [ ]`/`- [x]` items; `space` toggles and auto-saves; `p` promotes selected item via `AddTaskScreen` pre-filled with item text; on save, item removed from scratch and `add_task()` called
 - Keys work via screen-level `BINDINGS` with `self.set_focus(None)` in view mode
 - `action_scratch_pad` passes `lambda _: self.refresh_data()` so dashboard refreshes on close
-- Syncs with git on `g` / quit auto-sync
+- Syncs with git on `G` / quit auto-sync
+
+### Command palette
+- `:` opens `CommandScreen` — input-driven command palette modal
+- Dispatches: `sync`, `config`, `tags`, `update`, `weekly`, `events`
+- Returns command string via `dismiss()`; `DashboardScreen.action_command` handles routing
 
 ### Accomplishment blocks
 Stored as structured blocks:
 ```
-- Task: {title}
+- Task: {title} [Mgr:true] [Personal:true] [+project] [#tag1] [#tag2]
   Outcome: {outcome}
   Completed: {date}
 ```
 Always use `_find_accomplishment_block()` to locate them — never raw string match.
+`_find_accomplishment_block` strips `Mgr:true`, `Personal:true`, `+project`, and tags before title comparison.
 
 ## UI Conventions
 
@@ -229,53 +255,50 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - Theme hardcoded to `gruvbox` in `app.py` — Rich color strings are not theme-aware so other themes produce mismatched results
 - Carried tasks show `↩` glyph appended to title in task table
 - Mgr-flagged tasks and accomplishments show `★` glyph appended to title
-- Personal-flagged items show `♦` glyph appended to title in all four widget tables
-- `p` (promote someday) opens `AddTaskScreen` pre-filled with item title for full metadata entry
-- `S` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
-- `g` syncs logs repo via git with toast feedback; auto-syncs silently on quit
-- `?` opens `HelpScreen` — two-column static layout grouped by widget/screen area (Tasks, Dependencies, Risks, Someday, Accomplishments, Views & Navigation, System)
+- Personal-flagged items show `♦` glyph appended to title in all widget tables
+- `t` (promote someday) opens `AddTaskScreen` pre-filled with item title for full metadata entry
+- `s` moves focused task to someday via `AddSomedayScreen` pre-filled with task title
+- `G` syncs logs repo via git with toast feedback; auto-syncs silently on quit
+- `?` opens `HelpScreen` — two-column static layout grouped by widget/screen area
 - Toast notifications on: complete task, resolve dependency, promote someday, demote task, log sync
-- `U` opens `UpdateScreen` — manager update generator; since-date input, live preview, writes to `updates/`
+- `:update` opens `UpdateScreen` — manager update generator; since-date input, live preview, writes to `updates/`
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
-- `E` opens `EventsScreen` — lazy imported
+- `:events` opens `EventsScreen` — lazy imported
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
-- `C` opens `ConfigScreen` — edit `logs_path`; saves to `config.toml`
-- Quote rotates on launch and on `r` refresh
+- `:config` opens `ConfigScreen` — edit `logs_path`; saves to `config.toml`
+- Quote rotates on launch and on `R` refresh
 - Executive summary is a single-line metrics bar with red/green health coloring
+- Title bar shows active filters: `director_os (All #tag +Project)`
 
 ## Keyboard Bindings
 
 | Key | Action |
 |-----|--------|
-| `a` | Add task |
+| `a` | Add (context-sensitive: task / dep / risk / someday; no-op on accomplishments) |
 | `e` | Edit selected row |
-| `d` | Complete task |
+| `x` | Complete task (TaskTable) or resolve dependency (DependencyTable) |
 | `u` | Reopen accomplishment as task |
 | `delete` | Delete selected row |
+| `s` | Send focused task to someday |
+| `t` | Promote focused someday item to task |
+| `r` | Move focused dependency to risk |
+| `M` | Flag task/accomplishment for manager update (`★`) |
+| `H` | Toggle personal flag on focused item (`♦`) |
+| `P` | Cycle personal filter (All → Personal only → Work only) |
+| `f` | Cycle global tag filter forward (all → #tag1 → #tag2 → all) |
+| `F` | Cycle global tag filter reverse |
+| `[` | Cycle global project filter forward |
+| `]` | Cycle global project filter reverse |
 | `!` | Daily check-in |
-| `W` | Weekly review |
-| `t` | Tag manager |
-| `w` | Add dependency |
-| `x` | Resolve dependency |
-| `R` | Move focused dependency to risk |
-| `i` | Add risk |
-| `s` | Add someday item |
-| `S` | Move focused task to someday |
-| `p` | Promote someday item to task (opens AddTaskScreen pre-filled) |
 | `l` | Open daily log navigator |
 | `c` | Calendar (Gregorian + NRF fiscal) |
-| `E` | Events |
 | `v` | View focused widget full-screen |
-| `r` | Refresh data + new quote |
-| `m` | Flag task/accomplishment for manager update (`★`) |
-| `h` | Toggle personal flag on focused item (♦) |
-| `f` | Cycle tag filter on tasks (all → #tag1 → #tag2 → all) |
-| `P` | Cycle personal filter (All → Personal only → Work only) |
-| `U` | Manager update generator |
-| `C` | Config (logs path) |
-| `N` | Scratch pad (markdown, persistent; `j`/`k`/`space`/`p` for checkbox nav and promote) |
-| `g` | Sync logs (git add/commit/push); auto-syncs on quit |
-| `?` | Help (grouped by widget/screen) |
+| `R` | Refresh data + new quote |
+| `G` | Sync logs (git add/commit/push); auto-syncs on quit |
+| `n` | Scratch pad |
+| `b` | Briefing screen |
+| `:` | Command palette (sync, config, tags, update, weekly, events) |
+| `?` | Help |
 | `q` | Quit |
 
 ## Open Issues
@@ -290,8 +313,9 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | #14 | Tag Analytics Dashboard |
 | #15 | ~~Export Manager Update~~ ✓ |
 | #16 | Package Director OS |
-| #27 | Search / filter across tables |
+| #27 | ~~Search / filter across tables~~ ✓ (global tag + project filters) |
 | #28 | ~~Carry-forward indicator for rolled-over tasks~~ ✓ |
+| —  | `feature/metadata-parity` — add tags + project fields to deps, risks, someday modals and parser |
 
 ## Git Workflow
 

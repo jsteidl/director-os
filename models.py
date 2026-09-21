@@ -12,6 +12,7 @@ class Task:
     carried: bool = False
     mgr: bool = False
     personal: bool = False
+    project: str | None = None
 
 
 @dataclass
@@ -33,6 +34,7 @@ class Accomplishment:
     tags: list[str] = field(default_factory=list)
     mgr: bool = False
     personal: bool = False
+    project: str | None = None
 
 
 @dataclass

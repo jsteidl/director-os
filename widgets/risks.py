@@ -17,6 +17,7 @@ SEVERITY_LABELS = {"H": "● H", "M": "● M", "L": "● L"}
 class RisksTable(DataTable):
 
     personal_filter = "all"
+    tag_filter = ""
 
     def on_mount(self):
 
@@ -32,6 +33,8 @@ class RisksTable(DataTable):
             if self.personal_filter == "personal" and not risk.personal:
                 continue
             if self.personal_filter == "work" and risk.personal:
+                continue
+            if self.tag_filter and self.tag_filter not in risk.tags:
                 continue
             severity = risk.severity or ""
             color = SEVERITY_COLORS.get(severity, "default")

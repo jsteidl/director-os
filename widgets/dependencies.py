@@ -20,6 +20,8 @@ def _age_color(age):
 
 class DependencyTable(DataTable):
 
+    tag_filter = ""
+
     def on_mount(self):
 
         self.zebra_stripes = True
@@ -31,6 +33,8 @@ class DependencyTable(DataTable):
         self.clear()
 
         for dep in get_dependencies():
+            if self.tag_filter and self.tag_filter not in dep.tags:
+                continue
             color = _age_color(dep.age)
             self.add_row(
                 Text(_t(dep.item), style=color),
