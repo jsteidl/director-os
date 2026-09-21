@@ -43,6 +43,7 @@ from screens.confirm import ConfirmScreen
 from screens.widget_viewer import WidgetViewerScreen
 from screens.weekly_review import WeeklyReviewScreen
 from screens.tag_manager import TagManagerScreen
+from screens.command import CommandScreen
 
 class DashboardScreen(Screen):
 
@@ -53,37 +54,32 @@ class DashboardScreen(Screen):
         super().__init__()
         self._personal_filter = "all"
     BINDINGS = [
-        Binding("a", "add_task", "Add Task"),
+        Binding("a", "add", "Add"),
         Binding("e", "edit_selected", "Edit"),
-        Binding("d", "complete_task", "Done"),
-        Binding("delete", "delete_selected", "Delete"),
+        Binding("x", "complete_or_resolve", "Complete/Resolve"),
+        Binding("s", "send_to_someday", "Someday"),
+        Binding("t", "promote_to_task", "To Task"),
+        Binding("r", "dep_to_risk", "To Risk"),
         Binding("u", "reopen_task", "Reopen"),
-        Binding("r", "refresh_data", "Refresh"),
-        Binding("t", "tag_manager", "Tags"),
-        Binding("!", "daily_checkin", "Check-in"),
-        Binding("w", "add_dependency", "Dependency"),
-        Binding("x", "resolve_dependency", "Resolve"),
-        Binding("R", "dep_to_risk", "Dep → Risk"),
-        Binding("i", "add_risk", "Risk"),
-        Binding("s", "add_someday", "Someday"),
-        Binding("p", "promote_someday", "Promote"),
-        Binding("S", "demote_task", "Move to Someday"),
-        Binding("l", "show_daily_log", "Daily Log"),
-        Binding("W", "weekly_review", "Weekly Review"),
-        Binding("c", "calendar", "Calendar"),
-        Binding("E", "events", "Events"),
-        Binding("v", "view_widget", "View"),
-        Binding("m", "toggle_mgr", "Mgr flag"),
-        Binding("h", "toggle_personal", "Personal flag"),
+        Binding("delete", "delete_selected", "Delete"),
+        Binding("M", "toggle_mgr", "Mgr flag"),
+        Binding("H", "toggle_personal", "Personal flag"),
         Binding("P", "toggle_personal_filter", "Personal filter"),
-        Binding("U", "manager_update", "Update"),
-        Binding("g", "sync_logs", "Sync Logs"),
-        Binding("B", "briefing", "Briefing"),
-        Binding("N", "scratch_pad", "Scratch Pad"),
         Binding("f", "cycle_tag_filter", "Tag filter"),
-        Binding("F", "cycle_tag_filter_reverse", "Tag filter reverse", show=False),
-        Binding("C", "config", "Config"),
+        Binding("F", "cycle_tag_filter_reverse", "Tag filter ◂", show=False),
+        Binding("[", "cycle_project_filter", "Project filter", show=False),
+        Binding("]", "cycle_project_filter_reverse", "Project filter ◂", show=False),
+        Binding("v", "view_widget", "View"),
+        Binding("l", "show_daily_log", "Daily Log"),
+        Binding("c", "calendar", "Calendar"),
+        Binding("b", "briefing", "Briefing"),
+        Binding("n", "scratch_pad", "Scratch Pad"),
+        Binding("!", "daily_checkin", "Check-in"),
+        Binding("R", "refresh_data", "Refresh"),
+        Binding("G", "sync_logs", "Sync"),
+        Binding(":", "command", "Command"),
         Binding("?", "show_help", "Help"),
+        Binding("q", "quit", "Quit"),
     ]
 
     CSS = """
@@ -215,6 +211,113 @@ class DashboardScreen(Screen):
         clock = datetime.now().strftime("%A, %B %d  %I:%M %p")
         self.query_one("#app-quote", Label).update(self._quote)
         self.query_one("#app-clock", Label).update(clock)
+
+    # =====================================================
+    # ADD — context-sensitive
+    # =====================================================
+
+    def action_add(self):
+        focused = self.focused
+        if isinstance(focused, DependencyTable):
+            self.app.push_screen(AddDependencyScreen(), self.add_dependency_callback)
+        elif isinstance(focused, RisksTable):
+            self.app.push_screen(AddRiskScreen(), self.add_risk_callback)
+        elif isinstance(focused, SomedayTable):
+            self.app.push_screen(AddSomedayScreen(), self.add_someday_callback)
+        elif isinstance(focused, AccomplishmentTable):
+            return
+        else:
+            self.app.push_screen(AddTaskScreen(), self.add_task_callback)
+
+    # =====================================================
+    # COMPLETE / RESOLVE — context-sensitive
+    # =====================================================
+
+    def action_complete_or_resolve(self):
+        focused = self.focused
+        if isinstance(focused, DependencyTable):
+            self.action_resolve_dependency()
+        else:
+            self.action_complete_task()
+
+    # =====================================================
+    # SEND TO SOMEDAY — tasks only
+    # =====================================================
+
+    def action_send_to_someday(self):
+        focused = self.focused
+        if not isinstance(focused, TaskTable):
+            return
+        row = focused.cursor_row
+        if row is None:
+            return
+        tasks = self._filtered_tasks()
+        if row >= len(tasks):
+            return
+        task = tasks[row]
+        self.app.push_screen(
+            AddSomedayScreen(item=task.title),
+            lambda result: self._demote_task_callback(task.title, task.created, result)
+        )
+
+    # =====================================================
+    # PROMOTE TO TASK — someday only
+    # =====================================================
+
+    def action_promote_to_task(self):
+        focused = self.focused
+        if not isinstance(focused, SomedayTable):
+            return
+        self.action_promote_someday()
+
+    # =====================================================
+    # COMMAND PALETTE
+    # =====================================================
+
+    def action_command(self):
+        def on_command(cmd):
+            if not cmd:
+                return
+            if cmd == "sync":
+                self.action_sync_logs()
+            elif cmd == "config":
+                from screens.config import ConfigScreen
+                self.app.push_screen(ConfigScreen())
+            elif cmd == "tags":
+                self.app.push_screen(TagManagerScreen(), lambda saved: self.refresh_data() if saved else None)
+            elif cmd == "update":
+                from screens.update import UpdateScreen
+                self.app.push_screen(UpdateScreen(), lambda path: self.app.notify(f"Saved to {path}", severity="information") if path else None)
+            elif cmd == "weekly":
+                self.app.push_screen(WeeklyReviewScreen())
+            elif cmd == "events":
+                from screens.events import EventsScreen
+                self.app.push_screen(EventsScreen())
+        self.app.push_screen(CommandScreen(), on_command)
+
+    # =====================================================
+    # PROJECT FILTER
+    # =====================================================
+
+    def action_cycle_project_filter(self):
+        projects = [""] + sorted({t.project for t in self._filtered_tasks() if getattr(t, 'project', None)})
+        table = self.query_one(TaskTable)
+        current = table.project_filter
+        idx = projects.index(current) if current in projects else 0
+        table.project_filter = projects[(idx + 1) % len(projects)]
+        table.load_tasks()
+        label = f"+{table.project_filter}" if table.project_filter else "All projects"
+        self.app.notify(f"Project filter: {label}", timeout=2)
+
+    def action_cycle_project_filter_reverse(self):
+        projects = [""] + sorted({t.project for t in self._filtered_tasks() if getattr(t, 'project', None)})
+        table = self.query_one(TaskTable)
+        current = table.project_filter
+        idx = projects.index(current) if current in projects else 0
+        table.project_filter = projects[(idx - 1) % len(projects)]
+        table.load_tasks()
+        label = f"+{table.project_filter}" if table.project_filter else "All projects"
+        self.app.notify(f"Project filter: {label}", timeout=2)
 
     # =====================================================
     # EDIT SELECTED
@@ -541,20 +644,13 @@ class DashboardScreen(Screen):
         self.refresh()
 
     # =====================================================
-    # ADD TASK
+    # ADD TASK (direct, used by callbacks)
     # =====================================================
 
     def action_add_task(self):
+        self.app.push_screen(AddTaskScreen(), self.add_task_callback)
 
-        self.app.push_screen(
-            AddTaskScreen(),
-            self.add_task_callback
-        )
-
-    def add_task_callback(
-        self,
-        result
-    ):
+    def add_task_callback(self, result):
 
         if not result:
             return
@@ -578,7 +674,6 @@ class DashboardScreen(Screen):
     # =====================================================
 
     def action_complete_task(self):
-
         table = self.query_one(TaskTable)
         row = table.cursor_row
         if row is None:
@@ -684,13 +779,9 @@ class DashboardScreen(Screen):
     # =====================================================
     # DEPENDENCY
     # =====================================================
+
     def action_add_dependency(self):
-
-        self.app.push_screen(
-            AddDependencyScreen(),
-            self.add_dependency_callback
-        )
-
+        self.app.push_screen(AddDependencyScreen(), self.add_dependency_callback)
 
     def add_dependency_callback(self, result):
         if not result:
@@ -770,11 +861,7 @@ class DashboardScreen(Screen):
     # =====================================================
 
     def action_add_risk(self):
-
-        self.app.push_screen(
-            AddRiskScreen(),
-            self.add_risk_callback
-        )
+        self.app.push_screen(AddRiskScreen(), self.add_risk_callback)
 
     def add_risk_callback(self, result):
 
@@ -794,11 +881,7 @@ class DashboardScreen(Screen):
     # =====================================================
 
     def action_add_someday(self):
-
-        self.app.push_screen(
-            AddSomedayScreen(),
-            self.add_someday_callback
-        )
+        self.app.push_screen(AddSomedayScreen(), self.add_someday_callback)
 
     def add_someday_callback(self, result):
 
@@ -814,18 +897,14 @@ class DashboardScreen(Screen):
         self.refresh_data()
 
     def action_promote_someday(self):
-
         table = self.query_one(SomedayTable)
         row = table.cursor_row
-
         if row is None:
             return
-
         items = self._filtered_someday()
         if row >= len(items):
             return
         item = items[row]
-
         self.app.push_screen(
             AddTaskScreen(title=item.item),
             lambda result: self._promote_someday_callback(item.item, result)
@@ -841,20 +920,16 @@ class DashboardScreen(Screen):
         self.app.notify("Promoted to tasks ✓", severity="information")
 
     def action_demote_task(self):
-
         focused = self.focused
         if not isinstance(focused, TaskTable):
             return
-
         row = focused.cursor_row
         if row is None:
             return
-
         tasks = self._filtered_tasks()
         if row >= len(tasks):
             return
         task = tasks[row]
-
         self.app.push_screen(
             AddSomedayScreen(item=task.title),
             lambda result: self._demote_task_callback(task.title, task.created, result)
@@ -998,10 +1073,6 @@ class DashboardScreen(Screen):
     def action_briefing(self):
         from screens.splash import BriefingScreen
         self.app.push_screen(BriefingScreen())
-
-    def action_config(self):
-        from screens.config import ConfigScreen
-        self.app.push_screen(ConfigScreen())
 
     def action_sync_logs(self):
         from parser import _get_logs_path

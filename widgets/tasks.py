@@ -50,6 +50,7 @@ class TaskTable(DataTable):
 
     personal_filter = "all"
     tag_filter = ""
+    project_filter = ""
 
     def on_mount(self):
 
