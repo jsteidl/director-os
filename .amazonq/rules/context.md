@@ -49,8 +49,9 @@ screens/
   update.py                  # UpdateScreen — manager update generator
   weekly_review.py            # WeeklyReviewScreen
   config.py                   # ConfigScreen — edit logs_path via UI
+  scratch.py                  # ScratchPadScreen — markdown scratch pad with checkbox navigation and promote-to-task
 widgets/
-  metrics.py                  # MetricsWidget — single-line executive summary bar
+  metrics.py                  # MetricsWidget — single-line executive summary bar; personal_filter attribute; computes filtered metrics inline (does not call get_metrics())
   tasks.py                    # TaskTable
   dependencies.py             # DependencyTable
   risks.py                    # RisksTable
@@ -107,7 +108,9 @@ Left column = immediate action. Right column = situational awareness.
 
 ### Parser functions
 - `get_tasks()`, `get_dependencies()`, `get_risks()`, `get_someday_items()`, `get_accomplishments()` — all return lists of dataclass objects
-- `get_metrics()` — returns a dict with: `tasks`, `overdue`, `deps`, `oldest_dep`, `high_risks`, `accomplishments`, `month_wins`
+- `get_metrics()` — returns a dict with: `tasks`, `overdue`, `deps`, `oldest_dep`, `high_risks`, `accomplishments`, `month_wins` — no longer called by `MetricsWidget` (which computes filtered metrics inline)
+- `get_scratch()` / `save_scratch()` — read/write `scratch.md` in logs directory
+- `_parse_task_line(line)` — helper extracted from `get_tasks()`; parses all inline fields (due, created, carried, mgr, personal, priority, tags) from a raw task line
 - `get_all_tags()` — returns sorted unique tags across all object types
 - `rename_tag(old, new)` — renames all occurrences in the log file
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
@@ -126,6 +129,7 @@ Left column = immediate action. Right column = situational awareness.
 - `toggle_personal_task()`, `toggle_personal_accomplishment()`, `toggle_personal_risk()`, `toggle_personal_someday()` — toggled via `h` keybind
 - `♦` glyph rendered in all four widget tables for flagged items
 - `P` cycles `_personal_filter` on `DashboardScreen`: `all` → `personal` → `work` → `all`
+- `f` cycles `tag_filter` on `TaskTable`: `all` → `#tag1` → `#tag2` → ... → `all`; pulls live tag list from `get_all_tags()`; active filter shown via toast
 - Current filter shown in title bar as `director_os (All)` etc.
 - Work view hides personal items unless also `Mgr:true` (tasks/accomplishments only)
 - `_filtered_tasks()`, `_filtered_accomplishments()`, `_filtered_risks()`, `_filtered_someday()` helpers on `DashboardScreen` mirror widget filter logic — all row-index operations use these to avoid index mismatch
@@ -192,6 +196,15 @@ Left column = immediate action. Right column = situational awareness.
 - Tasks without `Created:` in the raw log (e.g. manually entered or old entries) should have it added manually to ensure reliable edit/complete
 - `add_task` writes each space-separated tag word as its own `#tag` — the tag field accepts space-separated words without `#`
 
+### Scratch pad
+- `N` opens `ScratchPadScreen` — persistent markdown scratch pad stored as `scratch.md` in logs directory
+- Default view mode renders `Markdown`; `e` switches to `TextArea` edit mode; `ctrl+s` saves and returns to view; `esc` closes from either mode
+- `_to_md(text, cursor)` — converts single line breaks to hard breaks, plain bullets to `•`, injects `›` cursor marker next to selected checkbox item
+- Checkbox navigation: `j`/`k` move `_cursor` over `- [ ]`/`- [x]` items; `space` toggles and auto-saves; `p` promotes selected item via `AddTaskScreen` pre-filled with item text; on save, item removed from scratch and `add_task()` called
+- Keys work via screen-level `BINDINGS` with `self.set_focus(None)` in view mode
+- `action_scratch_pad` passes `lambda _: self.refresh_data()` so dashboard refreshes on close
+- Syncs with git on `g` / quit auto-sync
+
 ### Accomplishment blocks
 Stored as structured blocks:
 ```
@@ -256,9 +269,11 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `r` | Refresh data + new quote |
 | `m` | Flag task/accomplishment for manager update (`★`) |
 | `h` | Toggle personal flag on focused item (♦) |
+| `f` | Cycle tag filter on tasks (all → #tag1 → #tag2 → all) |
 | `P` | Cycle personal filter (All → Personal only → Work only) |
 | `U` | Manager update generator |
 | `C` | Config (logs path) |
+| `N` | Scratch pad (markdown, persistent; `j`/`k`/`space`/`p` for checkbox nav and promote) |
 | `g` | Sync logs (git add/commit/push); auto-syncs on quit |
 | `?` | Help (grouped by widget/screen) |
 | `q` | Quit |

@@ -49,6 +49,7 @@ def _due_color(due_date):
 class TaskTable(DataTable):
 
     personal_filter = "all"
+    tag_filter = ""
 
     def on_mount(self):
 
@@ -64,6 +65,8 @@ class TaskTable(DataTable):
             if self.personal_filter == "personal" and not task.personal:
                 continue
             if self.personal_filter == "work" and task.personal and not task.mgr:
+                continue
+            if self.tag_filter and self.tag_filter not in task.tags:
                 continue
             color = _due_color(task.due_date) if task.due_date else _age_color(task.created)
             title = _t(task.title) + (" ↩" if task.carried else "") + (" ★" if task.mgr else "") + (" ♦" if task.personal else "")

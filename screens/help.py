@@ -47,6 +47,7 @@ GROUPS_RIGHT = [
     ]),
     ("Views & Navigation", [
         ("P", "Cycle personal filter"),
+        ("f", "Cycle tag filter (tasks)"),
         ("v", "View widget full-screen"),
         ("!", "Daily check-in"),
         ("l", "Daily log navigator"),

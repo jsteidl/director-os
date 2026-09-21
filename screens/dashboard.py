@@ -80,6 +80,7 @@ class DashboardScreen(Screen):
         Binding("g", "sync_logs", "Sync Logs"),
         Binding("B", "briefing", "Briefing"),
         Binding("N", "scratch_pad", "Scratch Pad"),
+        Binding("f", "cycle_tag_filter", "Tag filter"),
         Binding("C", "config", "Config"),
         Binding("?", "show_help", "Help"),
     ]
@@ -966,6 +967,17 @@ class DashboardScreen(Screen):
     # =====================================================
     # SYNC LOGS
     # =====================================================
+
+    def action_cycle_tag_filter(self):
+        from parser import get_all_tags
+        tags = [""] + get_all_tags()
+        table = self.query_one(TaskTable)
+        current = table.tag_filter
+        idx = tags.index(current) if current in tags else 0
+        table.tag_filter = tags[(idx + 1) % len(tags)]
+        table.load_tasks()
+        label = f"#{table.tag_filter}" if table.tag_filter else "All tags"
+        self.app.notify(f"Tag filter: {label}", timeout=2)
 
     def action_scratch_pad(self):
         from screens.scratch import ScratchPadScreen
