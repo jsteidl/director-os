@@ -391,28 +391,42 @@ class DashboardScreen(Screen):
         f = self._personal_filter
         return [t for t in get_tasks()
                 if not (f == "personal" and not t.personal)
-                and not (f == "work" and t.personal and not t.mgr)]
+                and not (f == "work" and t.personal and not t.mgr)
+                and not (self._tag_filter and self._tag_filter not in t.tags)
+                and not (self._project_filter and t.project != self._project_filter)]
 
     def _filtered_accomplishments(self):
         from parser import get_accomplishments
         f = self._personal_filter
         return [a for a in get_accomplishments()
                 if not (f == "personal" and not a.personal)
-                and not (f == "work" and a.personal and not a.mgr)]
+                and not (f == "work" and a.personal and not a.mgr)
+                and not (self._tag_filter and self._tag_filter not in a.tags)
+                and not (self._project_filter and a.project != self._project_filter)]
+
+    def _filtered_dependencies(self):
+        from parser import get_dependencies
+        return [d for d in get_dependencies()
+                if not (self._tag_filter and self._tag_filter not in d.tags)
+                and not (self._project_filter and d.project != self._project_filter)]
 
     def _filtered_risks(self):
         from parser import get_risks
         f = self._personal_filter
         return [r for r in get_risks()
                 if not (f == "personal" and not r.personal)
-                and not (f == "work" and r.personal)]
+                and not (f == "work" and r.personal)
+                and not (self._tag_filter and self._tag_filter not in r.tags)
+                and not (self._project_filter and r.project != self._project_filter)]
 
     def _filtered_someday(self):
         from parser import get_someday_items
         f = self._personal_filter
         return [s for s in get_someday_items()
                 if not (f == "personal" and not s.personal)
-                and not (f == "work" and s.personal)]
+                and not (f == "work" and s.personal)
+                and not (self._tag_filter and self._tag_filter not in s.tags)
+                and not (self._project_filter and s.project != self._project_filter)]
 
     def _edit_task(self):
 
@@ -439,13 +453,11 @@ class DashboardScreen(Screen):
         self.refresh_data()
 
     def _edit_dependency(self):
-
         table = self.query_one(DependencyTable)
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_dependencies
-        deps = get_dependencies()
+        deps = self._filtered_dependencies()
         if row >= len(deps):
             return
         dep = deps[row]
@@ -547,8 +559,7 @@ class DashboardScreen(Screen):
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_dependencies
-        deps = get_dependencies()
+        deps = self._filtered_dependencies()
         if row >= len(deps):
             return
         delete_dependency(deps[row].item)
@@ -824,13 +835,11 @@ class DashboardScreen(Screen):
         self.refresh_data()
 
     def action_resolve_dependency(self):
-
         table = self.query_one(DependencyTable)
         row = table.cursor_row
         if row is None:
             return
-        from parser import get_dependencies
-        deps = get_dependencies()
+        deps = self._filtered_dependencies()
         if row >= len(deps):
             return
         dependency_name = deps[row].item
@@ -846,8 +855,7 @@ class DashboardScreen(Screen):
         row = focused.cursor_row
         if row is None:
             return
-        from parser import get_dependencies
-        deps = get_dependencies()
+        deps = self._filtered_dependencies()
         if row >= len(deps):
             return
         dep = deps[row]
@@ -1046,8 +1054,7 @@ class DashboardScreen(Screen):
             row = focused.cursor_row
             if row is None:
                 return
-            from parser import get_dependencies
-            deps = get_dependencies()
+            deps = self._filtered_dependencies()
             if row >= len(deps):
                 return
             toggle_mgr_dependency(deps[row].item)
