@@ -297,6 +297,9 @@ class DashboardScreen(Screen):
                 self.app.push_screen(ConfigScreen())
             elif cmd == "tags":
                 self.app.push_screen(TagManagerScreen(), lambda saved: self.refresh_data() if saved else None)
+            elif cmd == "projects":
+                from screens.project_manager import ProjectManagerScreen
+                self.app.push_screen(ProjectManagerScreen(), lambda saved: self.refresh_data() if saved else None)
             elif cmd == "update":
                 from screens.update import UpdateScreen
                 self.app.push_screen(UpdateScreen(), lambda path: self.app.notify(f"Saved to {path}", severity="information") if path else None)

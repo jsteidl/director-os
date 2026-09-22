@@ -1370,6 +1370,58 @@ def get_all_tags():
     return sorted(tags, key=str.lower)
 
 
+def get_tag_counts() -> dict[str, int]:
+    """Return {tag: count} across all objects."""
+    counts: dict[str, int] = {}
+    for obj in [*get_tasks(), *get_dependencies(), *get_risks(), *get_someday_items(), *get_accomplishments()]:
+        for tag in obj.tags:
+            counts[tag] = counts.get(tag, 0) + 1
+    return counts
+
+
+def delete_tag(tag: str):
+    """Remove all occurrences of #tag from the log file."""
+    path = get_log_file()
+    content = path.read_text(encoding="utf-8")
+    content = re.sub(r"\s*#" + re.escape(tag) + r"\b", "", content)
+    path.write_text(content, encoding="utf-8")
+
+
+def get_all_projects():
+    """Return sorted list of unique project names across all objects."""
+    projects = set()
+    for obj in [*get_tasks(), *get_dependencies(), *get_risks(), *get_someday_items(), *get_accomplishments()]:
+        if obj.project:
+            projects.add(obj.project)
+    return sorted(projects, key=str.lower)
+
+
+def get_project_counts() -> dict[str, dict[str, int]]:
+    """Return {project: {tasks, deps, risks, high_risks, someday, accomplishments}} counts."""
+    counts: dict[str, dict[str, int]] = {}
+    def _inc(project, key):
+        if project:
+            counts.setdefault(project, {"tasks": 0, "deps": 0, "risks": 0, "high_risks": 0, "someday": 0, "accomplishments": 0})
+            counts[project][key] += 1
+    for t in get_tasks(): _inc(t.project, "tasks")
+    for d in get_dependencies(): _inc(d.project, "deps")
+    for r in get_risks():
+        _inc(r.project, "risks")
+        if r.severity.upper() == "H":
+            _inc(r.project, "high_risks")
+    for s in get_someday_items(): _inc(s.project, "someday")
+    for a in get_accomplishments(): _inc(a.project, "accomplishments")
+    return counts
+
+
+def rename_project(old: str, new: str):
+    """Rename all occurrences of +old to +new in the log file."""
+    path = get_log_file()
+    content = path.read_text(encoding="utf-8")
+    content = re.sub(r"\+" + re.escape(old) + r"\b", f"+{new}", content)
+    path.write_text(content, encoding="utf-8")
+
+
 def rename_tag(old_tag, new_tag):
     """Rename all occurrences of #old_tag to #new_tag in the log file."""
     path = get_log_file()

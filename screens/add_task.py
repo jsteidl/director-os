@@ -1,14 +1,17 @@
 from textual.screen import ModalScreen
 from textual.widgets import Input, Label
+from textual.suggester import SuggestFromList
 from textual.containers import Vertical
 from textual.binding import Binding
 from screens.due_date import resolve_due, DUE_PLACEHOLDER, DUE_ERROR
+from parser import get_all_tags, get_all_projects
+from screens.tab_complete import TabCompleteMixin
 
 
-class AddTaskScreen(ModalScreen[tuple]):
+class AddTaskScreen(TabCompleteMixin, ModalScreen[tuple]):
 
     BINDINGS = [
-        Binding("ctrl+s", "save", "Save"),
+        Binding("ctrl+s", "save", "Save", priority=True),
         Binding("escape", "cancel", "Cancel"),
     ]
 
@@ -48,9 +51,11 @@ class AddTaskScreen(ModalScreen[tuple]):
             Label("Due Date"),
             Input(id="due_date", value=self._due_date, placeholder=DUE_PLACEHOLDER),
             Label("Tags"),
-            Input(id="tag", placeholder="optional, space-separated without #", value=self._tags),
+            Input(id="tag", placeholder="optional, space-separated without #", value=self._tags,
+                  suggester=SuggestFromList(get_all_tags(), case_sensitive=False)),
             Label("Project"),
-            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)", value=self._project),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)", value=self._project,
+                  suggester=SuggestFromList(get_all_projects(), case_sensitive=False)),
         )
 
     def action_save(self):

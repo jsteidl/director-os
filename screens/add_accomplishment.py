@@ -1,13 +1,16 @@
 from textual.screen import ModalScreen
 from textual.widgets import Input, Label
+from textual.suggester import SuggestFromList
 from textual.containers import Vertical
 from textual.binding import Binding
+from parser import get_all_tags, get_all_projects
+from screens.tab_complete import TabCompleteMixin
 
 
-class AddAccomplishmentScreen(ModalScreen[tuple | None]):
+class AddAccomplishmentScreen(TabCompleteMixin, ModalScreen[tuple | None]):
 
     BINDINGS = [
-        Binding("ctrl+s", "save", "Save"),
+        Binding("ctrl+s", "save", "Save", priority=True),
         Binding("escape", "cancel", "Cancel"),
     ]
 
@@ -37,9 +40,11 @@ class AddAccomplishmentScreen(ModalScreen[tuple | None]):
             Label("Outcome  [dim]optional[/dim]"),
             Input(id="outcome", placeholder="Result or impact"),
             Label("Tags"),
-            Input(id="tags", placeholder="optional, space-separated without #"),
+            Input(id="tags", placeholder="optional, space-separated without #",
+                  suggester=SuggestFromList(get_all_tags(), case_sensitive=False)),
             Label("Project"),
-            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)"),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)",
+                  suggester=SuggestFromList(get_all_projects(), case_sensitive=False)),
         )
 
     def action_save(self):
@@ -55,10 +60,10 @@ class AddAccomplishmentScreen(ModalScreen[tuple | None]):
         self.dismiss(None)
 
 
-class EditAccomplishmentScreen(ModalScreen[tuple | None]):
+class EditAccomplishmentScreen(TabCompleteMixin, ModalScreen[tuple | None]):
 
     BINDINGS = [
-        Binding("ctrl+s", "save", "Save"),
+        Binding("ctrl+s", "save", "Save", priority=True),
         Binding("escape", "cancel", "Cancel"),
     ]
 
@@ -96,9 +101,11 @@ class EditAccomplishmentScreen(ModalScreen[tuple | None]):
             Label("Outcome"),
             Input(value=self._outcome, placeholder="Outcome", id="outcome"),
             Label("Tags"),
-            Input(value=self._tags, placeholder="optional, space-separated without #", id="tags"),
+            Input(value=self._tags, placeholder="optional, space-separated without #", id="tags",
+                  suggester=SuggestFromList(get_all_tags(), case_sensitive=False)),
             Label("Project"),
-            Input(value=self._project, placeholder="optional, no spaces (e.g. Data_Platform)", id="project"),
+            Input(value=self._project, placeholder="optional, no spaces (e.g. Data_Platform)", id="project",
+                  suggester=SuggestFromList(get_all_projects(), case_sensitive=False)),
         )
 
     def action_save(self):

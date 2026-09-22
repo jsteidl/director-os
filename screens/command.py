@@ -5,13 +5,14 @@ from textual.app import ComposeResult
 from textual.binding import Binding
 
 COMMANDS = {
-    "sync":    "Sync logs (git push)",
-    "config":  "Edit logs path",
-    "tags":    "Tag manager",
-    "update":  "Manager update",
-    "weekly":  "Weekly review",
-    "events":  "Events",
-    "help":    "List commands",
+    "sync":     "Sync logs (git push)",
+    "config":   "Edit logs path",
+    "tags":     "Tag manager",
+    "projects": "Project manager",
+    "update":   "Manager update",
+    "weekly":   "Weekly review",
+    "events":   "Events",
+    "help":     "List commands",
 }
 
 
@@ -49,7 +50,7 @@ class CommandScreen(ModalScreen[str | None]):
     def compose(self) -> ComposeResult:
         yield Vertical(
             Label("[dim]Command[/dim]", id="cmd-title"),
-            Input(placeholder="sync · config · tags · update · weekly · events · help", id="cmd-input"),
+            Input(placeholder="sync · config · tags · projects · update · weekly · events · help", id="cmd-input"),
             Label("", id="cmd-hint"),
         )
 
