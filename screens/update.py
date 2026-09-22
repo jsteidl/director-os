@@ -1,12 +1,22 @@
 from datetime import date, timedelta
 from textual.screen import ModalScreen
 from textual.containers import Vertical, Horizontal, ScrollableContainer
-from textual.widgets import Label, Input, Static, Switch
+from textual.widgets import Label, Input, Static, Switch, ListView, ListItem
 from textual.binding import Binding
 
 from parser import get_update_data, save_update, get_project_meta
 from widgets.tasks import PRIORITY_GLYPHS
 from screens.due_date import resolve_since, SINCE_PLACEHOLDER
+
+SINCE_PRESETS = [
+    ("Today",          "t"),
+    ("Yesterday",      "y"),
+    ("Last 7 days",    "-7"),
+    ("Last 2 weeks",   "-2w"),
+    ("Last 30 days",   "-30"),
+    ("This week (Mon)","lw"),
+    ("Custom date…",   "custom"),
+]
 
 
 class UpdateScreen(ModalScreen):
@@ -20,7 +30,7 @@ class UpdateScreen(ModalScreen):
     UpdateScreen {
         align: center middle;
     }
-    Vertical {
+    UpdateScreen > Vertical {
         width: 80%;
         height: 90%;
         border: solid $primary;
@@ -41,7 +51,7 @@ class UpdateScreen(ModalScreen):
         height: auto;
     }
     .filter-row {
-        height: 3;
+        height: auto;
         padding: 0 1;
         align: left middle;
     }
@@ -49,8 +59,19 @@ class UpdateScreen(ModalScreen):
         width: auto;
         padding: 0 1 0 0;
     }
+    #since-list {
+        width: 22;
+        height: auto;
+        max-height: 9;
+        border: none;
+        margin-right: 1;
+    }
     #since-input {
-        width: 20;
+        width: 22;
+        display: none;
+    }
+    #since-input.visible {
+        display: block;
     }
     """
 
@@ -63,11 +84,13 @@ class UpdateScreen(ModalScreen):
         self._data = None
 
     def compose(self):
+        items = [ListItem(Label(label), id=f"preset-{i}") for i, (label, _) in enumerate(SINCE_PRESETS)]
         yield Vertical(
             Label("Manager Update  [dim]ctrl+s to generate · esc to cancel[/dim]", id="update-title"),
             Horizontal(
                 Label("Since:", classes="filter-label"),
-                Input(value=self._since, placeholder=SINCE_PLACEHOLDER, id="since-input"),
+                ListView(*items, id="since-list"),
+                Input(placeholder="YYYY-MM-DD or shorthand", id="since-input"),
                 Label("  ★ flagged only:", classes="filter-label"),
                 Switch(value=True, id="mgr-switch"),
                 Label("  Grouped:", classes="filter-label"),
@@ -81,7 +104,27 @@ class UpdateScreen(ModalScreen):
         )
 
     def on_mount(self):
+        lv = self.query_one("#since-list", ListView)
+        # highlight the "This week" preset (index 5) as default
+        lv.index = 5
         self._refresh_preview()
+
+    def on_list_view_selected(self, event: ListView.Selected):
+        if event.list_view.id != "since-list":
+            return
+        idx = list(event.list_view.children).index(event.item)
+        _, shorthand = SINCE_PRESETS[idx]
+        inp = self.query_one("#since-input", Input)
+        if shorthand == "custom":
+            inp.add_class("visible")
+            inp.value = self._since
+            inp.focus()
+        else:
+            inp.remove_class("visible")
+            resolved, valid = resolve_since(shorthand)
+            if valid:
+                self._since = resolved
+                self._refresh_preview()
 
     def on_input_changed(self, event: Input.Changed):
         if event.input.id == "since-input":

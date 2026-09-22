@@ -1,19 +1,18 @@
 from textual.screen import ModalScreen
-from textual.widgets import Input, Label
+from textual.widgets import Input, Label, ListView, ListItem
 from textual.containers import Vertical
 from textual.app import ComposeResult
 from textual.binding import Binding
 
-COMMANDS = {
-    "sync":     "Sync logs (git push)",
-    "config":   "Edit logs path",
-    "tags":     "Tag manager",
-    "projects": "Project manager",
-    "update":   "Manager update",
-    "weekly":   "Weekly review",
-    "events":   "Events",
-    "help":     "List commands",
-}
+COMMANDS = [
+    ("sync",     "Sync logs (git push)"),
+    ("config",   "Edit logs path"),
+    ("tags",     "Tag manager"),
+    ("projects", "Project manager"),
+    ("update",   "Manager update"),
+    ("weekly",   "Weekly review"),
+    ("events",   "Events"),
+]
 
 
 class CommandScreen(ModalScreen[str | None]):
@@ -26,52 +25,65 @@ class CommandScreen(ModalScreen[str | None]):
     CommandScreen {
         align: center middle;
     }
-    Vertical {
+    CommandScreen > Vertical {
         width: 50;
         height: auto;
         border: solid $accent;
         background: $surface;
         padding: 1 2;
     }
-    #cmd-title {
-        height: 1;
-        color: $text-muted;
-        margin-bottom: 1;
-    }
     #cmd-input {
         margin-bottom: 1;
     }
-    #cmd-hint {
-        height: 1;
-        color: $text-muted;
+    #cmd-list {
+        height: auto;
+        max-height: 12;
+        border: none;
     }
     """
 
     def compose(self) -> ComposeResult:
         yield Vertical(
-            Label("[dim]Command[/dim]", id="cmd-title"),
-            Input(placeholder="sync · config · tags · projects · update · weekly · events · help", id="cmd-input"),
-            Label("", id="cmd-hint"),
+            Input(placeholder="filter commands…", id="cmd-input"),
+            ListView(
+                *[ListItem(Label(f"[bold]{cmd}[/bold]  [dim]{desc}[/dim]"), id=f"cmd-{cmd}") for cmd, desc in COMMANDS],
+                id="cmd-list",
+            ),
         )
 
     def on_mount(self):
         self.query_one("#cmd-input", Input).focus()
 
     def on_input_changed(self, event: Input.Changed):
-        cmd = event.value.strip().lower()
-        hint = COMMANDS.get(cmd, "")
-        self.query_one("#cmd-hint", Label).update(f"[dim]{hint}[/dim]" if hint else "")
+        q = event.value.strip().lower()
+        lv = self.query_one("#cmd-list", ListView)
+        for item in lv.query(ListItem):
+            cmd_id = item.id.removeprefix("cmd-")
+            item.display = q == "" or q in cmd_id
+        # move highlight to first visible
+        for i, item in enumerate(lv.query(ListItem)):
+            if item.display:
+                lv.index = i
+                break
 
-    def on_input_submitted(self, event: Input.Submitted):
-        cmd = event.value.strip().lower()
-        if cmd == "help":
-            lines = "\n".join(f"  {k:<10} {v}" for k, v in COMMANDS.items() if k != "help")
-            self.query_one("#cmd-hint", Label).update(f"[dim]{lines}[/dim]")
-            return
-        if cmd in COMMANDS:
+    def on_key(self, event):
+        lv = self.query_one("#cmd-list", ListView)
+        if event.key in ("down", "up"):
+            lv.focus()
+            event.prevent_default()
+        elif event.key == "enter":
+            self._select_highlighted(lv)
+            event.prevent_default()
+
+    def on_list_view_selected(self, event: ListView.Selected):
+        cmd = event.item.id.removeprefix("cmd-")
+        self.dismiss(cmd)
+
+    def _select_highlighted(self, lv: ListView):
+        highlighted = lv.highlighted_child
+        if highlighted:
+            cmd = highlighted.id.removeprefix("cmd-")
             self.dismiss(cmd)
-        else:
-            self.query_one("#cmd-hint", Label).update("[red]Unknown command[/red]")
 
     def action_cancel(self):
         self.dismiss(None)
