@@ -363,15 +363,15 @@ class DashboardScreen(Screen):
         acc = accomplishments[row]
         from screens.add_accomplishment import EditAccomplishmentScreen
         self.app.push_screen(
-            EditAccomplishmentScreen(task=acc.task, outcome=acc.outcome),
+            EditAccomplishmentScreen(task=acc.task, outcome=acc.outcome, tags=acc.tags, project=acc.project or ""),
             lambda result: self._edit_accomplishment_callback(acc.task, result)
         )
 
     def _edit_accomplishment_callback(self, old_task, result):
         if not result:
             return
-        new_task, outcome = result
-        edit_accomplishment(old_task, new_task, outcome)
+        new_task, outcome, tags, project = result
+        edit_accomplishment(old_task, new_task, outcome, tags=tags, project=project)
         self.refresh_data()
 
     def _filtered_tasks(self):

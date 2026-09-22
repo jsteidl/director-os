@@ -964,7 +964,7 @@ def _find_accomplishment_block(content, task_title):
     return None
 
 
-def edit_accomplishment(old_task, new_task, outcome):
+def edit_accomplishment(old_task, new_task, outcome, tags=None, project=""):
 
     content = load_log()
     match = _find_accomplishment_block(content, old_task)
@@ -973,8 +973,10 @@ def edit_accomplishment(old_task, new_task, outcome):
         return
 
     completed = match.group(3)
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+    project_str = f" +{project}" if project else ""
     new_block = (
-        f"- Task: {new_task}\n"
+        f"- Task: {new_task}{project_str}{tag_str}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {completed}\n"
     )
