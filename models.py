@@ -25,6 +25,7 @@ class Dependency:
     handoff_from: str | None = None
     expected_date: str | None = None
     project: str | None = None
+    mgr: bool = False
 
 
 @dataclass
@@ -47,6 +48,7 @@ class Risk:
     tags: list[str] = field(default_factory=list)
     personal: bool = False
     project: str | None = None
+    mgr: bool = False
 
 
 @dataclass

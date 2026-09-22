@@ -42,7 +42,8 @@ screens/
   reopen_task.py
   help.py
   widget_viewer.py            # WidgetViewerScreen — read-only full-screen modal for any table
-  tag_manager.py              # TagManagerScreen — rename/merge tags across all objects
+  tag_manager.py              # TagManagerScreen — rename/merge/delete tags; shows usage counts; zero-count rows highlighted
+  project_manager.py          # ProjectManagerScreen — rename projects; color-coded per-type counts; ⚠ high-risk indicator
   calendar.py                 # CalendarScreen — Gregorian + NRF fiscal calendar modal
   events.py                   # EventsScreen — CRUD for events
   add_event.py                # AddEventScreen form
@@ -50,7 +51,8 @@ screens/
   weekly_review.py            # WeeklyReviewScreen
   config.py                   # ConfigScreen — edit logs_path via UI
   scratch.py                  # ScratchPadScreen — markdown scratch pad with checkbox navigation and promote-to-task
-  command.py                  # CommandScreen — command palette modal (:sync, :config, :tags, :update, :weekly, :events)
+  command.py                  # CommandScreen — command palette modal (:sync, :config, :tags, :projects, :update, :weekly, :events)
+  tab_complete.py             # TabCompleteMixin — intercepts Tab to apply SuggestFromList completion on focused Input
 widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar; personal_filter attribute; computes filtered metrics inline (does not call get_metrics())
   tasks.py                    # TaskTable — tag_filter, project_filter, personal_filter attributes
@@ -113,7 +115,12 @@ Left column = immediate action. Right column = situational awareness.
 - `get_scratch()` / `save_scratch()` — read/write `scratch.md` in logs directory
 - `_parse_task_line(line)` — helper extracted from `get_tasks()`; parses all inline fields (due, created, carried, mgr, personal, priority, tags, project) from a raw task line
 - `get_all_tags()` — returns sorted unique tags across all object types
+- `get_all_projects()` — returns sorted unique project names across all object types
+- `get_tag_counts()` — returns `{tag: count}` across all object types
+- `get_project_counts()` — returns `{project: {tasks, deps, risks, high_risks, someday, accomplishments}}` counts
 - `rename_tag(old, new)` — renames all occurrences in the log file
+- `delete_tag(tag)` — removes all `#tag` occurrences from the log file
+- `rename_project(old, new)` — renames all `+old` occurrences to `+new` in the log file
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
 - `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` and strips `+project` before title comparison; used by edit/delete/reopen
 - `promote_someday_item(item_text, priority, due_date, tags, project)` — removes someday item, adds task with full metadata
@@ -230,8 +237,26 @@ Left column = immediate action. Right column = situational awareness.
 
 ### Command palette
 - `:` opens `CommandScreen` — input-driven command palette modal
-- Dispatches: `sync`, `config`, `tags`, `update`, `weekly`, `events`
+- Dispatches: `sync`, `config`, `tags`, `projects`, `update`, `weekly`, `events`
 - Returns command string via `dismiss()`; `DashboardScreen.action_command` handles routing
+
+### Tag manager
+- `TagManagerScreen` shows all tags with usage count on the right — red `0` for unused, dim count otherwise
+- Zero-count rows have muted label styling
+- Clearing an input and saving deletes that tag from the log via `delete_tag()`
+- Changing an input and saving renames via `rename_tag()`
+
+### Project manager
+- `ProjectManagerScreen` (`:projects`) shows all projects with per-type counts: T=Tasks, D=Deps, R=Risks, S=Someday, A=Accomplishments
+- Counts are color-coded: tasks=cyan, deps=yellow, risks=red, someday=muted, accomplishments=green, total=light
+- `⚠` glyph shown in red if project has any H-severity risks
+- Changing an input and saving renames via `rename_project()`; blank input is a no-op (no delete for projects)
+
+### Autocomplete on tag/project inputs
+- All add/edit screens use `SuggestFromList` from `textual.suggester` on tag and project `Input` fields
+- Suggestion lists built at compose time from `get_all_tags()` / `get_all_projects()`
+- `TabCompleteMixin` in `screens/tab_complete.py` intercepts Tab to apply the current suggestion without moving focus
+- All screens using the mixin set `priority=True` on their `ctrl+s` binding to ensure save works regardless of focused widget
 
 ### Accomplishment blocks
 Stored as structured blocks:
@@ -301,7 +326,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `G` | Sync logs (git add/commit/push); auto-syncs on quit |
 | `n` | Scratch pad |
 | `b` | Briefing screen |
-| `:` | Command palette (sync, config, tags, update, weekly, events) |
+| `:` | Command palette (sync, config, tags, projects, update, weekly, events) |
 | `?` | Help |
 | `q` | Quit |
 

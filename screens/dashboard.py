@@ -1021,7 +1021,7 @@ class DashboardScreen(Screen):
             self.refresh_data()
 
     def action_toggle_mgr(self):
-        from parser import toggle_mgr_task, toggle_mgr_accomplishment
+        from parser import toggle_mgr_task, toggle_mgr_accomplishment, toggle_mgr_dependency, toggle_mgr_risk
         focused = self.focused
         if isinstance(focused, TaskTable):
             row = focused.cursor_row
@@ -1041,6 +1041,25 @@ class DashboardScreen(Screen):
             if row >= len(accomplishments):
                 return
             toggle_mgr_accomplishment(accomplishments[row].task)
+            self.refresh_data()
+        elif isinstance(focused, DependencyTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            from parser import get_dependencies
+            deps = get_dependencies()
+            if row >= len(deps):
+                return
+            toggle_mgr_dependency(deps[row].item)
+            self.refresh_data()
+        elif isinstance(focused, RisksTable):
+            row = focused.cursor_row
+            if row is None:
+                return
+            risks = self._filtered_risks()
+            if row >= len(risks):
+                return
+            toggle_mgr_risk(risks[row].description)
             self.refresh_data()
 
     def action_manager_update(self):

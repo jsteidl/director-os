@@ -36,8 +36,9 @@ class DependencyTable(DataTable):
             if self.project_filter and dep.project != self.project_filter:
                 continue
             color = _age_color(dep.age)
+            item_text = _t(dep.item) + (" ★" if dep.mgr else "")
             self.add_row(
-                Text(_t(dep.item), style=color),
+                Text(item_text, style=color),
                 Text(_t(dep.owner), style=color),
                 Text(f"{dep.age}d", style=color),
                 Text(dep.expected_date or "", style=color),

@@ -39,7 +39,7 @@ class RisksTable(DataTable):
             severity = risk.severity or ""
             color = SEVERITY_COLORS.get(severity, "default")
             label = SEVERITY_LABELS.get(severity, severity)
-            desc = _t(risk.description) + (" ♦" if risk.personal else "")
+            desc = _t(risk.description) + (" ♦" if risk.personal else "") + (" ★" if risk.mgr else "")
             self.add_row(
                 desc,
                 _t(risk.owner),

@@ -474,6 +474,8 @@ def get_dependencies():
         project_match = re.search(r"\+([\w]+)", rest)
         project = project_match.group(1) if project_match else None
 
+        mgr = "Mgr:true" in rest
+
         dependencies.append(
             Dependency(
                 clean_item,
@@ -484,13 +486,14 @@ def get_dependencies():
                 handoff_from=handoff_from,
                 expected_date=expected_date,
                 project=project,
+                mgr=mgr,
             )
         )
 
     return dependencies
 
 
-def add_dependency(item, owner, handoff_from=None, expected_date=None, tags=None, project=""):
+def add_dependency(item, owner, handoff_from=None, expected_date=None, tags=None, project="", mgr=False):
 
     content = load_log()
 
@@ -501,6 +504,8 @@ def add_dependency(item, owner, handoff_from=None, expected_date=None, tags=None
         line += f" | HandoffFrom: {handoff_from}"
     if expected_date:
         line += f" | Expected: {expected_date}"
+    if mgr:
+        line += " Mgr:true"
     if project:
         line += f" +{project}"
     if tags:
@@ -527,11 +532,14 @@ def edit_dependency(old_item, new_item, owner, expected_date=None, tags=None, pr
     since = match.group(1)
     new_item, owner = _clean(new_item), _clean(owner)
     handoff_match = re.search(r"HandoffFrom:([^|\n]+)", match.group(0))
+    mgr = "Mgr:true" in match.group(0)
     new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
     if handoff_match:
         new_line += f" | HandoffFrom: {handoff_match.group(1).strip()}"
     if expected_date:
         new_line += f" | Expected: {expected_date}"
+    if mgr:
+        new_line += " Mgr:true"
     if project:
         new_line += f" +{project}"
     if tags:
@@ -540,8 +548,21 @@ def edit_dependency(old_item, new_item, owner, expected_date=None, tags=None, pr
     save_log(content)
 
 
-def delete_dependency(item_text):
+def toggle_mgr_dependency(item_text):
+    content = load_log()
+    pattern = re.compile(
+        r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*"
+    )
+    match = pattern.search(content)
+    if not match:
+        return
+    line = match.group(0)
+    new_line = line.replace(" Mgr:true", "") if "Mgr:true" in line else line + " Mgr:true"
+    content = content.replace(line, new_line, 1)
+    save_log(content)
 
+
+def delete_dependency(item_text):
     content = load_log()
 
     pattern = re.compile(
@@ -640,6 +661,8 @@ def get_risks():
         description, owner, since, severity, rest = line
         personal = "Personal:true" in rest
         rest_clean = rest.replace(" Personal:true", "")
+        mgr = "Mgr:true" in rest_clean
+        rest_clean = rest_clean.replace(" Mgr:true", "")
         tags = extract_tags(rest_clean)
         project_match = re.search(r"\+([\w]+)", rest_clean)
         project = project_match.group(1) if project_match else None
@@ -653,26 +676,28 @@ def get_risks():
                 tags=tags,
                 personal=personal,
                 project=project,
+                mgr=mgr,
             )
         )
 
     return risks
 
 
-def add_risk(description, owner, severity, tags=None, personal=False, project=""):
+def add_risk(description, owner, severity, tags=None, personal=False, project="", mgr=False):
 
     content = load_log()
 
     description, owner = _clean(description), _clean(owner)
 
     personal_str = " Personal:true" if personal else ""
+    mgr_str = " Mgr:true" if mgr else ""
     project_str = f" +{project}" if project else ""
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
 
     line = (
         f"- {description} | Owner: {owner} "
         f"| Since: {date.today()} "
-        f"| Severity: {severity.upper()}{personal_str}{project_str}{tag_str}\n"
+        f"| Severity: {severity.upper()}{personal_str}{mgr_str}{project_str}{tag_str}\n"
     )
 
     content = content.replace(
@@ -707,8 +732,24 @@ def edit_risk(old_description, new_description, owner, severity, tags=None, proj
     )
     if match and "Personal:true" in match.group(0):
         new_line += " Personal:true"
+    if match and "Mgr:true" in match.group(0):
+        new_line += " Mgr:true"
     new_line += project_str + tag_str
     content = content.replace(match.group(0), new_line, 1)
+    save_log(content)
+
+
+def toggle_mgr_risk(description):
+    content = load_log()
+    pattern = re.compile(
+        r"- " + re.escape(description) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2} \| Severity:\s*[HML].*"
+    )
+    match = pattern.search(content)
+    if not match:
+        return
+    line = match.group(0)
+    new_line = line.replace(" Mgr:true", "") if "Mgr:true" in line else line + " Mgr:true"
+    content = content.replace(line, new_line, 1)
     save_log(content)
 
 
@@ -1420,6 +1461,12 @@ def rename_project(old: str, new: str):
     content = path.read_text(encoding="utf-8")
     content = re.sub(r"\+" + re.escape(old) + r"\b", f"+{new}", content)
     path.write_text(content, encoding="utf-8")
+    # keep projects.md in sync
+    meta = get_project_meta()
+    if old in meta:
+        m = meta[old]
+        delete_project_meta(old)
+        save_project_meta(new, m["display"], m["description"])
 
 
 def rename_tag(old_tag, new_tag):
@@ -1461,7 +1508,7 @@ def get_update_data(since_date: str) -> dict:
                 all_resolved_risks.append({"item": item, "owner": owner, "severity": severity, "resolved": resolved, "notes": notes})
     accomplishments = [a for a in all_accomplishments if a.completed >= since_date]
     deps = get_dependencies()
-    risks = [r for r in get_risks() if r.severity.upper() == "H"]
+    risks = get_risks()
     entries = [e for e in get_all_daily_entries() if e.date >= since_date]
     blocked = [(e.date, b) for e in entries for b in e.blocked]
     return {
@@ -1477,46 +1524,109 @@ def get_update_data(since_date: str) -> dict:
 
 
 def save_update(since_date: str, data: dict) -> str:
-    lines = []
-    lines.append(f"## Update — Since {since_date}\n")
+    meta = get_project_meta()
+    grouped = data.get("grouped", False)
+    tasks = data.get("tasks", [])
+    accomplishments = data.get("accomplished", [])
+    deps = data.get("deps", [])
+    risks = data.get("risks", [])
 
-    lines.append("### Accomplished")
-    if data["accomplished"]:
-        for a in data["accomplished"]:
-            lines.append(f"- {a.task}")
-    else:
-        lines.append("- Nothing completed in this period")
+    lines = [f"## Update — Since {since_date}\n"]
 
-    lines.append("\n### In Progress")
-    if data["tasks"]:
-        for t in data["tasks"]:
-            from widgets.tasks import PRIORITY_GLYPHS
-            glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
-            due = f" (due {t.due_date})" if t.due_date else ""
-            lines.append(f"- {glyph}{t.title}{due}")
-    else:
-        lines.append("- No open tasks")
+    if grouped:
+        all_projects = sorted(
+            {i.project for i in [*tasks, *accomplishments, *deps, *risks] if i.project},
+            key=str.lower
+        )
+        for project in all_projects:
+            m = meta.get(project, {})
+            display = m.get("display") or project
+            description = m.get("description", "")
+            pt = [i for i in tasks if i.project == project]
+            pa = [i for i in accomplishments if i.project == project]
+            pd = [i for i in deps if i.project == project]
+            pr = [i for i in risks if i.project == project]
+            if not any([pt, pa, pd, pr]):
+                continue
+            lines.append(f"### {display}")
+            if description:
+                lines.append(f"_{description}_\n")
+            if pa:
+                lines.append("**Accomplished**")
+                for a in pa: lines.append(f"- {a.task}")
+            if pt:
+                lines.append("\n**In Progress**")
+                for t in pt:
+                    from widgets.tasks import PRIORITY_GLYPHS
+                    glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
+                    due = f" (due {t.due_date})" if t.due_date else ""
+                    lines.append(f"- {glyph}{t.title}{due}")
+            if pd:
+                lines.append("\n**Waiting On**")
+                for d in pd: lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
+            if pr:
+                lines.append("\n**Risks**")
+                for r in pr: lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner})")
+            lines.append("")
 
-    lines.append("\n### Waiting On")
-    if data["deps"]:
-        for d in data["deps"]:
-            lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
+        # Untagged
+        ut = [i for i in tasks if not i.project]
+        ua = [i for i in accomplishments if not i.project]
+        ud = [i for i in deps if not i.project]
+        ur = [i for i in risks if not i.project]
+        if any([ut, ua, ud, ur]):
+            lines.append("### General")
+            if ua:
+                lines.append("**Accomplished**")
+                for a in ua: lines.append(f"- {a.task}")
+            if ut:
+                lines.append("\n**In Progress**")
+                for t in ut:
+                    from widgets.tasks import PRIORITY_GLYPHS
+                    glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
+                    due = f" (due {t.due_date})" if t.due_date else ""
+                    lines.append(f"- {glyph}{t.title}{due}")
+            if ud:
+                lines.append("\n**Waiting On**")
+                for d in ud: lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
+            if ur:
+                lines.append("\n**Risks**")
+                for r in ur: lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner})")
+            lines.append("")
     else:
-        lines.append("- Nothing pending")
+        lines.append("### Accomplished")
+        if accomplishments:
+            for a in accomplishments: lines.append(f"- {a.task}")
+        else:
+            lines.append("- Nothing completed in this period")
 
-    lines.append("\n### Risks")
-    if data["risks"]:
-        for r in data["risks"]:
-            lines.append(f"- {r.description} (owner: {r.owner})")
-    else:
-        lines.append("- No high severity risks")
+        lines.append("\n### In Progress")
+        if tasks:
+            for t in tasks:
+                from widgets.tasks import PRIORITY_GLYPHS
+                glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
+                due = f" (due {t.due_date})" if t.due_date else ""
+                lines.append(f"- {glyph}{t.title}{due}")
+        else:
+            lines.append("- No open tasks")
+
+        lines.append("\n### Waiting On")
+        if deps:
+            for d in deps: lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
+        else:
+            lines.append("- Nothing pending")
+
+        lines.append("\n### Risks")
+        if risks:
+            for r in risks: lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner})")
+        else:
+            lines.append("- No risks to surface")
 
     lines.append("\n### Resolved Dependencies")
     if data.get("resolved_deps"):
         for d in data["resolved_deps"]:
             lines.append(f"- {d['item']} — {d['owner']} (resolved {d['resolved']})")
-            if d["notes"]:
-                lines.append(f"  Notes: {d['notes']}")
+            if d["notes"]: lines.append(f"  Notes: {d['notes']}")
     else:
         lines.append("- None")
 
@@ -1524,8 +1634,7 @@ def save_update(since_date: str, data: dict) -> str:
     if data.get("resolved_risks"):
         for r in data["resolved_risks"]:
             lines.append(f"- {r['item']} [{r['severity']}] — {r['owner']} (resolved {r['resolved']})")
-            if r["notes"]:
-                lines.append(f"  Notes: {r['notes']}")
+            if r["notes"]: lines.append(f"  Notes: {r['notes']}")
     else:
         lines.append("- None")
 
@@ -1615,6 +1724,47 @@ def get_daily_log_text():
 
 def get_events_file():
     return _get_logs_path() / "events.md"
+
+
+def get_projects_file():
+    return _get_logs_path() / "projects.md"
+
+
+def get_project_meta() -> dict[str, dict[str, str]]:
+    """Return {tag: {display, description}} from projects.md."""
+    path = get_projects_file()
+    if not path.exists():
+        return {}
+    meta = {}
+    for m in re.finditer(
+        r"- (\S+) \| Display: (.*?) \| Description: (.*)",
+        path.read_text(encoding="utf-8"),
+    ):
+        meta[m.group(1)] = {"display": m.group(2).strip(), "description": m.group(3).strip()}
+    return meta
+
+
+def save_project_meta(tag: str, display: str, description: str):
+    """Upsert a project meta entry in projects.md."""
+    path = get_projects_file()
+    content = path.read_text(encoding="utf-8") if path.exists() else "# Projects\n\n"
+    line = f"- {tag} | Display: {display} | Description: {description}\n"
+    pattern = re.compile(r"- " + re.escape(tag) + r" \| Display:.*\n")
+    if pattern.search(content):
+        content = pattern.sub(line, content, count=1)
+    else:
+        content += line
+    path.write_text(content, encoding="utf-8")
+
+
+def delete_project_meta(tag: str):
+    """Remove a project meta entry from projects.md."""
+    path = get_projects_file()
+    if not path.exists():
+        return
+    content = path.read_text(encoding="utf-8")
+    content = re.sub(r"- " + re.escape(tag) + r" \| Display:.*\n", "", content)
+    path.write_text(content, encoding="utf-8")
 
 
 def get_events() -> list:
