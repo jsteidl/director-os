@@ -952,6 +952,28 @@ def get_accomplishments():
     ]
 
 
+def add_accomplishment(task, outcome="", tags=None, project=""):
+
+    content = load_log()
+
+    task = _clean(task)
+    project_str = f" +{project}" if project else ""
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+
+    block = (
+        f"- Task: {task}{project_str}{tag_str}\n"
+        f"  Outcome: {outcome}\n"
+        f"  Completed: {date.today()}\n\n"
+    )
+
+    content = content.replace(
+        "### Wins Worth Mentioning",
+        block + "### Wins Worth Mentioning",
+        1,
+    )
+    save_log(content)
+
+
 def _find_accomplishment_block(content, task_title):
     """Find accomplishment block where stripped task title matches."""
     pattern = re.compile(
@@ -1359,14 +1381,13 @@ def rename_tag(old_tag, new_tag):
 def get_update_data(since_date: str) -> dict:
     tasks = get_tasks()
     all_accomplishments = []
+    all_resolved_deps = []
+    all_resolved_risks = []
     for path in sorted(_get_logs_path().glob("*-Director-Log.md")):
         content = path.read_text(encoding="utf-8")
-        pattern = (
-            r"- Task: (.*?)\n"
-            r"  Outcome: (.*?)\n"
-            r"  Completed: (.*?)\n"
-        )
-        for task, outcome, completed in re.findall(pattern, content, re.MULTILINE):
+        for task, outcome, completed in re.findall(
+            r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n", content, re.MULTILINE
+        ):
             all_accomplishments.append(Accomplishment(
                 task=strip_tags(task.replace(" Mgr:true", "")),
                 outcome=outcome,
@@ -1374,6 +1395,18 @@ def get_update_data(since_date: str) -> dict:
                 tags=extract_tags(task),
                 mgr="Mgr:true" in task,
             ))
+        for item, owner, resolved, notes in re.findall(
+            r"- Dependency: (.*?)\n  Owner: (.*?)\n  Resolved: (\d{4}-\d{2}-\d{2})\n  Notes: (.*?)\n",
+            content, re.MULTILINE
+        ):
+            if resolved >= since_date:
+                all_resolved_deps.append({"item": item, "owner": owner, "resolved": resolved, "notes": notes})
+        for item, owner, severity, resolved, notes in re.findall(
+            r"- Risk: (.*?)\n  Owner: (.*?)\n  Severity: ([HML])\n  Resolved: (\d{4}-\d{2}-\d{2})\n  Notes: (.*?)\n",
+            content, re.MULTILINE
+        ):
+            if resolved >= since_date:
+                all_resolved_risks.append({"item": item, "owner": owner, "severity": severity, "resolved": resolved, "notes": notes})
     accomplishments = [a for a in all_accomplishments if a.completed >= since_date]
     deps = get_dependencies()
     risks = [r for r in get_risks() if r.severity.upper() == "H"]
@@ -1386,6 +1419,8 @@ def get_update_data(since_date: str) -> dict:
         "deps": deps,
         "risks": risks,
         "blocked": blocked,
+        "resolved_deps": all_resolved_deps,
+        "resolved_risks": all_resolved_risks,
     }
 
 
@@ -1423,6 +1458,24 @@ def save_update(since_date: str, data: dict) -> str:
             lines.append(f"- {r.description} (owner: {r.owner})")
     else:
         lines.append("- No high severity risks")
+
+    lines.append("\n### Resolved Dependencies")
+    if data.get("resolved_deps"):
+        for d in data["resolved_deps"]:
+            lines.append(f"- {d['item']} — {d['owner']} (resolved {d['resolved']})")
+            if d["notes"]:
+                lines.append(f"  Notes: {d['notes']}")
+    else:
+        lines.append("- None")
+
+    lines.append("\n### Resolved Risks")
+    if data.get("resolved_risks"):
+        for r in data["resolved_risks"]:
+            lines.append(f"- {r['item']} [{r['severity']}] — {r['owner']} (resolved {r['resolved']})")
+            if r["notes"]:
+                lines.append(f"  Notes: {r['notes']}")
+    else:
+        lines.append("- None")
 
     lines.append("\n### Blocked / Notes")
     if data["blocked"]:

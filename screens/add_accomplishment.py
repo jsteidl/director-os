@@ -4,6 +4,57 @@ from textual.containers import Vertical
 from textual.binding import Binding
 
 
+class AddAccomplishmentScreen(ModalScreen[tuple | None]):
+
+    BINDINGS = [
+        Binding("ctrl+s", "save", "Save"),
+        Binding("escape", "cancel", "Cancel"),
+    ]
+
+    CSS = """
+    AddAccomplishmentScreen {
+        align: center middle;
+    }
+    Vertical {
+        width: 60;
+        height: auto;
+        border: solid $accent;
+        background: $surface;
+        padding: 1 3;
+    }
+    Label {
+        margin-top: 1;
+    }
+    Input {
+        margin-bottom: 1;
+    }
+    """
+
+    def compose(self):
+        yield Vertical(
+            Label("Accomplishment  [dim]ctrl+s to save · esc to cancel[/dim]"),
+            Input(id="task", placeholder="What did you accomplish?"),
+            Label("Outcome  [dim]optional[/dim]"),
+            Input(id="outcome", placeholder="Result or impact"),
+            Label("Tags"),
+            Input(id="tags", placeholder="optional, space-separated without #"),
+            Label("Project"),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)"),
+        )
+
+    def action_save(self):
+        task = self.query_one("#task", Input).value.strip()
+        if not task:
+            return
+        outcome = self.query_one("#outcome", Input).value.strip()
+        tags = [t.strip() for t in self.query_one("#tags", Input).value.split() if t.strip()]
+        project = self.query_one("#project", Input).value.strip()
+        self.dismiss((task, outcome, tags, project))
+
+    def action_cancel(self):
+        self.dismiss(None)
+
+
 class EditAccomplishmentScreen(ModalScreen[tuple | None]):
 
     BINDINGS = [

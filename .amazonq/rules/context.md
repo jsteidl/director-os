@@ -31,11 +31,11 @@ screens/
   add_task.py
   task_complete.py
   add_dependency.py
-  due_date.py                 # Shared due date resolution: resolve_due(), DUE_PLACEHOLDER, DUE_ERROR
+  due_date.py                 # Shared due date resolution: resolve_due(), resolve_since(), DUE_PLACEHOLDER, DUE_ERROR, SINCE_PLACEHOLDER, SINCE_ERROR
   resolve_dependency.py
   add_risk.py
   add_someday.py
-  add_accomplishment.py       # EditAccomplishmentScreen
+  add_accomplishment.py       # AddAccomplishmentScreen (standalone) + EditAccomplishmentScreen (edit with tags/project)
   daily_checkin.py
   daily_log_navigator.py
   daily_log_viewer.py
@@ -54,9 +54,9 @@ screens/
 widgets/
   metrics.py                  # MetricsWidget — single-line executive summary bar; personal_filter attribute; computes filtered metrics inline (does not call get_metrics())
   tasks.py                    # TaskTable — tag_filter, project_filter, personal_filter attributes
-  dependencies.py             # DependencyTable — tag_filter attribute
-  risks.py                    # RisksTable — tag_filter, personal_filter attributes
-  someday.py                  # SomedayTable — tag_filter, personal_filter attributes
+  dependencies.py             # DependencyTable — tag_filter, project_filter attributes
+  risks.py                    # RisksTable — tag_filter, project_filter, personal_filter attributes
+  someday.py                  # SomedayTable — tag_filter, project_filter, personal_filter attributes
   accomplishments_table.py    # AccomplishmentTable — tag_filter, project_filter, personal_filter attributes; Project and Tags columns
   today.py                    # TodayWidget — scrollable, shows today's check-in
 ```
@@ -117,8 +117,9 @@ Left column = immediate action. Right column = situational awareness.
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
 - `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` and strips `+project` before title comparison; used by edit/delete/reopen
 - `promote_someday_item(item_text, priority, due_date, tags, project)` — removes someday item, adds task with full metadata
-- `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked items across all log files since date; accomplishments and tasks include `mgr` flag
-- `save_update(since_date, data)` — writes structured bullet update to `<logs_path>/updates/update-YYYY-MM-DD.md`
+- `add_accomplishment(task, outcome, tags, project)` — writes accomplishment block directly; used by standalone add
+- `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked, resolved_deps, resolved_risks across all log files since date
+- `save_update(since_date, data)` — writes structured bullet update including resolved deps/risks to `<logs_path>/updates/update-YYYY-MM-DD.md`
 - `toggle_mgr_task(task_title)` — toggles `Mgr:true` on a task line
 - `toggle_mgr_accomplishment(task_title)` — toggles `Mgr:true` on an accomplishment block
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
@@ -144,25 +145,26 @@ Left column = immediate action. Right column = situational awareness.
 - `toggle_mgr_task` searches on title prefix before `@mention` to handle tags between title and mention in raw log
 
 ### Project field
-- `+ProjectName` inline field on tasks and accomplishments
-- `Task.project` and `Accomplishment.project` — `str | None`, parsed by `_parse_task_line` and `get_accomplishments`
-- `add_task(... project="")` and `edit_task(... project="")` write `+project` after `Personal:true`, before tags
+- `+ProjectName` inline field on tasks, accomplishments, dependencies, risks, and someday items
+- `Task.project`, `Accomplishment.project`, `Dependency.project`, `Risk.project`, `SomedayItem.project` — `str | None`
+- All add/edit modals expose Tags and Project fields; project uses underscore convention (`+Data_Platform`)
 - `complete_task` carries `+project` forward from the task line into the accomplishment block
 - `promote_someday_item(... project="")` writes `+project` on the new task line
-- `AddTaskScreen` has a Project input field; dismisses 5-tuple `(task, priority, due_date, tag, project)`
-- `[`/`]` cycles global project filter forward/reverse on `DashboardScreen`
-- Project filter applies to `TaskTable` and `AccomplishmentTable` (only objects with a project field)
+- `AddTaskScreen` dismisses 5-tuple `(task, priority, due_date, tag, project)`
+- `]`/`[` cycles global project filter forward/reverse on `DashboardScreen`; `0` clears all filters
+- Project filter applies to all widgets; project list pulled from all object types
 - `TaskTable` renders project as `+ProjectName` in the Project column (replaces Created column)
-- `AccomplishmentTable` renders project in a Project column alongside Tags column
+- `AccomplishmentTable`, `DependencyTable`, `RisksTable`, `SomedayTable` all render Project and Tags columns
 - `_find_accomplishment_block` strips `+project` before title comparison
 
 ### Global tag and project filters
 - Filter state lives on `DashboardScreen` as `_tag_filter: str` and `_project_filter: str`
 - `refresh_data()` pushes both filters to all widgets on every refresh
 - `f`/`F` cycles tag filter forward/reverse — applies to all widgets (tasks, deps, risks, someday, accomplishments)
-- `[`/`]` cycles project filter forward/reverse — applies to tasks and accomplishments only
+- `]`/`[` cycles project filter forward/reverse — applies to all widgets; project list pulled from all object types
+- `0` clears both tag and project filters simultaneously
 - Active filters shown in title bar: `director_os (All #active +DataPlatform)`
-- Tag list for cycling pulled from `get_all_tags()` (all object types); project list from tasks + accomplishments combined
+- Tag list for cycling pulled from `get_all_tags()` (all object types); project list from all object types
 
 ### Carry-forward
 - Rolled-over tasks get `Carried:true` appended to their log line at rollover time
@@ -172,9 +174,10 @@ Left column = immediate action. Right column = situational awareness.
 - `complete_task` carries `Mgr:true`, `Personal:true`, `+project`, and tags forward into the accomplishment block
 
 ### Due date shorthands
-- Shared module `screens/due_date.py` exports `resolve_due(value)`, `DUE_PLACEHOLDER`, `DUE_ERROR`
-- Shorthands: `t`/`today`=today, `tm`/`tomorrow`=+1d, `w`/`week`=+7d, `2w`=+14d, `+N`=+N days, `YYYY-MM-DD`=literal
-- Used in `AddTaskScreen`, `AddDependencyScreen`, and `CompleteTaskScreen` (handoff expected date)
+- Shared module `screens/due_date.py` exports `resolve_due()`, `resolve_since()`, and their placeholder/error constants
+- `resolve_due` shorthands: `t`/`today`=today, `tm`/`tomorrow`=+1d, `w`/`week`=+7d, `2w`=+14d, `+N`=+N days, `YYYY-MM-DD`=literal
+- `resolve_since` shorthands: `t`/`today`=today, `y`/`yesterday`=-1d, `lw`/`lastweek`=last Monday, `-N`=-N days, `-2w`=-2 weeks, `YYYY-MM-DD`=literal
+- `resolve_due` used in `AddTaskScreen`, `AddDependencyScreen`, `CompleteTaskScreen`; `resolve_since` used in `UpdateScreen`
 
 ### Task-dependency handoff
 - Completing a task (`x` on TaskTable) shows optional "Hand off to someone?" checkbox
@@ -197,9 +200,9 @@ Left column = immediate action. Right column = situational awareness.
 ### Dependency model
 - `Dependency.handoff_from` — optional, parsed from `HandoffFrom:` field in log line
 - `Dependency.expected_date` — optional, parsed from `Expected:\s*(\d{4}-\d{2}-\d{2})` in log line
-- `AddDependencyScreen` includes expected date field; no tags or project field yet (planned in `feature/metadata-parity`)
-- `edit_dependency` preserves `HandoffFrom` and writes `Expected` on save
-- `DependencyTable` shows `Expected` as a fourth column
+- `AddDependencyScreen` includes expected date, tags, and project fields; dismisses 5-tuple `(item, owner, expected, tags, project)`
+- `edit_dependency` preserves `HandoffFrom` and writes `Expected`, tags, project on save
+- `DependencyTable` shows `Expected`, `Project`, `Tags` columns
 
 ### Log sync
 - `G` keybind in `dashboard.py` runs `git -C <logs_path> add -A && commit -m "sync" && push`
@@ -274,7 +277,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 
 | Key | Action |
 |-----|--------|
-| `a` | Add (context-sensitive: task / dep / risk / someday; no-op on accomplishments) |
+| `a` | Add (context-sensitive: task / dep / risk / someday / accomplishment) |
 | `e` | Edit selected row |
 | `x` | Complete task (TaskTable) or resolve dependency (DependencyTable) |
 | `u` | Reopen accomplishment as task |
@@ -287,8 +290,9 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `P` | Cycle personal filter (All → Personal only → Work only) |
 | `f` | Cycle global tag filter forward (all → #tag1 → #tag2 → all) |
 | `F` | Cycle global tag filter reverse |
-| `[` | Cycle global project filter forward |
-| `]` | Cycle global project filter reverse |
+| `[` | Cycle global project filter reverse |
+| `]` | Cycle global project filter forward |
+| `0` | Clear all filters |
 | `!` | Daily check-in |
 | `l` | Open daily log navigator |
 | `c` | Calendar (Gregorian + NRF fiscal) |
@@ -313,9 +317,9 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | #14 | Tag Analytics Dashboard |
 | #15 | ~~Export Manager Update~~ ✓ |
 | #16 | Package Director OS |
-| #27 | ~~Search / filter across tables~~ ✓ (global tag + project filters) |
+| #27 | ~~Search / filter across tables~~ ✓ (global tag + project filters across all widgets) |
 | #28 | ~~Carry-forward indicator for rolled-over tasks~~ ✓ |
-| —  | `feature/metadata-parity` — add tags + project fields to deps, risks, someday modals and parser |
+| —  | ~~`feature/metadata-parity`~~ ✓ — full tags + project parity across all object types |
 
 ## Git Workflow
 

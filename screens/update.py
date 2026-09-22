@@ -6,11 +6,7 @@ from textual.binding import Binding
 
 from parser import get_update_data, save_update
 from widgets.tasks import PRIORITY_GLYPHS
-
-
-def _last_monday() -> str:
-    today = date.today()
-    return (today - timedelta(days=today.weekday())).isoformat()
+from screens.due_date import resolve_since, SINCE_PLACEHOLDER
 
 
 class UpdateScreen(ModalScreen):
@@ -60,7 +56,8 @@ class UpdateScreen(ModalScreen):
 
     def __init__(self):
         super().__init__()
-        self._since = _last_monday()
+        today = date.today()
+        self._since = (today - timedelta(days=today.weekday())).isoformat()
         self._mgr_only = True
         self._data = None
 
@@ -69,7 +66,7 @@ class UpdateScreen(ModalScreen):
             Label("Manager Update  [dim]ctrl+s to generate · esc to cancel[/dim]", id="update-title"),
             Horizontal(
                 Label("Since:", classes="filter-label"),
-                Input(value=self._since, id="since-input"),
+                Input(value=self._since, placeholder=SINCE_PLACEHOLDER, id="since-input"),
                 Label("  ★ flagged only:", classes="filter-label"),
                 Switch(value=True, id="mgr-switch"),
                 classes="filter-row",
@@ -85,8 +82,10 @@ class UpdateScreen(ModalScreen):
 
     def on_input_changed(self, event: Input.Changed):
         if event.input.id == "since-input":
-            self._since = event.value
-            self._refresh_preview()
+            resolved, valid = resolve_since(event.value)
+            if valid:
+                self._since = resolved
+                self._refresh_preview()
 
     def on_switch_changed(self, event: Switch.Changed):
         self._mgr_only = event.value
@@ -138,6 +137,20 @@ class UpdateScreen(ModalScreen):
                 lines.append(f"  • {r.description} (owner: {r.owner})")
         else:
             lines.append("  No high severity risks")
+
+        lines.append("\n[bold]Resolved Dependencies[/bold]")
+        if self._data.get("resolved_deps"):
+            for d in self._data["resolved_deps"]:
+                lines.append(f"  • {d['item']} — {d['owner']} (resolved {d['resolved']})")
+        else:
+            lines.append("  None")
+
+        lines.append("\n[bold]Resolved Risks[/bold]")
+        if self._data.get("resolved_risks"):
+            for r in self._data["resolved_risks"]:
+                lines.append(f"  • {r['item']} [{r['severity']}] — {r['owner']} (resolved {r['resolved']})")
+        else:
+            lines.append("  None")
 
         lines.append("\n[bold]Blocked / Notes[/bold]")
         if self._data["blocked"]:

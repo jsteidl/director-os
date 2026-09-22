@@ -11,20 +11,24 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 ## Features
 
 - **Executive Summary** — live status bar showing overdue count, high risk count, oldest task age, and wins this month
-- **Task tracking** — add, edit, complete, delete, and reopen tasks with priority (A/B/C), due dates, and tags
+- **Task tracking** — add, edit, complete, delete, and reopen tasks with priority (A/B/C), due dates, tags, and project
 - **Dependency tracking** — track what you're waiting on, by owner and age; hand off from completed tasks
-- **Risk tracking** — log risks with severity (H/M/L), owner, and date
+- **Risk tracking** — log risks with severity (H/M/L), owner, date, tags, and project
 - **Someday / Future** — capture ideas and future work; promote to active tasks or demote tasks to someday
-- **Accomplishments** — auto-logged when tasks are completed; flag with `m` to surface in manager updates
-- **Manager update** — generate a structured bullet update since a given date; written to `updates/` in your logs directory
+- **Accomplishments** — auto-logged when tasks are completed; carries tags, project, and flags forward; add standalone accomplishments directly; flag with `M` to surface in manager updates
+- **Project tracking** — tag any item with `+ProjectName` (underscores for spaces, e.g. `+Data_Platform`); filter the entire dashboard by project with `]`/`[`; `0` clears all filters
+- **Tag filtering** — filter the entire dashboard by tag with `f`/`F`; tags and projects apply across all object types
+- **Manager update** — generate a structured bullet update since a given date (supports shorthands: `y`, `-7`, `-2w`, `lw`); includes resolved deps and risks; written to `updates/`
 - **Daily check-in** — structured daily log with priorities, accomplished, blocked, and notes
 - **Today panel** — shows today's check-in at a glance
 - **Weekly review** — structured weekly summary
 - **Calendar** — Gregorian and NRF 4-5-4 fiscal calendar with due date and event markers
 - **Events** — track holidays, deadlines, OOO with configurable reminders
 - **Personal flag** — mark items as personal (♦); cycle dashboard between All / Personal / Work views
+- **Scratch pad** — persistent markdown scratch pad with checkbox navigation and promote-to-task
 - **Tag manager** — rename and merge tags across all objects
-- **Log sync** — push logs to any git remote with `g`; auto-syncs on quit
+- **Command palette** — `:` to access sync, config, tags, update, weekly, and events
+- **Log sync** — push logs to any git remote with `G`; auto-syncs on quit
 
 Press `?` in the app for a full keyboard shortcut reference.
 

@@ -28,3 +28,37 @@ def resolve_due(value: str) -> tuple[str, bool]:
         return value.strip(), True
     except ValueError:
         return value, False
+
+
+SINCE_PLACEHOLDER = "YYYY-MM-DD · t · y · -N · -2w · lw"
+SINCE_ERROR = "Use YYYY-MM-DD, t, y, -N, -2w, or lw"
+
+
+def resolve_since(value: str) -> tuple[str, bool]:
+    """Return (resolved_date_str, is_valid) for past-facing since-date inputs."""
+    if not value:
+        return "", False
+    lower = value.strip().lower()
+    today = date.today()
+    if lower in ("t", "today"):
+        return today.isoformat(), True
+    if lower in ("y", "yesterday"):
+        return (today - timedelta(days=1)).isoformat(), True
+    if lower in ("lw", "lastweek"):
+        return (today - timedelta(days=today.weekday())).isoformat(), True
+    if lower.startswith("-"):
+        rest = lower[1:]
+        if rest.endswith("w"):
+            try:
+                return (today - timedelta(weeks=int(rest[:-1]))).isoformat(), True
+            except ValueError:
+                return value, False
+        try:
+            return (today - timedelta(days=int(rest))).isoformat(), True
+        except ValueError:
+            return value, False
+    try:
+        date.fromisoformat(value.strip())
+        return value.strip(), True
+    except ValueError:
+        return value, False

@@ -23,7 +23,7 @@ from parser import (
     resolve_dependency,
     add_risk, edit_risk, delete_risk, resolve_risk,
     add_someday_item, edit_someday_item, delete_someday_item, promote_someday_item,
-    delete_accomplishment, edit_accomplishment,
+    delete_accomplishment, edit_accomplishment, add_accomplishment,
     toggle_personal_task, toggle_personal_accomplishment,
     toggle_personal_risk, toggle_personal_someday,
 )
@@ -228,9 +228,18 @@ class DashboardScreen(Screen):
         elif isinstance(focused, SomedayTable):
             self.app.push_screen(AddSomedayScreen(), self.add_someday_callback)
         elif isinstance(focused, AccomplishmentTable):
-            return
+            from screens.add_accomplishment import AddAccomplishmentScreen
+            self.app.push_screen(AddAccomplishmentScreen(), self._add_accomplishment_callback)
         else:
             self.app.push_screen(AddTaskScreen(), self.add_task_callback)
+
+    def _add_accomplishment_callback(self, result):
+        if not result:
+            return
+        task, outcome, tags, project = result
+        add_accomplishment(task, outcome, tags, project)
+        self.refresh_data()
+        self.app.notify("Accomplishment logged ✓", severity="information")
 
     # =====================================================
     # COMPLETE / RESOLVE — context-sensitive
