@@ -43,11 +43,11 @@ screens/
   help.py
   widget_viewer.py            # WidgetViewerScreen — read-only full-screen modal for any table
   tag_manager.py              # TagManagerScreen — rename/merge/delete tags; shows usage counts; zero-count rows highlighted
-  project_manager.py          # ProjectManagerScreen — rename projects; color-coded per-type counts; ⚠ high-risk indicator
+  project_manager.py          # ProjectManagerScreen — rename projects; color-coded per-type counts; ⚠ high-risk indicator; Display and Description fields per project; saves to projects.md
   calendar.py                 # CalendarScreen — Gregorian + NRF fiscal calendar modal
   events.py                   # EventsScreen — CRUD for events
   add_event.py                # AddEventScreen form
-  update.py                   # UpdateScreen — manager update generator
+  update.py                   # UpdateScreen — manager update generator; grouped by project (default) or flat toggle; ★ flagged only switch; personal items always excluded; display name + description as grouped headers
   weekly_review.py            # WeeklyReviewScreen
   config.py                   # ConfigScreen — edit logs_path via UI
   scratch.py                  # ScratchPadScreen — markdown scratch pad with checkbox navigation and promote-to-task
@@ -120,7 +120,13 @@ Left column = immediate action. Right column = situational awareness.
 - `get_project_counts()` — returns `{project: {tasks, deps, risks, high_risks, someday, accomplishments}}` counts
 - `rename_tag(old, new)` — renames all occurrences in the log file
 - `delete_tag(tag)` — removes all `#tag` occurrences from the log file
-- `rename_project(old, new)` — renames all `+old` occurrences to `+new` in the log file
+- `rename_project(old, new)` — renames all `+old` occurrences to `+new` in the log file; keeps `projects.md` in sync
+- `get_projects_file()` — path to `projects.md` in logs directory
+- `get_project_meta()` — returns `{tag: {display, description}}` from `projects.md`
+- `save_project_meta(tag, display, description)` — upsert a project meta entry
+- `delete_project_meta(tag)` — remove a project meta entry
+- `toggle_mgr_dependency(item_text)` — toggles `Mgr:true` on a dependency line
+- `toggle_mgr_risk(description)` — toggles `Mgr:true` on a risk line
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
 - `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` and strips `+project` before title comparison; used by edit/delete/reopen
 - `promote_someday_item(item_text, priority, due_date, tags, project)` — removes someday item, adds task with full metadata
@@ -142,12 +148,15 @@ Left column = immediate action. Right column = situational awareness.
 - Personal flag is independent of mgr flag — items can carry both
 
 ### Mgr flag
-- `Mgr:true` inline field on tasks and accomplishments — same pattern as `Carried:true`
-- `toggle_mgr_task()` / `toggle_mgr_accomplishment()` — toggled via `M` keybind
+- `Mgr:true` inline field on tasks, accomplishments, dependencies, and risks
+- `toggle_mgr_task()` / `toggle_mgr_accomplishment()` / `toggle_mgr_dependency()` / `toggle_mgr_risk()` — toggled via `M` keybind
 - Completing a `Mgr:true` task carries the flag into the accomplishment block
-- `edit_task` preserves `Mgr:true` on the rewritten line
-- `★` glyph rendered in task and accomplishment tables for flagged items
-- Update screen defaults to `★ flagged only`; toggle off to show all
+- `edit_task` preserves `Mgr:true` on the rewritten line; `edit_dependency` and `edit_risk` preserve it too
+- `★` glyph rendered in task, accomplishment, dependency, and risk tables for flagged items
+- Update screen defaults to `★ flagged only`; toggle off to show all with `★` inline
+- Personal items always excluded from manager update regardless of mgr flag
+- Deps: shown in update only if `★`-flagged (when switch on) or all (when switch off)
+- Risks: H-severity always shown; M/L shown only if `★`-flagged
 - `_find_accomplishment_block` strips `Mgr:true` before title comparison
 - `toggle_mgr_task` searches on title prefix before `@mention` to handle tags between title and mention in raw log
 
@@ -235,6 +244,16 @@ Left column = immediate action. Right column = situational awareness.
 - `action_scratch_pad` passes `lambda _: self.refresh_data()` so dashboard refreshes on close
 - Syncs with git on `G` / quit auto-sync
 
+### Manager update
+- `UpdateScreen` (`:update`) — grouped by project by default; flat view via Grouped toggle switch
+- Grouped view: `### Display Name` header, `_description_` subtitle, items nested under project; untagged items in `(General)` at bottom
+- Flat view: traditional section-per-type layout
+- `★ flagged only` switch: when on, filters tasks/accomplishments/deps to flagged only; when off, shows all with `★` inline next to flagged items
+- Risks: H-severity always included; M/L included only if `★`-flagged
+- Personal items always excluded regardless of switches
+- Resolved deps/risks and blocked always shown flat at the bottom
+- `save_update()` mirrors grouped/flat structure in saved markdown
+
 ### Command palette
 - `:` opens `CommandScreen` — input-driven command palette modal
 - Dispatches: `sync`, `config`, `tags`, `projects`, `update`, `weekly`, `events`
@@ -250,7 +269,10 @@ Left column = immediate action. Right column = situational awareness.
 - `ProjectManagerScreen` (`:projects`) shows all projects with per-type counts: T=Tasks, D=Deps, R=Risks, S=Someday, A=Accomplishments
 - Counts are color-coded: tasks=cyan, deps=yellow, risks=red, someday=muted, accomplishments=green, total=light
 - `⚠` glyph shown in red if project has any H-severity risks
-- Changing an input and saving renames via `rename_project()`; blank input is a no-op (no delete for projects)
+- Each row has Display and Description inputs — saved to `projects.md` in logs directory
+- Display name used as header in grouped manager update; Description shown as subtitle
+- Changing tag input and saving renames via `rename_project()`; blank tag input is a no-op
+- `projects.md` format: `- Tag | Display: Display Name | Description: description text`
 
 ### Autocomplete on tag/project inputs
 - All add/edit screens use `SuggestFromList` from `textual.suggester` on tag and project `Input` fields
