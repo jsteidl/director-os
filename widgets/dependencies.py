@@ -21,19 +21,19 @@ def _age_color(age):
 class DependencyTable(DataTable):
 
     tag_filter = ""
+    project_filter = ""
 
     def on_mount(self):
-
         self.zebra_stripes = True
-        self.add_columns("Dependency", "Owner", "Age", "Expected")
+        self.add_columns("Dependency", "Owner", "Age", "Expected", "Project", "Tags")
         self.load_dependencies()
 
     def load_dependencies(self):
-
         self.clear()
-
         for dep in get_dependencies():
             if self.tag_filter and self.tag_filter not in dep.tags:
+                continue
+            if self.project_filter and dep.project != self.project_filter:
                 continue
             color = _age_color(dep.age)
             self.add_row(
@@ -41,4 +41,6 @@ class DependencyTable(DataTable):
                 Text(_t(dep.owner), style=color),
                 Text(f"{dep.age}d", style=color),
                 Text(dep.expected_date or "", style=color),
+                Text(f"+{dep.project}" if dep.project else "", style=color),
+                Text(" ".join(f"#{t}" for t in dep.tags) if dep.tags else "", style=color),
             )

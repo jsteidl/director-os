@@ -50,7 +50,7 @@ class AddTaskScreen(ModalScreen[tuple]):
             Label("Tags"),
             Input(id="tag", placeholder="optional, space-separated without #", value=self._tags),
             Label("Project"),
-            Input(id="project", placeholder="optional, without +", value=self._project),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)", value=self._project),
         )
 
     def action_save(self):

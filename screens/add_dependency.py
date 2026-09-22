@@ -31,11 +31,13 @@ class AddDependencyScreen(ModalScreen[tuple]):
     }
     """
 
-    def __init__(self, item="", owner="", expected_date=""):
+    def __init__(self, item="", owner="", expected_date="", tags=None, project=""):
         super().__init__()
         self._item = item
         self._owner = owner
         self._expected_date = expected_date
+        self._tags = " ".join(tags) if tags else ""
+        self._project = project
 
     def compose(self):
         yield Vertical(
@@ -45,6 +47,10 @@ class AddDependencyScreen(ModalScreen[tuple]):
             Input(id="owner", placeholder="Owner", value=self._owner),
             Label("Expected date"),
             Input(id="expected", placeholder=DUE_PLACEHOLDER, value=self._expected_date),
+            Label("Tags"),
+            Input(id="tags", placeholder="optional, space-separated without #", value=self._tags),
+            Label("Project"),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)", value=self._project),
         )
 
     def action_save(self):
@@ -55,7 +61,9 @@ class AddDependencyScreen(ModalScreen[tuple]):
         if not valid:
             self.query_one("#expected", Input).border_subtitle = DUE_ERROR
             return
-        self.dismiss((dependency, owner, expected or None))
+        tags = [t.strip() for t in self.query_one("#tags", Input).value.split() if t.strip()]
+        project = self.query_one("#project", Input).value.strip()
+        self.dismiss((dependency, owner, expected or None, tags, project))
 
     def action_cancel(self):
         self.dismiss(None)

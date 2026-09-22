@@ -10,22 +10,15 @@ class SomedayTable(DataTable):
 
     personal_filter = "all"
     tag_filter = ""
+    project_filter = ""
 
     def on_mount(self):
-
         self.zebra_stripes = True
-        self.add_columns(
-            "Item",
-            "Owner",
-            "Since",
-        )
-
+        self.add_columns("Item", "Owner", "Since", "Project", "Tags")
         self.load_items()
 
     def load_items(self):
-
         self.clear()
-
         for item in get_someday_items():
             if self.personal_filter == "personal" and not item.personal:
                 continue
@@ -33,8 +26,12 @@ class SomedayTable(DataTable):
                 continue
             if self.tag_filter and self.tag_filter not in item.tags:
                 continue
+            if self.project_filter and item.project != self.project_filter:
+                continue
             self.add_row(
                 _t(item.item) + (" ♦" if item.personal else ""),
                 _t(item.owner),
                 item.since,
+                f"+{item.project}" if item.project else "",
+                " ".join(f"#{t}" for t in item.tags) if item.tags else "",
             )

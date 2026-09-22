@@ -30,11 +30,12 @@ class AddSomedayScreen(ModalScreen[tuple]):
     }
     """
 
-    def __init__(self, item="", owner="", tags=None):
+    def __init__(self, item="", owner="", tags=None, project=""):
         super().__init__()
         self._item = item
         self._owner = owner
         self._tags = " ".join(tags) if tags else ""
+        self._project = project
 
     def compose(self):
         yield Vertical(
@@ -44,6 +45,8 @@ class AddSomedayScreen(ModalScreen[tuple]):
             Input(id="owner", placeholder="Owner", value=self._owner),
             Label("Tags"),
             Input(id="tags", placeholder="optional, space-separated without #", value=self._tags),
+            Label("Project"),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)", value=self._project),
         )
 
     def action_save(self):
@@ -51,7 +54,8 @@ class AddSomedayScreen(ModalScreen[tuple]):
         owner = self.query_one("#owner", Input).value
         tags_raw = self.query_one("#tags", Input).value
         tags = [t.strip() for t in tags_raw.split() if t.strip()]
-        self.dismiss((item, owner, tags))
+        project = self.query_one("#project", Input).value.strip()
+        self.dismiss((item, owner, tags, project))
 
     def action_cancel(self):
         self.dismiss(None)

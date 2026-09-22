@@ -24,6 +24,7 @@ class Dependency:
     tags: list[str] = field(default_factory=list)
     handoff_from: str | None = None
     expected_date: str | None = None
+    project: str | None = None
 
 
 @dataclass
@@ -45,6 +46,7 @@ class Risk:
     severity: str
     tags: list[str] = field(default_factory=list)
     personal: bool = False
+    project: str | None = None
 
 
 @dataclass
@@ -54,6 +56,7 @@ class SomedayItem:
     since: str
     tags: list[str] = field(default_factory=list)
     personal: bool = False
+    project: str | None = None
 
 
 @dataclass

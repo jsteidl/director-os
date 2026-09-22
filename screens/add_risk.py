@@ -30,12 +30,13 @@ class AddRiskScreen(ModalScreen[tuple]):
     }
     """
 
-    def __init__(self, description="", owner="", severity="", tags=None):
+    def __init__(self, description="", owner="", severity="", tags=None, project=""):
         super().__init__()
         self._description = description
         self._owner = owner
         self._severity = severity
         self._tags = " ".join(tags) if tags else ""
+        self._project = project
 
     def compose(self):
         yield Vertical(
@@ -47,6 +48,8 @@ class AddRiskScreen(ModalScreen[tuple]):
             Input(id="severity", placeholder="H, M, or L", value=self._severity),
             Label("Tags"),
             Input(id="tags", placeholder="optional, space-separated without #", value=self._tags),
+            Label("Project"),
+            Input(id="project", placeholder="optional, no spaces (e.g. Data_Platform)", value=self._project),
         )
 
     def action_save(self):
@@ -55,7 +58,8 @@ class AddRiskScreen(ModalScreen[tuple]):
         severity = self.query_one("#severity", Input).value.upper()
         tags_raw = self.query_one("#tags", Input).value
         tags = [t.strip() for t in tags_raw.split() if t.strip()]
-        self.dismiss((description, owner, severity, tags))
+        project = self.query_one("#project", Input).value.strip()
+        self.dismiss((description, owner, severity, tags, project))
 
     def action_cancel(self):
         self.dismiss(None)

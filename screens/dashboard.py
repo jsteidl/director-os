@@ -69,8 +69,9 @@ class DashboardScreen(Screen):
         Binding("P", "toggle_personal_filter", "Personal filter"),
         Binding("f", "cycle_tag_filter", "Tag filter"),
         Binding("F", "cycle_tag_filter_reverse", "Tag filter ◂", show=False),
-        Binding("[", "cycle_project_filter", "Project filter", show=False),
-        Binding("]", "cycle_project_filter_reverse", "Project filter ◂", show=False),
+        Binding("[", "cycle_project_filter_reverse", "Project filter ◂", show=False),
+        Binding("]", "cycle_project_filter", "Project filter", show=False),
+        Binding("0", "clear_filters", "Clear filters", show=False),
         Binding("v", "view_widget", "View"),
         Binding("l", "show_daily_log", "Daily Log"),
         Binding("c", "calendar", "Calendar"),
@@ -302,8 +303,14 @@ class DashboardScreen(Screen):
     # =====================================================
 
     def action_cycle_project_filter(self):
-        from parser import get_tasks, get_accomplishments
-        projects = [""] + sorted({t.project for t in get_tasks() if t.project} | {a.project for a in get_accomplishments() if a.project})
+        from parser import get_tasks, get_accomplishments, get_dependencies, get_risks, get_someday_items
+        projects = [""] + sorted(
+            {t.project for t in get_tasks() if t.project} |
+            {a.project for a in get_accomplishments() if a.project} |
+            {d.project for d in get_dependencies() if d.project} |
+            {r.project for r in get_risks() if r.project} |
+            {s.project for s in get_someday_items() if s.project}
+        )
         idx = projects.index(self._project_filter) if self._project_filter in projects else 0
         self._project_filter = projects[(idx + 1) % len(projects)]
         self.refresh_data()
@@ -311,8 +318,14 @@ class DashboardScreen(Screen):
         self.app.notify(f"Project filter: {label}", timeout=2)
 
     def action_cycle_project_filter_reverse(self):
-        from parser import get_tasks, get_accomplishments
-        projects = [""] + sorted({t.project for t in get_tasks() if t.project} | {a.project for a in get_accomplishments() if a.project})
+        from parser import get_tasks, get_accomplishments, get_dependencies, get_risks, get_someday_items
+        projects = [""] + sorted(
+            {t.project for t in get_tasks() if t.project} |
+            {a.project for a in get_accomplishments() if a.project} |
+            {d.project for d in get_dependencies() if d.project} |
+            {r.project for r in get_risks() if r.project} |
+            {s.project for s in get_someday_items() if s.project}
+        )
         idx = projects.index(self._project_filter) if self._project_filter in projects else 0
         self._project_filter = projects[(idx - 1) % len(projects)]
         self.refresh_data()
@@ -425,15 +438,15 @@ class DashboardScreen(Screen):
             return
         dep = deps[row]
         self.app.push_screen(
-            AddDependencyScreen(item=dep.item, owner=dep.owner, expected_date=dep.expected_date or ""),
+            AddDependencyScreen(item=dep.item, owner=dep.owner, expected_date=dep.expected_date or "", tags=dep.tags, project=dep.project or ""),
             lambda result: self._edit_dependency_callback(dep.item, result)
         )
 
     def _edit_dependency_callback(self, old_item, result):
         if not result:
             return
-        new_item, owner, expected_date = result
-        edit_dependency(old_item, new_item, owner, expected_date=expected_date or None)
+        new_item, owner, expected_date, tags, project = result
+        edit_dependency(old_item, new_item, owner, expected_date=expected_date or None, tags=tags or None, project=project)
         self.refresh_data()
 
     def _edit_risk(self):
@@ -447,15 +460,15 @@ class DashboardScreen(Screen):
             return
         risk = risks[row]
         self.app.push_screen(
-            AddRiskScreen(description=risk.description, owner=risk.owner, severity=risk.severity),
+            AddRiskScreen(description=risk.description, owner=risk.owner, severity=risk.severity, tags=risk.tags, project=risk.project or ""),
             lambda result: self._edit_risk_callback(risk.description, result)
         )
 
     def _edit_risk_callback(self, old_desc, result):
         if not result:
             return
-        description, owner, severity, tags = result
-        edit_risk(old_desc, description, owner, severity, tags)
+        description, owner, severity, tags, project = result
+        edit_risk(old_desc, description, owner, severity, tags, project=project)
         self.refresh_data()
 
     def _edit_someday(self):
@@ -469,15 +482,15 @@ class DashboardScreen(Screen):
             return
         item = items[row]
         self.app.push_screen(
-            AddSomedayScreen(item=item.item, owner=item.owner),
+            AddSomedayScreen(item=item.item, owner=item.owner, tags=item.tags, project=item.project or ""),
             lambda result: self._edit_someday_callback(item.item, result)
         )
 
     def _edit_someday_callback(self, old_item, result):
         if not result:
             return
-        new_item, owner, tags = result
-        edit_someday_item(old_item, new_item, owner, tags)
+        new_item, owner, tags, project = result
+        edit_someday_item(old_item, new_item, owner, tags, project=project)
         self.refresh_data()
 
     # =====================================================
@@ -622,6 +635,7 @@ class DashboardScreen(Screen):
 
         deps = self.query_one(DependencyTable)
         deps.tag_filter = self._tag_filter
+        deps.project_filter = self._project_filter
         deps.load_dependencies()
 
         today = self.query_one(TodayWidget)
@@ -630,11 +644,13 @@ class DashboardScreen(Screen):
         risks = self.query_one(RisksTable)
         risks.personal_filter = self._personal_filter
         risks.tag_filter = self._tag_filter
+        risks.project_filter = self._project_filter
         risks.load_risks()
 
         someday = self.query_one(SomedayTable)
         someday.personal_filter = self._personal_filter
         someday.tag_filter = self._tag_filter
+        someday.project_filter = self._project_filter
         someday.load_items()
 
         accomplishments = self.query_one(AccomplishmentTable)
@@ -789,10 +805,10 @@ class DashboardScreen(Screen):
     def add_dependency_callback(self, result):
         if not result:
             return
-        dependency, owner, expected_date = result
+        dependency, owner, expected_date, tags, project = result
         if not dependency:
             return
-        add_dependency(dependency, owner, expected_date=expected_date or None)
+        add_dependency(dependency, owner, expected_date=expected_date or None, tags=tags or None, project=project)
         self.refresh_data()
 
     def action_resolve_dependency(self):
@@ -831,9 +847,9 @@ class DashboardScreen(Screen):
     def _dep_to_risk_callback(self, dep_item, result):
         if not result:
             return
-        description, owner, severity, tags = result
+        description, owner, severity, tags, project = result
         delete_dependency(dep_item)
-        add_risk(description, owner, severity, tags)
+        add_risk(description, owner, severity, tags, project=project)
         self.refresh_data()
         self.app.notify("Moved to Risks ✓", severity="information")
 
@@ -871,12 +887,12 @@ class DashboardScreen(Screen):
         if not result:
             return
 
-        description, owner, severity, tags = result
+        description, owner, severity, tags, project = result
 
         if not description:
             return
 
-        add_risk(description, owner, severity, tags)
+        add_risk(description, owner, severity, tags, project=project)
         self.refresh_data()
 
     # =====================================================
@@ -891,12 +907,12 @@ class DashboardScreen(Screen):
         if not result:
             return
 
-        item, owner, tags = result
+        item, owner, tags, project = result
 
         if not item:
             return
 
-        add_someday_item(item, owner, tags)
+        add_someday_item(item, owner, tags, project=project)
         self.refresh_data()
 
     def action_promote_someday(self):
@@ -941,9 +957,9 @@ class DashboardScreen(Screen):
     def _demote_task_callback(self, task_title, created, result):
         if not result:
             return
-        item, owner, tags = result
+        item, owner, tags, project = result
         delete_task(task_title, created=created)
-        add_someday_item(item, owner, tags)
+        add_someday_item(item, owner, tags, project=project)
         self.refresh_data()
         self.app.notify("Moved to Someday ✓", severity="information")
 
@@ -1046,6 +1062,12 @@ class DashboardScreen(Screen):
     # =====================================================
     # SYNC LOGS
     # =====================================================
+
+    def action_clear_filters(self):
+        self._tag_filter = ""
+        self._project_filter = ""
+        self.refresh_data()
+        self.app.notify("Filters cleared", timeout=2)
 
     def action_cycle_tag_filter(self):
         from parser import get_all_tags

@@ -471,6 +471,9 @@ def get_dependencies():
         expected_match = re.search(r"Expected:\s*(\d{4}-\d{2}-\d{2})", rest)
         expected_date = expected_match.group(1) if expected_match else None
 
+        project_match = re.search(r"\+([\w]+)", rest)
+        project = project_match.group(1) if project_match else None
+
         dependencies.append(
             Dependency(
                 clean_item,
@@ -480,13 +483,14 @@ def get_dependencies():
                 tags,
                 handoff_from=handoff_from,
                 expected_date=expected_date,
+                project=project,
             )
         )
 
     return dependencies
 
 
-def add_dependency(item, owner, handoff_from=None, expected_date=None):
+def add_dependency(item, owner, handoff_from=None, expected_date=None, tags=None, project=""):
 
     content = load_log()
 
@@ -497,6 +501,10 @@ def add_dependency(item, owner, handoff_from=None, expected_date=None):
         line += f" | HandoffFrom: {handoff_from}"
     if expected_date:
         line += f" | Expected: {expected_date}"
+    if project:
+        line += f" +{project}"
+    if tags:
+        line += " " + " ".join(f"#{t}" for t in tags)
     line += "\n"
 
     marker = "### Waiting On\n"
@@ -504,7 +512,7 @@ def add_dependency(item, owner, handoff_from=None, expected_date=None):
     save_log(content)
 
 
-def edit_dependency(old_item, new_item, owner, expected_date=None):
+def edit_dependency(old_item, new_item, owner, expected_date=None, tags=None, project=""):
 
     content = load_log()
 
@@ -524,6 +532,10 @@ def edit_dependency(old_item, new_item, owner, expected_date=None):
         new_line += f" | HandoffFrom: {handoff_match.group(1).strip()}"
     if expected_date:
         new_line += f" | Expected: {expected_date}"
+    if project:
+        new_line += f" +{project}"
+    if tags:
+        new_line += " " + " ".join(f"#{t}" for t in tags)
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
@@ -626,10 +638,11 @@ def get_risks():
         match.group(1),
     ):
         description, owner, since, severity, rest = line
-        tags = extract_tags(rest)
         personal = "Personal:true" in rest
         rest_clean = rest.replace(" Personal:true", "")
         tags = extract_tags(rest_clean)
+        project_match = re.search(r"\+([\w]+)", rest_clean)
+        project = project_match.group(1) if project_match else None
 
         risks.append(
             Risk(
@@ -639,25 +652,27 @@ def get_risks():
                 severity=severity,
                 tags=tags,
                 personal=personal,
+                project=project,
             )
         )
 
     return risks
 
 
-def add_risk(description, owner, severity, tags=None, personal=False):
+def add_risk(description, owner, severity, tags=None, personal=False, project=""):
 
     content = load_log()
 
     description, owner = _clean(description), _clean(owner)
 
-    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
     personal_str = " Personal:true" if personal else ""
+    project_str = f" +{project}" if project else ""
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
 
     line = (
         f"- {description} | Owner: {owner} "
         f"| Since: {date.today()} "
-        f"| Severity: {severity.upper()}{personal_str}{tag_str}\n"
+        f"| Severity: {severity.upper()}{personal_str}{project_str}{tag_str}\n"
     )
 
     content = content.replace(
@@ -669,7 +684,7 @@ def add_risk(description, owner, severity, tags=None, personal=False):
     save_log(content)
 
 
-def edit_risk(old_description, new_description, owner, severity, tags=None):
+def edit_risk(old_description, new_description, owner, severity, tags=None, project=""):
 
     content = load_log()
 
@@ -683,6 +698,7 @@ def edit_risk(old_description, new_description, owner, severity, tags=None):
 
     since = match.group(1)
     new_description, owner = _clean(new_description), _clean(owner)
+    project_str = f" +{project}" if project else ""
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
     new_line = (
         f"- {new_description} | Owner: {owner} "
@@ -691,7 +707,7 @@ def edit_risk(old_description, new_description, owner, severity, tags=None):
     )
     if match and "Personal:true" in match.group(0):
         new_line += " Personal:true"
-    new_line += tag_str
+    new_line += project_str + tag_str
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
@@ -764,6 +780,8 @@ def get_someday_items():
         personal = "Personal:true" in rest
         rest_clean = rest.replace(" Personal:true", "")
         tags = extract_tags(rest_clean)
+        project_match = re.search(r"\+([\w]+)", rest_clean)
+        project = project_match.group(1) if project_match else None
 
         items.append(
             SomedayItem(
@@ -772,6 +790,7 @@ def get_someday_items():
                 since=since,
                 tags=tags,
                 personal=personal,
+                project=project,
             )
         )
 
@@ -792,18 +811,19 @@ def toggle_personal_risk(description):
     save_log(content)
 
 
-def add_someday_item(item, owner, tags=None, personal=False):
+def add_someday_item(item, owner, tags=None, personal=False, project=""):
 
     content = load_log()
 
     item, owner = _clean(item), _clean(owner)
 
-    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
     personal_str = " Personal:true" if personal else ""
+    project_str = f" +{project}" if project else ""
+    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
 
     line = (
         f"- {item} | Owner: {owner} "
-        f"| Since: {date.today()}{personal_str}{tag_str}\n"
+        f"| Since: {date.today()}{personal_str}{project_str}{tag_str}\n"
     )
 
     content = content.replace(
@@ -815,7 +835,7 @@ def add_someday_item(item, owner, tags=None, personal=False):
     save_log(content)
 
 
-def edit_someday_item(old_item, new_item, owner, tags=None):
+def edit_someday_item(old_item, new_item, owner, tags=None, project=""):
 
     content = load_log()
 
@@ -829,11 +849,12 @@ def edit_someday_item(old_item, new_item, owner, tags=None):
 
     since = match.group(1)
     new_item, owner = _clean(new_item), _clean(owner)
+    project_str = f" +{project}" if project else ""
     tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
     new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
     if match and "Personal:true" in match.group(0):
         new_line += " Personal:true"
-    new_line += tag_str
+    new_line += project_str + tag_str
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
