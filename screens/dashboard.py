@@ -308,6 +308,9 @@ class DashboardScreen(Screen):
             elif cmd == "events":
                 from screens.events import EventsScreen
                 self.app.push_screen(EventsScreen())
+            elif cmd == "about":
+                from screens.about import AboutScreen
+                self.app.call_after_refresh(self.app.push_screen, AboutScreen())
         self.app.push_screen(CommandScreen(), on_command)
 
     # =====================================================

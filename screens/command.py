@@ -12,6 +12,7 @@ COMMANDS = [
     ("update",   "Manager update"),
     ("weekly",   "Weekly review"),
     ("events",   "Events"),
+    ("about",    "About director_os"),
 ]
 
 
