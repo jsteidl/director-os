@@ -1,49 +1,33 @@
 import re
 from datetime import date
 from models import Task
-from parser._core import extract_tags, strip_tags, _clean, load_log, save_log
+from parser._core import _clean, load_log, save_log
 
 
-def _parse_task_line(title) -> Task:
-    due_match = re.search(r"Due:(\d{4}-\d{2}-\d{2})", title)
-    due_date = due_match.group(1) if due_match else None
-    if due_date:
-        title = title.replace(f" Due:{due_date}", "").strip()
+def _parse_task_line(line) -> Task:
+    parts = [p.strip() for p in line.split(" | ")]
+    title_part = parts[0]
+    fields = {k.strip(): v.strip() for k, v in (p.split(":", 1) for p in parts[1:] if ":" in p)}
 
-    created_match = re.search(r"Created:(\d{4}-\d{2}-\d{2})", title)
-    created = created_match.group(1) if created_match else None
-    if created:
-        title = title.replace(f" Created:{created}", "").strip()
-
-    carried = "Carried:true" in title
-    if carried:
-        title = title.replace(" Carried:true", "").strip()
-
-    mgr = "Mgr:true" in title
-    if mgr:
-        title = title.replace(" Mgr:true", "").strip()
-
-    personal = "Personal:true" in title
-    if personal:
-        title = title.replace(" Personal:true", "").strip()
-
-    priority = None
-    priority_match = re.match(r"^\(([ABC])\)\s+(.*)$", title)
+    priority_match = re.match(r"^\(([ABC])\)\s+(.*)", title_part)
     if priority_match:
         priority = priority_match.group(1)
         title = priority_match.group(2)
+    else:
+        priority = None
+        title = title_part
 
-    project_match = re.search(r"\+([\w]+)", title)
-    project = project_match.group(1) if project_match else None
-    if project:
-        title = re.sub(r"\s*\+[\w]+", "", title).strip()
-
-    tags = extract_tags(title)
-    title = strip_tags(title)
-
-    return Task(title=title, priority=priority, due_date=due_date,
-                created=created, tags=tags, carried=carried, mgr=mgr,
-                personal=personal, project=project)
+    return Task(
+        title=title,
+        priority=priority,
+        due_date=fields.get("Due"),
+        created=fields.get("Created"),
+        carried=fields.get("Carried", "").lower() == "true",
+        mgr=fields.get("Mgr", "").lower() == "true",
+        personal=fields.get("Personal", "").lower() == "true",
+        project=fields.get("Project") or None,
+        tags=fields.get("Tags", "").split() if fields.get("Tags") else [],
+    )
 
 
 def get_tasks():
@@ -60,19 +44,31 @@ def get_tasks():
     return tasks
 
 
+def _build_task_line(title, priority, due_date, created, mgr, personal, project, tags, carried=False):
+    title_part = f"({priority}) {title}" if priority else title
+    parts = [title_part]
+    if due_date:
+        parts.append(f"Due: {due_date}")
+    parts.append(f"Created: {created}")
+    if carried:
+        parts.append("Carried: true")
+    if mgr:
+        parts.append("Mgr: true")
+    if personal:
+        parts.append("Personal: true")
+    if project:
+        parts.append(f"Project: {project}")
+    if tags:
+        parts.append(f"Tags: {' '.join(tags)}")
+    return "- [ ] " + " | ".join(parts)
+
+
 def add_task(task_name, tag="", due_date="", priority="", project=""):
     content = load_log()
     task_name = _clean(task_name)
-    title = f"({priority}) {task_name}" if priority else task_name
-    line = f"- [ ] {title}"
-    if due_date:
-        line += f" Due:{due_date}"
-    line += f" Created:{date.today()}"
-    if project:
-        line += f" +{project}"
-    if tag:
-        line += " " + " ".join(f"#{t}" for t in tag.split() if t)
-    line += "\n"
+    tags = [t.lstrip("#").lower() for t in tag.split() if t] if tag else []
+    line = _build_task_line(task_name, priority, due_date, date.today().isoformat(),
+                            False, False, project, tags) + "\n"
     content = content.replace("### High-Priority\n", f"### High-Priority\n{line}", 1)
     save_log(content)
 
@@ -81,31 +77,17 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
     content = load_log()
     new_title = _clean(new_title)
     if created:
-        search_text = re.escape(old_title.split(" @")[0].rstrip("…"))
-        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*")
-        if not pattern.search(content):
-            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*")
     else:
         search_text = old_title.split(" @")[0].rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
     if not match:
         return
-    created_match = re.search(r"Created:(\d{4}-\d{2}-\d{2})", match.group(0))
-    created = created_match.group(1) if created_match else date.today().isoformat()
-    new_line_title = f"({priority}) {new_title}" if priority else new_title
-    new_line = f"- [ ] {new_line_title}"
-    if due_date:
-        new_line += f" Due:{due_date}"
-    new_line += f" Created:{created}"
-    if "Mgr:true" in match.group(0):
-        new_line += " Mgr:true"
-    if "Personal:true" in match.group(0):
-        new_line += " Personal:true"
-    if project:
-        new_line += f" +{project}"
-    if tags:
-        new_line += " " + " ".join(f"#{t}" for t in tags)
+    old_task = _parse_task_line(match.group(0)[6:])  # strip "- [ ] "
+    used_created = created or old_task.created or date.today().isoformat()
+    new_line = _build_task_line(new_title, priority, due_date, used_created,
+                                old_task.mgr, old_task.personal, project, tags or [])
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
@@ -113,10 +95,7 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
 def delete_task(task_title, created=None):
     content = load_log()
     if created:
-        search_text = re.escape(task_title.rstrip("…"))
-        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*\n")
-        if not pattern.search(content):
-            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*\n")
     else:
         pattern = re.compile(r"- \[ \] .*" + re.escape(task_title.rstrip("…")) + r".*\n")
     if not pattern.search(content):
@@ -129,28 +108,27 @@ def delete_task(task_title, created=None):
 def complete_task(task_text, outcome, created=None):
     content = load_log()
     if created:
-        search_text = re.escape(task_text.rstrip("…"))
-        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*\n")
-        if not pattern.search(content):
-            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*\n")
     else:
         pattern = re.compile(r"- \[ \] .*" + re.escape(task_text.rstrip("…")) + r".*\n")
     match = pattern.search(content)
-    mgr = bool(match and "Mgr:true" in match.group(0))
-    personal = bool(match and "Personal:true" in match.group(0))
-    project_match = re.search(r"\+([\w]+)", match.group(0)) if match else None
-    project = project_match.group(1) if project_match else None
-    carried_tags = extract_tags(match.group(0)) if match else []
+    if not match:
+        return
+    task = _parse_task_line(match.group(0).strip()[6:])
     content = pattern.sub("", content, count=1)
-    clean_title = task_text.rstrip("…")
-    flags = "".join([
-        " Mgr:true" if mgr else "",
-        " Personal:true" if personal else "",
-        f" +{project}" if project else "",
-        (" " + " ".join(f"#{t}" for t in carried_tags)) if carried_tags else "",
-    ])
+
+    task_parts = [f"Task: {task_text.rstrip('…')}"]
+    if task.mgr:
+        task_parts.append("Mgr: true")
+    if task.personal:
+        task_parts.append("Personal: true")
+    if task.project:
+        task_parts.append(f"Project: {task.project}")
+    if task.tags:
+        task_parts.append(f"Tags: {' '.join(task.tags)}")
+
     accomplishment = (
-        f"- Task: {clean_title}{flags}\n"
+        f"- {' | '.join(task_parts)}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {date.today()}\n\n"
     )
@@ -162,7 +140,9 @@ def reopen_task(task_title):
     content = load_log()
     pattern = re.compile(r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n\n", re.MULTILINE)
     for match in pattern.finditer(content):
-        if strip_tags(match.group(1)).strip() == task_title:
+        raw = match.group(1)
+        clean = re.sub(r"\s*\|\s*(Mgr|Personal|Project|Tags):.*", "", raw).strip()
+        if clean == task_title:
             content = content.replace(match.group(0), "", 1)
             content = content.replace("### High-Priority\n", f"### High-Priority\n- [ ] {task_title}\n", 1)
             save_log(content)
@@ -172,36 +152,32 @@ def reopen_task(task_title):
 def toggle_mgr_task(task_title, created=None):
     content = load_log()
     if created:
-        search_text = re.escape(task_title.split(" @")[0].rstrip("…"))
-        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*")
-        if not pattern.search(content):
-            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*")
     else:
         search_text = task_title.split(" @")[0].rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
     if not match:
         return
-    line = match.group(0)
-    new_line = line.replace(" Mgr:true", "") if "Mgr:true" in line else line + " Mgr:true"
-    content = content.replace(line, new_line, 1)
+    task = _parse_task_line(match.group(0)[6:])
+    new_line = _build_task_line(task.title, task.priority, task.due_date, task.created,
+                                not task.mgr, task.personal, task.project, task.tags)
+    content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
 
 def toggle_personal_task(task_title, created=None):
     content = load_log()
     if created:
-        search_text = re.escape(task_title.split(" @")[0].rstrip("…"))
-        pattern = re.compile(r"- \[ \] .*" + search_text + r".*Created:" + re.escape(created) + r".*")
-        if not pattern.search(content):
-            pattern = re.compile(r"- \[ \] .*Created:" + re.escape(created) + r".*")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*")
     else:
         search_text = task_title.split(" @")[0].rstrip("…")
         pattern = re.compile(r"- \[ \] .*" + re.escape(search_text) + r".*")
     match = pattern.search(content)
     if not match:
         return
-    line = match.group(0)
-    new_line = line.replace(" Personal:true", "") if "Personal:true" in line else line + " Personal:true"
-    content = content.replace(line, new_line, 1)
+    task = _parse_task_line(match.group(0)[6:])
+    new_line = _build_task_line(task.title, task.priority, task.due_date, task.created,
+                                task.mgr, not task.personal, task.project, task.tags)
+    content = content.replace(match.group(0), new_line, 1)
     save_log(content)

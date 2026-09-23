@@ -4,97 +4,103 @@ from models import SomedayItem
 from parser._core import extract_tags, _clean, load_log, save_log
 
 
+def _parse_someday_line(line):
+    parts = [p.strip() for p in line.lstrip("- ").split(" | ")]
+    fields = {}
+    for p in parts[1:]:
+        if ": " in p:
+            k, v = p.split(": ", 1)
+            fields[k] = v
+    return SomedayItem(
+        item=parts[0],
+        owner=fields.get("Owner", ""),
+        since=fields.get("Since", ""),
+        tags=extract_tags(line),
+        personal=fields.get("Personal") == "true",
+        project=fields.get("Project"),
+    )
+
+
+def _build_someday_line(item, owner, since, personal=False, project="", tags=None):
+    line = f"- {item} | Owner: {owner} | Since: {since}"
+    if personal:
+        line += " | Personal: true"
+    if project:
+        line += f" | Project: {project}"
+    if tags:
+        line += f" | Tags: {' '.join(tags)}"
+    return line
+
+
 def get_someday_items():
     content = load_log()
     match = re.search(r"### Someday/Future(.*?)### Risks", content, re.S)
     if not match:
         return []
     items = []
-    for item, owner, since, rest in re.findall(
-        r"- (.*?) \| Owner:\s*(.*?) \| Since: (\d{4}-\d{2}-\d{2})(.*)",
-        match.group(1),
-    ):
-        personal = "Personal:true" in rest
-        rest_clean = rest.replace(" Personal:true", "")
-        tags = extract_tags(rest_clean)
-        project_match = re.search(r"\+([\w]+)", rest_clean)
-        project = project_match.group(1) if project_match else None
-        items.append(SomedayItem(item=item, owner=owner, since=since, tags=tags, personal=personal, project=project))
+    for line in match.group(1).splitlines():
+        if re.match(r"- .+ \| Owner:", line):
+            items.append(_parse_someday_line(line))
     return items
 
 
 def add_someday_item(item, owner, tags=None, personal=False, project=""):
     content = load_log()
-    item, owner = _clean(item), _clean(owner)
-    personal_str = " Personal:true" if personal else ""
-    project_str = f" +{project}" if project else ""
-    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
-    line = f"- {item} | Owner: {owner} | Since: {date.today()}{personal_str}{project_str}{tag_str}\n"
+    line = _build_someday_line(_clean(item), _clean(owner), date.today(),
+                               personal, project, tags) + "\n"
     content = content.replace("### Someday/Future\n", f"### Someday/Future\n{line}", 1)
     save_log(content)
 
 
 def edit_someday_item(old_item, new_item, owner, tags=None, project=""):
     content = load_log()
-    pattern = re.compile(
-        r"- " + re.escape(old_item) + r" \| Owner:\s*.*? \| Since:\s*(\d{4}-\d{2}-\d{2}).*"
-    )
+    pattern = re.compile(r"- " + re.escape(old_item) + r" \| Owner:.*")
     match = pattern.search(content)
     if not match:
         return
-    since = match.group(1)
-    new_item, owner = _clean(new_item), _clean(owner)
-    new_line = f"- {new_item} | Owner: {owner} | Since: {since}"
-    if "Personal:true" in match.group(0):
-        new_line += " Personal:true"
-    if project:
-        new_line += f" +{project}"
-    if tags:
-        new_line += " " + " ".join(f"#{t}" for t in tags)
+    old = _parse_someday_line(match.group(0))
+    new_line = _build_someday_line(_clean(new_item), _clean(owner), old.since,
+                                   old.personal, project, tags)
     content = content.replace(match.group(0), new_line, 1)
     save_log(content)
 
 
 def delete_someday_item(item_text):
     content = load_log()
-    pattern = re.compile(
-        r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*\n"
-    )
+    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*\n")
     content = pattern.sub("", content, count=1)
     save_log(content)
 
 
 def toggle_personal_someday(item_text):
     content = load_log()
-    pattern = re.compile(
-        r"- " + re.escape(item_text) + r" \| Owner:\s*.*? \| Since:\s*\d{4}-\d{2}-\d{2}.*"
-    )
+    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*")
     match = pattern.search(content)
     if not match:
         return
     line = match.group(0)
-    new_line = line.replace(" Personal:true", "") if "Personal:true" in line else line + " Personal:true"
+    if " | Personal: true" in line:
+        new_line = line.replace(" | Personal: true", "")
+    else:
+        new_line = line + " | Personal: true"
     content = content.replace(line, new_line, 1)
     save_log(content)
 
 
 def promote_someday_item(item_text, priority="", due_date="", tags=None, project=""):
     content = load_log()
-    for item, owner, since, rest in re.findall(
-        r"- (.*?) \| Owner: (.*?) \| Since: (\d{4}-\d{2}-\d{2})(.*)", content
-    ):
-        if item == item_text:
-            original = f"- {item} | Owner: {owner} | Since: {since}{rest}"
-            content = content.replace(original + "\n", "", 1)
-            title = f"({priority}) {item_text}" if priority else item_text
-            task_line = f"- [ ] {title}"
-            if due_date:
-                task_line += f" Due:{due_date}"
-            task_line += f" Created:{date.today()}"
-            if project:
-                task_line += f" +{project}"
-            if tags:
-                task_line += " " + " ".join(f"#{t}" for t in tags)
-            content = content.replace("### High-Priority\n", f"### High-Priority\n{task_line}\n", 1)
-            save_log(content)
-            return
+    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*")
+    match = pattern.search(content)
+    if not match:
+        return
+    content = content.replace(match.group(0) + "\n", "", 1)
+    title = f"({priority}) {item_text}" if priority else item_text
+    task_line = f"- [ ] {title} | Created: {date.today()}"
+    if due_date:
+        task_line += f" | Due: {due_date}"
+    if project:
+        task_line += f" | Project: {project}"
+    if tags:
+        task_line += f" | Tags: {' '.join(tags)}"
+    content = content.replace("### High-Priority\n", f"### High-Priority\n{task_line}\n", 1)
+    save_log(content)

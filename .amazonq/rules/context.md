@@ -19,13 +19,29 @@ A terminal-based productivity OS for technology leaders, built with Python and [
 
 ```
 app.py                        # Entry point — includes ConfigErrorScreen for bad logs_path
-parser.py                     # All read/write logic against the log file
 models.py                     # Dataclasses: Task, Dependency, Risk, SomedayItem, Accomplishment, DailyLogEntry, Event
+migrate_logs.py               # One-time migration script; --dry-run flag; accepts optional path override arg
 quotes.py                     # Douglas Adams quotes, get_random_quote()
 fiscal.py                     # NRF 4-5-4 fiscal calendar logic
 config.toml                   # Machine-local config (gitignored) — sets logs_path
 config.toml.example           # Committed template for config.toml
 logs/                         # Default log directory (overridden by config.toml)
+parser/
+  __init__.py                 # Re-exports all public functions — always import from `parser`, never submodules
+  _core.py                    # _get_logs_path, load_log, save_log, extract_tags, strip_tags, _clean, get_terminal_size
+  _files.py                   # Path helpers: get_log_file, get_prev_log_file, get_events_file, get_projects_file, get_scratch_file
+  _scaffold.py                # scaffold_log, rollover_log
+  tasks.py                    # get_tasks, add_task, edit_task, delete_task, complete_task, reopen_task, toggle_mgr_task, toggle_personal_task
+  dependencies.py             # get_dependencies, add_dependency, edit_dependency, delete_dependency, resolve_dependency, toggle_mgr_dependency
+  risks.py                    # get_risks, add_risk, edit_risk, delete_risk, resolve_risk, toggle_mgr_risk, toggle_personal_risk
+  someday.py                  # get_someday_items, add_someday_item, edit_someday_item, delete_someday_item, promote_someday_item, toggle_personal_someday
+  accomplishments.py          # get_accomplishments, add_accomplishment, edit_accomplishment, delete_accomplishment, toggle_mgr_accomplishment, toggle_personal_accomplishment
+  daily.py                    # get_today_entry, get_all_daily_entries, add_daily_entry, edit_daily_entry
+  tags.py                     # get_all_tags, get_tag_counts, rename_tag, delete_tag
+  projects.py                 # get_all_projects, get_project_counts, get_project_meta, save_project_meta, delete_project_meta, rename_project, delete_project
+  metrics.py                  # get_metrics, get_update_data, save_update
+  events.py                   # get_events, add_event, edit_event, delete_event, check_event_notifications
+  scratch.py                  # get_scratch, save_scratch
 screens/
   dashboard.py                # Main screen — layout, bindings, all action handlers
   add_task.py
@@ -90,16 +106,26 @@ Left column = immediate action. Right column = situational awareness.
 
 ### Portable log storage
 - Log path is configured via `config.toml` (`logs_path` key)
-- `_get_logs_path()` in `parser.py` reads the config and falls back to `logs/` if absent
+- `_get_logs_path()` in `parser/_core.py` reads the config and falls back to `logs/` if absent
 - All file functions (`get_log_file`, `get_prev_log_file`, `get_events_file`) use `_get_logs_path()`
 - `config.toml` is gitignored — each machine has its own; `config.toml.example` is committed
 - `app.py` checks `_get_logs_path().exists()` on startup and shows `ConfigErrorScreen` if missing
 - `config.toml` supports optional `terminal_size = [width, height]` — emits xterm resize escape on launch via `sys.stdout.write(f"\033[8;{rows};{cols}t")` before `App.run()`
-- `get_terminal_size()` in `parser.py` reads this value; no-op if not set or not a tty
+- `get_terminal_size()` in `parser/_core.py` reads this value; no-op if not set or not a tty
+
+### Log format
+- All single-line object types use pipe-delimited named fields: `- Title | Field: value | Field: value`
+- Field names are capitalized with colon-space: `Due: 2026-09-23`, `Tags: strategy hiring`, `Project: edp`
+- Optional fields are omitted entirely when not set — no empty `Tags: ` or `Project: `
+- Tag values are lowercase and space-separated; project values are lowercase with underscores
+- Accomplishments use a multi-line block format with pipe fields on the Task line
+- Resolved dependency blocks are write-once and never migrated
+- Full spec in `.amazonq/rules/log-format.md`
+- Migration script: `migrate_logs.py` — converts legacy `Key:value` / `+project` / `#tag` format
 
 ### Tag handling
-- `extract_tags(text)` — matches `#+` (handles `##tag` double-hash)
-- `strip_tags(text)` — removes all `#+\S+` patterns including double-hash and malformed tokens like `##j/k`
+- `extract_tags(text)` — reads `Tags: word1 word2` from pipe field; falls back to `#tag` for legacy/daily log lines
+- `strip_tags(text)` — removes `| Tags: ...` pipe field; falls back to `#tag` stripping for legacy lines
 
 ### Edit/delete operations
 - All edit and delete handlers in `dashboard.py` read from parser functions by row index (e.g. `get_tasks()[row]`) — never from table cell values, which may be truncated or styled
@@ -107,39 +133,43 @@ Left column = immediate action. Right column = situational awareness.
 ### Log file read/write
 - Always use `load_log()` / `save_log()` for normal operations
 - If a function needs to read/write the file directly (e.g. migration, `rename_tag`), use `get_log_file()` path directly to avoid `load_log` → function → `load_log` recursion
-- `rename_tag()` in `parser.py` uses direct path read/write for this reason
+- `rename_tag()`, `delete_tag()`, `rename_project()`, `delete_project()` all use direct path read/write for this reason
+- Always import from `parser` (the package `__init__`), never from submodules directly
 
 ### Parser functions
 - `get_tasks()`, `get_dependencies()`, `get_risks()`, `get_someday_items()`, `get_accomplishments()` — all return lists of dataclass objects
-- `get_metrics()` — returns a dict with: `tasks`, `overdue`, `deps`, `oldest_dep`, `high_risks`, `accomplishments`, `month_wins` — no longer called by `MetricsWidget` (which computes filtered metrics inline)
+- `get_metrics()` — returns a dict with: `tasks`, `overdue`, `deps`, `oldest_dep`, `high_risks`, `accomplishments`, `month_wins` — not called by `MetricsWidget` (which computes filtered metrics inline)
 - `get_scratch()` / `save_scratch()` — read/write `scratch.md` in logs directory
-- `_parse_task_line(line)` — helper extracted from `get_tasks()`; parses all inline fields (due, created, carried, mgr, personal, priority, tags, project) from a raw task line
+- `_parse_task_line(line)` — in `parser/tasks.py`; splits on ` | `, extracts all named fields
+- `_parse_dep_line`, `_parse_risk_line`, `_parse_someday_line` — same pattern in their respective modules
+- `_build_task_line`, `_build_dep_line`, `_build_risk_line`, `_build_someday_line` — write canonical pipe-delimited lines
 - `get_all_tags()` — returns sorted unique tags across all object types
 - `get_all_projects()` — returns sorted unique project names across all object types
 - `get_tag_counts()` — returns `{tag: count}` across all object types
 - `get_project_counts()` — returns `{project: {tasks, deps, risks, high_risks, someday, accomplishments}}` counts
-- `rename_tag(old, new)` — renames all occurrences in the log file
-- `delete_tag(tag)` — removes all `#tag` occurrences from the log file
-- `rename_project(old, new)` — renames all `+old` occurrences to `+new` in the log file; keeps `projects.md` in sync
+- `rename_tag(old, new)` — rewrites `Tags:` field per line in the log file
+- `delete_tag(tag)` — removes tag from `Tags:` field per line in the log file
+- `rename_project(old, new)` — rewrites `Project:` field in the log file; keeps `projects.md` in sync
+- `delete_project(tag)` — removes `Project:` field from all matching lines; removes from `projects.md`
 - `get_projects_file()` — path to `projects.md` in logs directory
 - `get_project_meta()` — returns `{tag: {display, description}}` from `projects.md`
 - `save_project_meta(tag, display, description)` — upsert a project meta entry
 - `delete_project_meta(tag)` — remove a project meta entry
-- `toggle_mgr_dependency(item_text)` — toggles `Mgr:true` on a dependency line
-- `toggle_mgr_risk(description)` — toggles `Mgr:true` on a risk line
+- `toggle_mgr_dependency(item_text)` — toggles `Mgr: true` on a dependency line
+- `toggle_mgr_risk(description)` — toggles `Mgr: true` on a risk line
 - `get_today_entry()` — returns today's `DailyLogEntry` or `None`
-- `_find_accomplishment_block(content, task_title)` — helper that uses `strip_tags()` and strips `+project` before title comparison; used by edit/delete/reopen
+- `_find_accomplishment_block(content, task_title)` — matches on clean title only (strips all pipe fields before comparison)
 - `promote_someday_item(item_text, priority, due_date, tags, project)` — removes someday item, adds task with full metadata
 - `add_accomplishment(task, outcome, tags, project)` — writes accomplishment block directly; used by standalone add
 - `get_update_data(since_date)` — returns accomplished, tasks, deps, H risks, blocked, resolved_deps, resolved_risks across all log files since date
 - `save_update(since_date, data)` — writes structured bullet update including resolved deps/risks to `<logs_path>/updates/update-YYYY-MM-DD.md`
-- `toggle_mgr_task(task_title)` — toggles `Mgr:true` on a task line
-- `toggle_mgr_accomplishment(task_title)` — toggles `Mgr:true` on an accomplishment block
+- `toggle_mgr_task(task_title)` — toggles `Mgr: true` on a task line
+- `toggle_mgr_accomplishment(task_title)` — toggles `Mgr: true` on an accomplishment block
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
 - `check_event_notifications()` — called on mount; appends reminders to today's daily log
 
 ### Personal flag
-- `Personal:true` inline field on tasks, accomplishments, risks, and someday items
+- `Personal: true` pipe field on tasks, accomplishments, risks, and someday items
 - `toggle_personal_task()`, `toggle_personal_accomplishment()`, `toggle_personal_risk()`, `toggle_personal_someday()` — toggled via `H` keybind
 - `♦` glyph rendered in all widget tables for flagged items
 - `P` cycles `_personal_filter` on `DashboardScreen`: `all` → `personal` → `work` → `all`
@@ -148,30 +178,29 @@ Left column = immediate action. Right column = situational awareness.
 - Personal flag is independent of mgr flag — items can carry both
 
 ### Mgr flag
-- `Mgr:true` inline field on tasks, accomplishments, dependencies, and risks
+- `Mgr: true` pipe field on tasks, accomplishments, dependencies, and risks
 - `toggle_mgr_task()` / `toggle_mgr_accomplishment()` / `toggle_mgr_dependency()` / `toggle_mgr_risk()` — toggled via `M` keybind
-- Completing a `Mgr:true` task carries the flag into the accomplishment block
-- `edit_task` preserves `Mgr:true` on the rewritten line; `edit_dependency` and `edit_risk` preserve it too
+- Completing a `Mgr: true` task carries the flag into the accomplishment block
+- `edit_task` preserves `Mgr: true` on the rewritten line; `edit_dependency` and `edit_risk` preserve it too
 - `★` glyph rendered in task, accomplishment, dependency, and risk tables for flagged items
 - Update screen defaults to `★ flagged only`; toggle off to show all with `★` inline
 - Personal items always excluded from manager update regardless of mgr flag
 - Deps: shown in update only if `★`-flagged (when switch on) or all (when switch off)
 - Risks: H-severity always shown; M/L shown only if `★`-flagged
-- `_find_accomplishment_block` strips `Mgr:true` before title comparison
-- `toggle_mgr_task` searches on title prefix before `@mention` to handle tags between title and mention in raw log
+- `_find_accomplishment_block` matches on clean title only — strips all pipe fields before comparison
+- `toggle_mgr_task` matches by `Created:` date when available
 
 ### Project field
-- `+ProjectName` inline field on tasks, accomplishments, dependencies, risks, and someday items
+- `Project: name` pipe field on tasks, accomplishments, dependencies, risks, and someday items
 - `Task.project`, `Accomplishment.project`, `Dependency.project`, `Risk.project`, `SomedayItem.project` — `str | None`
-- All add/edit modals expose Tags and Project fields; project uses underscore convention (`+Data_Platform`)
-- `complete_task` carries `+project` forward from the task line into the accomplishment block
-- `promote_someday_item(... project="")` writes `+project` on the new task line
+- All add/edit modals expose Tags and Project fields; project uses underscore convention (`edp`, `bi_discovery`)
+- `complete_task` carries `Project:` forward from the task line into the accomplishment block
+- `promote_someday_item(... project="")` writes `Project:` on the new task line
 - `AddTaskScreen` dismisses 5-tuple `(task, priority, due_date, tag, project)`
 - `]`/`[` cycles global project filter forward/reverse on `DashboardScreen`; `0` clears all filters
 - Project filter applies to all widgets; project list pulled from all object types
-- `TaskTable` renders project as `+ProjectName` in the Project column (replaces Created column)
+- `TaskTable` renders project in the Project column
 - `AccomplishmentTable`, `DependencyTable`, `RisksTable`, `SomedayTable` all render Project and Tags columns
-- `_find_accomplishment_block` strips `+project` before title comparison
 
 ### Global tag and project filters
 - Filter state lives on `DashboardScreen` as `_tag_filter: str` and `_project_filter: str`
@@ -183,11 +212,11 @@ Left column = immediate action. Right column = situational awareness.
 - Tag list for cycling pulled from `get_all_tags()` (all object types); project list from all object types
 
 ### Carry-forward
-- Rolled-over tasks get `Carried:true` appended to their log line at rollover time
-- `get_tasks()` parses and strips `Carried:true`, sets `Task.carried = True`
+- Rolled-over tasks get `| Carried: true` appended to their log line at rollover time
+- `get_tasks()` parses and strips `Carried: true`, sets `Task.carried = True`
 - `TaskTable` renders `↩` appended to the title for carried tasks
 - Editing a carried task drops the marker (intentional — once edited, it's no longer a carry-forward)
-- `complete_task` carries `Mgr:true`, `Personal:true`, `+project`, and tags forward into the accomplishment block
+- `complete_task` carries `Mgr: true`, `Personal: true`, `Project:`, and tags forward into the accomplishment block
 
 ### Due date shorthands
 - Shared module `screens/due_date.py` exports `resolve_due()`, `resolve_since()`, and their placeholder/error constants
@@ -233,7 +262,7 @@ Left column = immediate action. Right column = situational awareness.
 - `action_complete_task` and `_edit_task` in `dashboard.py` pass `task.created` from the parsed `Task` object
 - Fallback (no `created`): title-based match, splitting on ` @` before building the regex
 - All tasks added via `add_task` include `Created:` so new tasks always match by date
-- `add_task` writes each space-separated tag word as its own `#tag` — the tag field accepts space-separated words without `#`
+- `add_task` writes tags as `Tags: word1 word2` — the tag field accepts space-separated words without `#`
 
 ### Scratch pad
 - `n` opens `ScratchPadScreen` — persistent markdown scratch pad stored as `scratch.md` in logs directory
@@ -283,12 +312,12 @@ Left column = immediate action. Right column = situational awareness.
 ### Accomplishment blocks
 Stored as structured blocks:
 ```
-- Task: {title} [Mgr:true] [Personal:true] [+project] [#tag1] [#tag2]
+- Task: {title} [| Mgr: true] [| Personal: true] [| Project: name] [| Tags: tag1 tag2]
   Outcome: {outcome}
   Completed: {date}
 ```
 Always use `_find_accomplishment_block()` to locate them — never raw string match.
-`_find_accomplishment_block` strips `Mgr:true`, `Personal:true`, `+project`, and tags before title comparison.
+`_find_accomplishment_block` strips all pipe fields before title comparison.
 
 ## UI Conventions
 
@@ -367,6 +396,8 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | #27 | ~~Search / filter across tables~~ ✓ (global tag + project filters across all widgets) |
 | #28 | ~~Carry-forward indicator for rolled-over tasks~~ ✓ |
 | —  | ~~`feature/metadata-parity`~~ ✓ — full tags + project parity across all object types |
+| —  | ~~`refactor/parser-split`~~ ✓ — monolithic parser.py split into parser/ package |
+| —  | ~~`refactor/log-format`~~ ✓ — pipe-delimited named fields across all object types; migration script included |
 
 ## Git Workflow
 

@@ -30,7 +30,7 @@ class AboutScreen(ModalScreen):
     """
 
     CONTENT = """\
-[bold]director_os[/bold]  [dim]v2025.01.15[/dim]
+[bold]director_os[/bold]  [dim]v2026.09.23[/dim]
 
 A terminal-based productivity OS for technology leaders. 
 

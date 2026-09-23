@@ -1,43 +1,64 @@
 import re
 from datetime import date
 from models import Accomplishment
-from parser._core import extract_tags, strip_tags, _clean, load_log, save_log
+from parser._core import extract_tags, _clean, load_log, save_log
+
+
+def _strip_pipe_fields(text):
+    return re.sub(r"\s*\|.*", "", text).strip()
 
 
 def _find_accomplishment_block(content, task_title):
     pattern = re.compile(r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n", re.S)
     for match in pattern.finditer(content):
-        if strip_tags(re.sub(r"\s*\+[\w]+", "", match.group(1).replace(" Mgr:true", "").replace(" Personal:true", ""))).strip() == task_title:
+        if _strip_pipe_fields(match.group(1)) == task_title:
             return match
     return None
 
 
 def get_accomplishments():
     content = load_log()
-    return [
-        Accomplishment(
-            task=strip_tags(re.sub(r"\s*\+[\w]+", "", task.replace(" Mgr:true", "").replace(" Personal:true", ""))),
+    results = []
+    for task, outcome, completed in re.findall(
+        r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n",
+        content, re.MULTILINE,
+    ):
+        parts = [p.strip() for p in task.split(" | ")]
+        fields = {}
+        for p in parts[1:]:
+            if ": " in p:
+                k, v = p.split(": ", 1)
+                fields[k] = v
+        results.append(Accomplishment(
+            task=parts[0],
             outcome=outcome,
             completed=completed,
             tags=extract_tags(task),
-            mgr="Mgr:true" in task,
-            personal="Personal:true" in task,
-            project=re.search(r"\+([\w]+)", task).group(1) if re.search(r"\+([\w]+)", task) else None,
-        )
-        for task, outcome, completed in re.findall(
-            r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n",
-            content, re.MULTILINE,
-        )
-    ]
+            mgr=fields.get("Mgr") == "true",
+            personal=fields.get("Personal") == "true",
+            project=fields.get("Project"),
+        ))
+    return results
+
+
+def _build_task_header(task, mgr=False, personal=False, project="", tags=None):
+    line = task
+    if mgr:
+        line += " | Mgr: true"
+    if personal:
+        line += " | Personal: true"
+    if project:
+        line += f" | Project: {project}"
+    if tags:
+        line += f" | Tags: {' '.join(tags)}"
+    return line
 
 
 def add_accomplishment(task, outcome="", tags=None, project=""):
     content = load_log()
-    task = _clean(task)
-    project_str = f" +{project}" if project else ""
-    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
+    header = _build_task_header(_clean(task), project=project, tags=tags)
     block = (
-        f"- Task: {task}{project_str}{tag_str}\n"
+        f"- Task: {header}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {date.today()}\n\n"
     )
@@ -51,10 +72,9 @@ def edit_accomplishment(old_task, new_task, outcome, tags=None, project=""):
     if not match:
         return
     completed = match.group(3)
-    tag_str = " " + " ".join(f"#{t}" for t in tags) if tags else ""
-    project_str = f" +{project}" if project else ""
+    header = _build_task_header(new_task, project=project, tags=tags)
     new_block = (
-        f"- Task: {new_task}{project_str}{tag_str}\n"
+        f"- Task: {header}\n"
         f"  Outcome: {outcome}\n"
         f"  Completed: {completed}\n"
     )
@@ -77,10 +97,12 @@ def toggle_mgr_accomplishment(task_title):
     pattern = re.compile(r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n", re.S)
     for match in pattern.finditer(content):
         raw = match.group(1)
-        if strip_tags(raw.replace(" Mgr:true", "")).strip() == task_title:
-            new_raw = raw.replace(" Mgr:true", "") if "Mgr:true" in raw else raw + " Mgr:true"
-            new_block = match.group(0).replace(raw, new_raw, 1)
-            content = content.replace(match.group(0), new_block, 1)
+        if _strip_pipe_fields(raw) == task_title:
+            if " | Mgr: true" in raw:
+                new_raw = raw.replace(" | Mgr: true", "")
+            else:
+                new_raw = raw + " | Mgr: true"
+            content = content.replace(match.group(0), match.group(0).replace(raw, new_raw, 1), 1)
             save_log(content)
             return
 
@@ -90,9 +112,11 @@ def toggle_personal_accomplishment(task_title):
     pattern = re.compile(r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n", re.S)
     for match in pattern.finditer(content):
         raw = match.group(1)
-        if strip_tags(raw.replace(" Mgr:true", "").replace(" Personal:true", "")).strip() == task_title:
-            new_raw = raw.replace(" Personal:true", "") if "Personal:true" in raw else raw + " Personal:true"
-            new_block = match.group(0).replace(raw, new_raw, 1)
-            content = content.replace(match.group(0), new_block, 1)
+        if _strip_pipe_fields(raw) == task_title:
+            if " | Personal: true" in raw:
+                new_raw = raw.replace(" | Personal: true", "")
+            else:
+                new_raw = raw + " | Personal: true"
+            content = content.replace(match.group(0), match.group(0).replace(raw, new_raw, 1), 1)
             save_log(content)
             return

@@ -16,7 +16,7 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 - **Risk tracking** — log risks with severity (H/M/L), owner, date, tags, and project
 - **Someday / Future** — capture ideas and future work; promote to active tasks or demote tasks to someday
 - **Accomplishments** — auto-logged when tasks are completed; carries tags, project, and flags forward; add standalone accomplishments directly; flag with `M` to surface in manager updates
-- **Project tracking** — tag any item with `+ProjectName` (underscores for spaces, e.g. `+Data_Platform`); filter the entire dashboard by project with `]`/`[`; `0` clears all filters
+- **Project tracking** — tag any item with a project (`Project: name`); filter the entire dashboard by project with `]`/`[`; `0` clears all filters
 - **Tag filtering** — filter the entire dashboard by tag with `f`/`F`; tags and projects apply across all object types
 - **Manager update** — generate a structured bullet update since a given date (supports shorthands: `y`, `-7`, `-2w`, `lw`); includes resolved deps and risks; written to `updates/`
 - **Daily check-in** — structured daily log with priorities, accomplished, blocked, and notes
@@ -29,6 +29,7 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 - **Tag manager** — rename and merge tags across all objects
 - **Command palette** — `:` to access sync, config, tags, update, weekly, and events
 - **Log sync** — push logs to any git remote with `G`; auto-syncs on quit
+- **Plain text log format** — pipe-delimited named fields (`Field: value`) across all object types; human-readable and easily parsed
 
 Press `?` in the app for a full keyboard shortcut reference.
 
