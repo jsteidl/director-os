@@ -57,7 +57,7 @@ class ProjectManagerScreen(TabCompleteMixin, ModalScreen):
             rows.append(
                 Vertical(
                     Horizontal(
-                        Label(f"+{project}", classes="proj-label"),
+                        Label(project, classes="proj-label"),
                         tag_inp,
                         Label(summary, classes="proj-summary"),
                         classes="proj-top-row",

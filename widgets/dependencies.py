@@ -42,6 +42,6 @@ class DependencyTable(DataTable):
                 Text(_t(dep.owner), style=color),
                 Text(f"{dep.age}d", style=color),
                 Text(dep.expected_date or "", style=color),
-                Text(f"+{dep.project}" if dep.project else "", style=color),
+                Text(dep.project or "", style=color),
                 Text(" ".join(f"#{t}" for t in dep.tags) if dep.tags else "", style=color),
             )

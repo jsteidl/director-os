@@ -27,10 +27,15 @@ def get_terminal_size() -> tuple[int, int] | None:
 
 
 def extract_tags(text):
+    m = re.search(r"\| Tags: ([^|\n]+)", text)
+    if m:
+        return m.group(1).strip().split()
     return re.findall(r"#+(\w+)", text)
 
 
 def strip_tags(text):
+    if "| Tags:" in text:
+        return re.sub(r"\s*\| Tags: [^|\n]+", "", text).strip()
     return re.sub(r"\s*#+\S+", "", text).strip()
 
 

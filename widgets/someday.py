@@ -32,6 +32,6 @@ class SomedayTable(DataTable):
                 _t(item.item) + (" ♦" if item.personal else ""),
                 _t(item.owner),
                 item.since,
-                f"+{item.project}" if item.project else "",
+                item.project or "",
                 " ".join(f"#{t}" for t in item.tags) if item.tags else "",
             )

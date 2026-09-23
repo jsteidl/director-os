@@ -78,5 +78,5 @@ class TaskTable(DataTable):
                 Text(PRIORITY_GLYPHS.get(task.priority, task.priority or ""), style=f"bold {PRIORITY_COLORS.get(task.priority, color)}"),
                 Text(task.due_date or "", style=color),
                 Text(" ".join(f"#{t}" for t in task.tags) if task.tags else "", style=color),
-                Text(f"+{task.project}" if task.project else "", style=color),
+                Text(task.project or "", style=color),
             )

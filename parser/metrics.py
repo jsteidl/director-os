@@ -1,7 +1,7 @@
 import re
 from datetime import date
 from models import Accomplishment
-from parser._core import extract_tags, strip_tags, _get_logs_path
+from parser._core import extract_tags, _get_logs_path
 from parser.tasks import get_tasks
 from parser.dependencies import get_dependencies
 from parser.risks import get_risks
@@ -46,14 +46,16 @@ def get_update_data(since_date: str) -> dict:
         for task, outcome, completed in re.findall(
             r"- Task: (.*?)\n  Outcome: (.*?)\n  Completed: (.*?)\n", content, re.MULTILINE
         ):
+            parts = [p.strip() for p in task.split(" | ")]
+            fields = {k: v for p in parts[1:] if ": " in p for k, v in [p.split(": ", 1)]}
             all_accomplishments.append(Accomplishment(
-                task=strip_tags(re.sub(r"\s*\+[\w]+", "", task.replace(" Mgr:true", "").replace(" Personal:true", ""))),
+                task=parts[0],
                 outcome=outcome,
                 completed=completed,
                 tags=extract_tags(task),
-                mgr="Mgr:true" in task,
-                personal="Personal:true" in task,
-                project=re.search(r"\+([\w]+)", task).group(1) if re.search(r"\+([\w]+)", task) else None,
+                mgr=fields.get("Mgr") == "true",
+                personal=fields.get("Personal") == "true",
+                project=fields.get("Project"),
             ))
         for item, owner, resolved, notes in re.findall(
             r"- Dependency: (.*?)\n  Owner: (.*?)\n  Resolved: (\d{4}-\d{2}-\d{2})\n  Notes: (.*?)\n",

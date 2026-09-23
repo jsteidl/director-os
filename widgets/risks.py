@@ -45,6 +45,6 @@ class RisksTable(DataTable):
                 _t(risk.owner),
                 Text(label, style=f"bold {color}"),
                 risk.since,
-                f"+{risk.project}" if risk.project else "",
+                risk.project or "",
                 " ".join(f"#{t}" for t in risk.tags) if risk.tags else "",
             )

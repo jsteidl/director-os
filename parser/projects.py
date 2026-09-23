@@ -1,5 +1,4 @@
 import re
-from parser._core import _get_logs_path
 from parser._files import get_log_file, get_projects_file
 from parser.tasks import get_tasks
 from parser.dependencies import get_dependencies
@@ -67,7 +66,7 @@ def delete_project_meta(tag: str):
 def rename_project(old: str, new: str):
     path = get_log_file()
     content = path.read_text(encoding="utf-8")
-    content = re.sub(r"\+" + re.escape(old) + r"\b", f"+{new}", content)
+    content = re.sub(r"(\| Project: )" + re.escape(old) + r"(\s*(?:\||\n|$))", r"\g<1>" + new + r"\2", content)
     path.write_text(content, encoding="utf-8")
     meta = get_project_meta()
     if old in meta:
@@ -79,6 +78,6 @@ def rename_project(old: str, new: str):
 def delete_project(tag: str):
     path = get_log_file()
     content = path.read_text(encoding="utf-8")
-    content = re.sub(r"\s*\+" + re.escape(tag) + r"\b", "", content)
+    content = re.sub(r"\s*\| Project: " + re.escape(tag) + r"(\s*(?=\||\n|$))", r"\1", content)
     path.write_text(content, encoding="utf-8")
     delete_project_meta(tag)
