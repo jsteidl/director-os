@@ -37,7 +37,6 @@ def get_metrics():
 
 
 def get_update_data(since_date: str) -> dict:
-    tasks = get_tasks()
     all_accomplishments = []
     all_resolved_deps = []
     all_resolved_risks = []
@@ -75,7 +74,7 @@ def get_update_data(since_date: str) -> dict:
     return {
         "since": since_date,
         "accomplished": accomplishments,
-        "tasks": tasks,
+        "tasks": get_tasks(),
         "deps": get_dependencies(),
         "risks": get_risks(),
         "blocked": blocked,
@@ -85,87 +84,62 @@ def get_update_data(since_date: str) -> dict:
 
 
 def save_update(since_date: str, data: dict) -> str:
-    from widgets.tasks import PRIORITY_GLYPHS
     meta = get_project_meta()
-    grouped = data.get("grouped", False)
     tasks = data.get("tasks", [])
     accomplishments = data.get("accomplished", [])
     deps = data.get("deps", [])
     risks = data.get("risks", [])
 
+    all_projects = sorted(
+        {i.project for i in [*tasks, *accomplishments, *deps, *risks] if i.project},
+        key=str.lower
+    )
+
     lines = [f"## Update — Since {since_date}\n"]
 
-    if grouped:
-        all_projects = sorted(
-            {i.project for i in [*tasks, *accomplishments, *deps, *risks] if i.project},
-            key=str.lower
-        )
-        for project in all_projects:
+    for project in [*all_projects, None]:
+        pt = [i for i in tasks if i.project == project]
+        pa = [i for i in accomplishments if i.project == project]
+        pd = [i for i in deps if i.project == project]
+        pr = [i for i in risks if i.project == project]
+        if not any([pt, pa, pd, pr]):
+            continue
+        if project:
             m = meta.get(project, {})
             display = m.get("display") or project
             description = m.get("description", "")
-            pt = [i for i in tasks if i.project == project]
-            pa = [i for i in accomplishments if i.project == project]
-            pd = [i for i in deps if i.project == project]
-            pr = [i for i in risks if i.project == project]
-            if not any([pt, pa, pd, pr]):
-                continue
-            lines.append(f"### {display}")
+            open_count = len(pt)
+            done_count = len(pa)
+            due_dates = sorted(t.due_date for t in pt if t.due_date)
+            due_str = f"next due {due_dates[0]}" if due_dates else "no due dates"
+            lines.append(f"### {display}  [{open_count} open · {done_count} done · {due_str}]")
             if description:
                 lines.append(f"_{description}_\n")
-            if pa:
-                lines.append("**Accomplished**")
-                for a in pa: lines.append(f"- {a.task}")
-            if pt:
-                lines.append("\n**In Progress**")
-                for t in pt:
-                    glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
-                    due = f" (due {t.due_date})" if t.due_date else ""
-                    lines.append(f"- {glyph}{t.title}{due}")
-            if pd:
-                lines.append("\n**Waiting On**")
-                for d in pd: lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
-            if pr:
-                lines.append("\n**Risks**")
-                for r in pr: lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner})")
-            lines.append("")
-        ut = [i for i in tasks if not i.project]
-        ua = [i for i in accomplishments if not i.project]
-        ud = [i for i in deps if not i.project]
-        ur = [i for i in risks if not i.project]
-        if any([ut, ua, ud, ur]):
-            lines.append("### General")
-            if ua:
-                lines.append("**Accomplished**")
-                for a in ua: lines.append(f"- {a.task}")
-            if ut:
-                lines.append("\n**In Progress**")
-                for t in ut:
-                    glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
-                    due = f" (due {t.due_date})" if t.due_date else ""
-                    lines.append(f"- {glyph}{t.title}{due}")
-            if ud:
-                lines.append("\n**Waiting On**")
-                for d in ud: lines.append(f"- {d.item} — {d.owner} ({d.age}d)")
-            if ur:
-                lines.append("\n**Risks**")
-                for r in ur: lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner})")
-            lines.append("")
-    else:
-        lines.append("### Accomplished")
-        for a in accomplishments: lines.append(f"- {a.task}") if accomplishments else lines.append("- Nothing completed in this period")
-        lines.append("\n### In Progress")
-        if tasks:
-            for t in tasks:
-                glyph = PRIORITY_GLYPHS.get(t.priority, "") + " " if t.priority else ""
-                due = f" (due {t.due_date})" if t.due_date else ""
-                lines.append(f"- {glyph}{t.title}{due}")
         else:
-            lines.append("- No open tasks")
-        lines.append("\n### Waiting On")
-        for d in deps: lines.append(f"- {d.item} — {d.owner} ({d.age}d)") if deps else lines.append("- Nothing pending")
-        lines.append("\n### Risks")
-        for r in risks: lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner})") if risks else lines.append("- No risks to surface")
+            lines.append("### General")
+        if pa:
+            lines.append("**Accomplished**")
+            for a in pa:
+                label = f"{a.task} — {a.outcome}" if a.outcome else a.task
+                tags = f" {' '.join(f'#{t}' for t in a.tags)}" if a.tags else ""
+                lines.append(f"- {label}{tags}")
+        if pt:
+            lines.append("\n**In Progress**")
+            for t in sorted(pt, key=lambda t: t.due_date or "9999"):
+                due = f" (due {t.due_date})" if t.due_date else ""
+                tags = f" {' '.join(f'#{tag}' for tag in t.tags)}" if t.tags else ""
+                lines.append(f"- {t.title}{due}{tags}")
+        if pd:
+            lines.append("\n**Waiting On**")
+            for d in pd:
+                tags = f" {' '.join(f'#{t}' for t in d.tags)}" if d.tags else ""
+                lines.append(f"- {d.item} — {d.owner} ({d.age}d){tags}")
+        if pr:
+            lines.append("\n**Risks**")
+            for r in pr:
+                tags = f" {' '.join(f'#{t}' for t in r.tags)}" if r.tags else ""
+                lines.append(f"- [{r.severity}] {r.description} (owner: {r.owner}){tags}")
+        lines.append("")
 
     lines.append("\n### Resolved Dependencies")
     if data.get("resolved_deps"):

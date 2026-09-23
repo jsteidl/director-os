@@ -18,7 +18,8 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 - **Accomplishments** — auto-logged when tasks are completed; carries tags, project, and flags forward; add standalone accomplishments directly; flag with `M` to surface in manager updates
 - **Project tracking** — tag any item with a project (`Project: name`); filter the entire dashboard by project with `]`/`[`; `0` clears all filters
 - **Tag filtering** — filter the entire dashboard by tag with `f`/`F`; tags and projects apply across all object types
-- **Manager update** — generate a structured bullet update since a given date (supports shorthands: `y`, `-7`, `-2w`, `lw`); includes resolved deps and risks; written to `updates/`
+- **Manager update** — generate a project-grouped update since a given date (supports shorthands: `y`, `-7`, `-2w`, `lw`); programmatic summary per project (open · done · next due); accomplished bullets show outcome; tags on all bullet types; includes resolved deps and risks; written to `updates/`
+- **Project manager** — rename projects, set display name and description used in manager updates; color-coded per-type counts; high-risk indicator
 - **Daily check-in** — structured daily log with priorities, accomplished, blocked, and notes
 - **Today panel** — shows today's check-in at a glance
 - **Weekly review** — structured weekly summary

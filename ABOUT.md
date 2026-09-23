@@ -39,26 +39,26 @@ Everything is keyboard-driven. Adding a task, completing it, flagging it for you
 
 One of the most useful features is the manager update generator. When you need to report out — to your manager, in a staff meeting, or in a written update — you open `:update`, set a since-date, and get a structured summary of:
 
-- What you accomplished
+- What you accomplished (with outcomes)
 - What's in progress
 - What you're waiting on
 - Risks on the radar
 - What got resolved
 
-Items are grouped by project, with human-readable project names and descriptions as headers. You control what surfaces in the update by flagging items with `M` (the manager flag). The update is written to a markdown file you can paste anywhere.
+Items are always grouped by project. Each project section opens with a programmatic summary — open count, done count, and next due date — so the health of each initiative is visible at a glance. Human-readable project names and descriptions serve as headers. You control what surfaces in the update by flagging items with `M` (the manager flag). The update is written to a markdown file you can paste anywhere.
 
 ---
 
 ## Projects and tags
 
-Any item — task, dependency, risk, accomplishment — can be tagged with a project (`+ProjectName`) and one or more tags (`#tag`). This lets you:
+Any item — task, dependency, risk, accomplishment — can be tagged with a project and one or more tags. Projects are initiative anchors (e.g. `edp`, `bi_discovery`). Tags are cross-cutting work types (e.g. `deployment`, `planning`, `hiring`, `budgeting`). This lets you:
 
 - Filter the entire dashboard to a single project with `]`/`[`
 - Filter by tag with `f`/`F`
 - See per-project health at a glance in the project manager (`:projects`)
 - Get project-grouped manager updates automatically
 
-Projects have display names and descriptions, so your update reads "Data Platform" instead of "Data_Platform".
+Projects have display names and descriptions, so your update reads "Data Platform" instead of `edp`.
 
 ---
 

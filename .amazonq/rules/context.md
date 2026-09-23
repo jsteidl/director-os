@@ -63,7 +63,7 @@ screens/
   calendar.py                 # CalendarScreen — Gregorian + NRF fiscal calendar modal
   events.py                   # EventsScreen — CRUD for events
   add_event.py                # AddEventScreen form
-  update.py                   # UpdateScreen — manager update generator; grouped by project (default) or flat toggle; ★ flagged only switch; personal items always excluded; display name + description as grouped headers
+  update.py                   # UpdateScreen — manager update generator; always project-grouped; programmatic summary per project; ★ flagged only switch; tags on all bullet types; personal items always excluded
   weekly_review.py            # WeeklyReviewScreen
   config.py                   # ConfigScreen — edit logs_path via UI
   scratch.py                  # ScratchPadScreen — markdown scratch pad with checkbox navigation and promote-to-task
@@ -274,14 +274,17 @@ Left column = immediate action. Right column = situational awareness.
 - Syncs with git on `G` / quit auto-sync
 
 ### Manager update
-- `UpdateScreen` (`:update`) — grouped by project by default; flat view via Grouped toggle switch
-- Grouped view: `### Display Name` header, `_description_` subtitle, items nested under project; untagged items in `(General)` at bottom
-- Flat view: traditional section-per-type layout
+- `UpdateScreen` (`:update`) — always project-grouped; no flat view toggle
+- Each project section: display name + programmatic summary (`N open · N done · next due YYYY-MM-DD`), optional description subtitle, then Accomplished / In Progress / Waiting On / Risks subsections
+- Untagged items collected under `(General)` at bottom of project list
+- Tags shown dimmed on all bullet types (accomplished, in progress, waiting on, risks)
+- Accomplished bullets: `task — outcome` format
 - `★ flagged only` switch: when on, filters tasks/accomplishments/deps to flagged only; when off, shows all with `★` inline next to flagged items
 - Risks: H-severity always included; M/L included only if `★`-flagged
 - Personal items always excluded regardless of switches
-- Resolved deps/risks and blocked always shown flat at the bottom
-- `save_update()` mirrors grouped/flat structure in saved markdown
+- Resolved deps/risks and blocked always shown flat below a divider at the bottom
+- `save_update()` mirrors the same grouped structure in saved markdown
+- Project/tag convention: projects = initiative anchor (e.g. `edp`, `bi_discovery`); tags = work type (e.g. `deployment`, `planning`, `vendor`, `hiring`, `budgeting`, `reporting`, `escalation`) — sparse, cross-cutting, never used for status; title carries specificity
 
 ### Command palette
 - `:` opens `CommandScreen` — input-driven command palette modal
