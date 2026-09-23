@@ -74,7 +74,7 @@ class ProjectManagerScreen(TabCompleteMixin, ModalScreen):
             )
 
         yield Vertical(
-            Label("Project Manager  [dim]ctrl+s to save · esc to cancel[/dim]", id="pm-title"),
+            Label("Project Manager  [dim]ctrl+s to save · blank tag to delete · esc to cancel[/dim]", id="pm-title"),
             Label(
                 f"[{C_TASKS}]T[/] Tasks  [{C_DEPS}]D[/] Deps  [{C_RISKS}]R[/] Risks  [{C_SOME}]S[/] Someday  [{C_ACCS}]A[/] Accomplishments  [bold red]⚠[/bold red] High risk",
                 id="pm-legend"
@@ -89,6 +89,9 @@ class ProjectManagerScreen(TabCompleteMixin, ModalScreen):
             desc = self.query_one(f"#desc-{old_proj}", Input).value.strip()
 
             if not new_tag:
+                delete_project_meta(old_proj)
+                from parser import delete_project
+                delete_project(old_proj)
                 continue
 
             if new_tag != old_proj:

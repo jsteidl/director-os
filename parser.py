@@ -1469,6 +1469,15 @@ def rename_project(old: str, new: str):
         save_project_meta(new, m["display"], m["description"])
 
 
+def delete_project(tag: str):
+    """Remove all +tag occurrences from the log file and projects.md."""
+    path = get_log_file()
+    content = path.read_text(encoding="utf-8")
+    content = re.sub(r"\s*\+" + re.escape(tag) + r"\b", "", content)
+    path.write_text(content, encoding="utf-8")
+    delete_project_meta(tag)
+
+
 def rename_tag(old_tag, new_tag):
     """Rename all occurrences of #old_tag to #new_tag in the log file."""
     path = get_log_file()
