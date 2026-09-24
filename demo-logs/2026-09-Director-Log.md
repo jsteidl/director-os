@@ -3,48 +3,48 @@
 ## Active To-Dos
 
 ### High-Priority
-- [ ] (A) Review Q4 headcount ask with HR | Due: 2026-09-27 | Created: 2026-09-01 | Tags: hiring
-- [ ] (A) Review Q4 headcount ask with HR | Due: 2026-09-10 | Created: 2026-09-01 | Tags: hiring | Mgr: true
-- [ ] (A) Aero sales table validation sign-off | Due: 2026-09-24 | Created: 2026-09-02 | Project: edp | Tags: deployment
-- [ ] (A) Aero sales table validation sign-off | Due: 2026-09-09 | Created: 2026-09-02 | Project: edp | Tags: deployment | Mgr: true
-- [ ] (B) Respond to Tableau renewal proposal | Due: 2026-09-14 | Created: 2026-09-01 | Tags: vendor budgeting
-- [ ] (B) Draft BI team Q4 roadmap | Due: 2026-09-15 | Created: 2026-09-01 | Project: bi_discovery | Tags: planning | Mgr: true
-- [ ] (B) Schedule skip-levels for September | Due: 2026-09-12 | Created: 2026-09-01 | Tags: hiring
-- [ ] (C) Prep weekly staff meeting agenda | Due: 2026-09-24 | Created: 2026-09-03
-- [ ] (C) Review service account audit findings | Due: 2026-09-17 | Created: 2026-09-03 | Project: platform | Tags: reporting
-- [ ] (C) Prep weekly staff meeting agenda | Due: 2026-09-06 | Created: 2026-09-03
+- [ ] (A) Finalize EDP architecture decision | Due: 2026-09-26 | Created: 2026-09-01 | Project: edp | Tags: planning
+- [ ] (A) Review Q4 headcount ask with HR | Due: 2026-09-23 | Created: 2026-09-02 | Mgr: true | Tags: hiring
+- [ ] (A) Unblock Snowflake cost anomaly investigation | Due: 2026-09-25 | Created: 2026-09-03 | Project: platform | Tags: vendor
+- [ ] (A) Aero sales table validation sign-off | Due: 2026-09-28 | Created: 2026-09-04 | Project: edp | Tags: deployment | Mgr: true
+- [ ] (B) Respond to Tableau renewal proposal | Due: 2026-09-25 | Created: 2026-09-05 | Tags: vendor budgeting
+- [ ] (B) Draft BI team Q4 roadmap | Due: 2026-10-07 | Created: 2026-09-06 | Project: bi_discovery | Tags: planning | Mgr: true
+- [ ] (B) Schedule skip-levels for September | Due: 2026-09-30 | Created: 2026-09-07 | Tags: hiring
+- [ ] (C) Update on-call rotation for October | Due: 2026-10-10 | Created: 2026-09-08 | Project: platform | Tags: planning
+- [ ] (C) Review service account audit findings | Due: 2026-10-05 | Created: 2026-09-09 | Project: platform | Tags: reporting
+- [ ] (C) Prep weekly staff meeting agenda | Due: 2026-09-25 | Created: 2026-09-10
 
 ### Waiting On
-- EDP vendor SOW | Owner: Ashlie | Since: 2026-09-01 | Project: edp | Tags: vendor
-- Snowflake enterprise pricing response | Owner: Bill | Since: 2026-08-28 | Tags: vendor budgeting | Mgr: true
+- EDP vendor SOW | Owner: Dana Reyes | Since: 2026-09-01 | Project: edp | Tags: vendor
+- Snowflake enterprise pricing response | Owner: Marcus Webb | Since: 2026-08-28 | Tags: vendor budgeting | Mgr: true
 - Q4 budget approval | Owner: CFO | Since: 2026-09-02 | Tags: budgeting | Mgr: true
-- Store EntraID provisioning spec | Owner: Shrikant | Since: 2026-09-01 | Project: platform | Tags: deployment
-- Feedback on BI roadmap draft | Owner: Chetan | Since: 2026-09-03 | Project: bi_discovery | Tags: planning
+- Store EntraID provisioning spec | Owner: Priya Nair | Since: 2026-09-01 | Project: platform | Tags: deployment
+- Feedback on BI roadmap draft | Owner: Jordan Kim | Since: 2026-09-03 | Project: bi_discovery | Tags: planning
 
 ### Resolved Dependencies
 
 - Dependency: Aimpoint NDA countersignature
-  Owner: Ashlie
+  Owner: Dana Reyes
   Resolved: 2026-09-02
   Notes: Signed and returned; engagement can proceed
 
 - Dependency: Looker contract renewal terms
-  Owner: Brian Williams
+  Owner: Marcus Webb
   Resolved: 2026-09-01
   Notes: Agreed to 2-year renewal at current rate; procurement engaged
 
 ### Someday/Future
-- Standardize data access provisioning workflow | Owner: Jeff | Since: 2026-09-01 | Project: platform | Tags: planning
-- Evaluate dbt Cloud vs self-hosted for EDP | Owner: Jeff | Since: 2026-09-01 | Project: edp | Tags: vendor planning
-- Build internal BI onboarding guide | Owner: Jeff | Since: 2026-09-02 | Project: bi_discovery | Tags: reporting
-- Explore Sigma for store ops dashboards | Owner: Jeff | Since: 2026-09-03 | Tags: vendor | Personal: true
+- Standardize data access provisioning workflow | Owner: Alex Torres | Since: 2026-09-01 | Project: platform | Tags: planning
+- Evaluate dbt Cloud vs self-hosted for EDP | Owner: Alex Torres | Since: 2026-09-01 | Project: edp | Tags: vendor planning
+- Build internal BI onboarding guide | Owner: Alex Torres | Since: 2026-09-02 | Project: bi_discovery | Tags: reporting
+- Explore Sigma for store ops dashboards | Owner: Alex Torres | Since: 2026-09-03 | Tags: vendor | Personal: true
 
 ### Risks
-- EDP timeline at risk due to vendor delays | Severity: H | Owner: Jeff | Since: 2026-09-01 | Project: edp | Tags: deployment | Mgr: true
-- Snowflake costs trending 20% over forecast | Severity: H | Owner: Shrikant | Since: 2026-08-29 | Project: platform | Tags: budgeting | Mgr: true
-- Single point of failure on Boomi ETL | Severity: M | Owner: Sreeram | Since: 2026-09-02 | Project: platform | Tags: deployment
-- Q4 hiring timeline may slip | Severity: M | Owner: Jeff | Since: 2026-09-01 | Tags: hiring
-- Tableau license count under-provisioned | Severity: L | Owner: Jeff | Since: 2026-09-03 | Tags: vendor budgeting
+- EDP timeline at risk due to vendor delays | Severity: H | Owner: Alex Torres | Since: 2026-09-01 | Project: edp | Tags: deployment | Mgr: true
+- Snowflake costs trending 20% over forecast | Severity: H | Owner: Priya Nair | Since: 2026-08-29 | Project: platform | Tags: budgeting | Mgr: true
+- Single point of failure on Boomi ETL | Severity: M | Owner: Sam Okafor | Since: 2026-09-02 | Project: platform | Tags: deployment
+- Q4 hiring timeline may slip | Severity: M | Owner: Alex Torres | Since: 2026-09-01 | Tags: hiring
+- Tableau license count under-provisioned | Severity: L | Owner: Alex Torres | Since: 2026-09-03 | Tags: vendor budgeting
 
 ### Accomplishments
 
@@ -68,7 +68,7 @@
   Outcome: Published to team Slack; no conflicts
   Completed: 2026-09-03
 
-- Task: Review store insights dashboard with Manish | Project: bi_discovery | Tags: reporting | Mgr: true
+- Task: Review store insights dashboard with Jordan | Project: bi_discovery | Tags: reporting | Mgr: true
   Outcome: Approved for stakeholder review; minor label fixes requested
   Completed: 2026-09-03
 
@@ -113,7 +113,7 @@
 
 ##### Blocked
 
-- Snowflake pricing response still outstanding from Bill
+- Snowflake pricing response still outstanding from Marcus Webb
 
 ##### Notes
 
@@ -123,7 +123,7 @@
 
 ##### Priorities
 
-- Store insights review with Manish
+- Store insights review with Jordan
 - On-call schedule
 - Service account audit triage
 
@@ -135,7 +135,7 @@
 
 ##### Blocked
 
-- BI roadmap feedback pending from Chetan
+- BI roadmap feedback pending from Jordan Kim
 
 ##### Notes
 
@@ -160,4 +160,4 @@
 
 ##### Notes
 
-- Good momentum on EDP. Roadmap draft needs Chetan's input before it moves.
+- Good momentum on EDP. Roadmap draft needs Jordan Kim's input before it moves.
