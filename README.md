@@ -4,9 +4,28 @@ A terminal-based productivity OS for technology leaders. Built with [Textual](ht
 
 director_os is a low-friction way to manage your work, stay on top of what matters, and report out on status and accomplishments — without leaving the terminal. All data is stored in plain markdown files, one per month. No database, no sync service, no lock-in.
 
-## Screenshot
+## Screenshots
 
-![director_os dashboard](screenshots/director_os_dashboard.png)
+![Dashboard](screenshots/director_os_dashboard.png)
+*Main dashboard — tasks, dependencies, risks, someday, accomplishments, and today's check-in*
+
+![Manager Update](screenshots/director_os_manager_update.png)
+*Manager update — project-grouped with programmatic summary, outcomes, and tags*
+
+![Project Manager](screenshots/director_os_project_manager.png)
+*Project manager — per-type counts, high-risk indicator, display name and description*
+
+![Tag Manager](screenshots/director_os_tag_manager.png)
+*Tag manager — rename, merge, and delete tags across all objects*
+
+![Weekly Review](screenshots/director_os_weekly_review.png)
+*Weekly review*
+
+![Command Palette](screenshots/director_os_command_palette.png)
+*Command palette*
+
+![Help](screenshots/director_os_help_screen.png)
+*Keyboard shortcut reference*
 
 ## Features
 
