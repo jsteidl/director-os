@@ -5,9 +5,9 @@
 ### High-Priority
 - [ ] (A) Finalize EDP architecture decision | Due: 2026-09-26 | Created: 2026-09-01 | Project: edp | Tags: planning
 - [ ] (A) Review Q4 headcount ask with HR | Due: 2026-09-23 | Created: 2026-09-02 | Mgr: true | Tags: hiring
-- [ ] (A) Unblock Snowflake cost anomaly investigation | Due: 2026-09-25 | Created: 2026-09-03 | Project: platform | Tags: vendor
-- [ ] (A) Aero sales table validation sign-off | Due: 2026-09-28 | Created: 2026-09-04 | Project: edp | Tags: deployment | Mgr: true
-- [ ] (B) Respond to Tableau renewal proposal | Due: 2026-09-25 | Created: 2026-09-05 | Tags: vendor budgeting
+- [ ] (A) Unblock Magrathea Analytics cost anomaly investigation | Due: 2026-09-25 | Created: 2026-09-03 | Project: platform | Tags: vendor
+- [ ] (A) Bistromath sales table validation sign-off | Due: 2026-09-28 | Created: 2026-09-04 | Project: edp | Tags: deployment | Mgr: true
+- [ ] (B) Respond to Sirius Cybernetics BI renewal proposal | Due: 2026-09-25 | Created: 2026-09-05 | Tags: vendor budgeting
 - [ ] (B) Draft BI team Q4 roadmap | Due: 2026-10-07 | Created: 2026-09-06 | Project: bi_discovery | Tags: planning | Mgr: true
 - [ ] (B) Schedule skip-levels for September | Due: 2026-09-30 | Created: 2026-09-07 | Tags: hiring
 - [ ] (C) Update on-call rotation for October | Due: 2026-10-10 | Created: 2026-09-08 | Project: platform | Tags: planning
@@ -15,44 +15,44 @@
 - [ ] (C) Prep weekly staff meeting agenda | Due: 2026-09-25 | Created: 2026-09-10
 
 ### Waiting On
-- EDP vendor SOW | Owner: Dana Reyes | Since: 2026-09-01 | Project: edp | Tags: vendor
-- Snowflake enterprise pricing response | Owner: Marcus Webb | Since: 2026-08-28 | Tags: vendor budgeting | Mgr: true
-- Q4 budget approval | Owner: CFO | Since: 2026-09-02 | Tags: budgeting | Mgr: true
-- Store EntraID provisioning spec | Owner: Priya Nair | Since: 2026-09-01 | Project: platform | Tags: deployment
-- Feedback on BI roadmap draft | Owner: Jordan Kim | Since: 2026-09-03 | Project: bi_discovery | Tags: planning
+- EDP vendor SOW | Owner: Trillian | Since: 2026-09-01 | Project: edp | Tags: vendor
+- Magrathea Analytics enterprise pricing response | Owner: Zaphod Beeblebrox | Since: 2026-08-28 | Tags: vendor budgeting | Mgr: true
+- Q4 budget approval | Owner: Hotblack Desiato | Since: 2026-09-02 | Tags: budgeting | Mgr: true
+- Store EntraID provisioning spec | Owner: Ford Prefect | Since: 2026-09-01 | Project: platform | Tags: deployment
+- Feedback on BI roadmap draft | Owner: Slartibartfast | Since: 2026-09-03 | Project: bi_discovery | Tags: planning
 
 ### Resolved Dependencies
 
-- Dependency: Aimpoint NDA countersignature
-  Owner: Dana Reyes
+- Dependency: Milliways Consulting NDA countersignature
+  Owner: Trillian
   Resolved: 2026-09-02
   Notes: Signed and returned; engagement can proceed
 
-- Dependency: Looker contract renewal terms
-  Owner: Marcus Webb
+- Dependency: Megadodo Publications contract renewal terms
+  Owner: Zaphod Beeblebrox
   Resolved: 2026-09-01
   Notes: Agreed to 2-year renewal at current rate; procurement engaged
 
 ### Someday/Future
-- Standardize data access provisioning workflow | Owner: Alex Torres | Since: 2026-09-01 | Project: platform | Tags: planning
-- Evaluate dbt Cloud vs self-hosted for EDP | Owner: Alex Torres | Since: 2026-09-01 | Project: edp | Tags: vendor planning
-- Build internal BI onboarding guide | Owner: Alex Torres | Since: 2026-09-02 | Project: bi_discovery | Tags: reporting
-- Explore Sigma for store ops dashboards | Owner: Alex Torres | Since: 2026-09-03 | Tags: vendor | Personal: true
+- Standardize data access provisioning workflow | Owner: Arthur Dent | Since: 2026-09-01 | Project: platform | Tags: planning
+- Evaluate dbt Cloud vs self-hosted for EDP | Owner: Arthur Dent | Since: 2026-09-01 | Project: edp | Tags: vendor planning
+- Build internal BI onboarding guide | Owner: Arthur Dent | Since: 2026-09-02 | Project: bi_discovery | Tags: reporting
+- Explore Sirius Cybernetics BI for store ops dashboards | Owner: Arthur Dent | Since: 2026-09-03 | Tags: vendor | Personal: true
 
 ### Risks
-- EDP timeline at risk due to vendor delays | Severity: H | Owner: Alex Torres | Since: 2026-09-01 | Project: edp | Tags: deployment | Mgr: true
-- Snowflake costs trending 20% over forecast | Severity: H | Owner: Priya Nair | Since: 2026-08-29 | Project: platform | Tags: budgeting | Mgr: true
-- Single point of failure on Boomi ETL | Severity: M | Owner: Sam Okafor | Since: 2026-09-02 | Project: platform | Tags: deployment
-- Q4 hiring timeline may slip | Severity: M | Owner: Alex Torres | Since: 2026-09-01 | Tags: hiring
-- Tableau license count under-provisioned | Severity: L | Owner: Alex Torres | Since: 2026-09-03 | Tags: vendor budgeting
+- EDP timeline at risk due to vendor delays | Severity: H | Owner: Arthur Dent | Since: 2026-09-01 | Project: edp | Tags: deployment | Mgr: true
+- Magrathea Analytics costs trending 20% over forecast | Severity: H | Owner: Ford Prefect | Since: 2026-08-29 | Project: platform | Tags: budgeting | Mgr: true
+- Single point of failure on Vogon Integration Platform | Severity: M | Owner: Marvin | Since: 2026-09-02 | Project: platform | Tags: deployment
+- Q4 hiring timeline may slip | Severity: M | Owner: Arthur Dent | Since: 2026-09-01 | Tags: hiring
+- Sirius Cybernetics BI license count under-provisioned | Severity: L | Owner: Arthur Dent | Since: 2026-09-03 | Tags: vendor budgeting
 
 ### Accomplishments
 
-- Task: Kick off EDP discovery with vendor | Project: edp | Tags: planning | Mgr: true
+- Task: Kick off EDP discovery with Milliways Consulting | Project: edp | Tags: planning | Mgr: true
   Outcome: Alignment meeting held; vendor delivering SOW by 2026-09-05
   Completed: 2026-09-01
 
-- Task: Resolve Boomi ETL failure on balance feed | Project: platform | Tags: deployment
+- Task: Resolve Vogon Integration Platform failure on balance feed | Project: platform | Tags: deployment
   Outcome: Root cause identified (schema drift); fix deployed and monitored for 24h
   Completed: 2026-09-02
 
@@ -60,7 +60,7 @@
   Outcome: Deck delivered; positive reception; follow-up on EDP investment requested
   Completed: 2026-09-01
 
-- Task: Close out Aimpoint NDA | Tags: vendor
+- Task: Close out Milliways Consulting NDA | Tags: vendor
   Outcome: Fully executed; filed in contract tracker
   Completed: 2026-09-02
 
@@ -68,7 +68,7 @@
   Outcome: Published to team Slack; no conflicts
   Completed: 2026-09-03
 
-- Task: Review store insights dashboard with Jordan | Project: bi_discovery | Tags: reporting | Mgr: true
+- Task: Review store insights dashboard with Slartibartfast | Project: bi_discovery | Tags: reporting | Mgr: true
   Outcome: Approved for stakeholder review; minor label fixes requested
   Completed: 2026-09-03
 
@@ -80,19 +80,19 @@
 
 ##### Priorities
 
-- EDP vendor kickoff
+- EDP vendor kickoff with Milliways Consulting
 - Q2 accomplishments deck
-- Aimpoint NDA follow-up
+- Milliways Consulting NDA follow-up
 
 ##### Accomplished
 
-- EDP kickoff meeting held; vendor engaged and responsive
+- EDP kickoff meeting held; Trillian engaged and responsive
 - Q2 deck delivered to leadership — good reception
-- Aimpoint NDA countersigned and filed
+- Milliways Consulting NDA countersigned and filed
 
 ##### Blocked
 
-- Q4 budget still pending CFO sign-off
+- Q4 budget still pending Hotblack Desiato sign-off
 
 ##### Notes
 
@@ -102,18 +102,18 @@
 
 ##### Priorities
 
-- Boomi ETL root cause
+- Vogon Integration Platform ETL root cause
 - Q4 headcount prep
 - Platform risk review
 
 ##### Accomplished
 
-- Boomi fix deployed; schema drift was the culprit
+- Vogon Integration Platform fix deployed; schema drift was the culprit
 - Drafted Q4 headcount ask; needs HR alignment before submitting
 
 ##### Blocked
 
-- Snowflake pricing response still outstanding from Marcus Webb
+- Magrathea Analytics pricing response still outstanding from Zaphod Beeblebrox
 
 ##### Notes
 
@@ -123,7 +123,7 @@
 
 ##### Priorities
 
-- Store insights review with Jordan
+- Store insights review with Slartibartfast
 - On-call schedule
 - Service account audit triage
 
@@ -135,7 +135,7 @@
 
 ##### Blocked
 
-- BI roadmap feedback pending from Jordan Kim
+- BI roadmap feedback pending from Slartibartfast
 
 ##### Notes
 
@@ -146,18 +146,18 @@
 ##### Priorities
 
 - Finalize EDP architecture decision
-- Snowflake cost investigation
+- Magrathea Analytics cost investigation
 - Q4 roadmap draft
 
 ##### Accomplished
 
 - EDP arch review completed with team; decision pending vendor response
-- Snowflake anomaly traced to untagged warehouse; cost controls applied
+- Magrathea Analytics anomaly traced to untagged warehouse; cost controls applied
 
 ##### Blocked
 
-- Q4 budget approval still pending CFO
+- Q4 budget approval still pending Hotblack Desiato
 
 ##### Notes
 
-- Good momentum on EDP. Roadmap draft needs Jordan Kim's input before it moves.
+- Good momentum on EDP. Roadmap draft needs Slartibartfast's input before it moves.
