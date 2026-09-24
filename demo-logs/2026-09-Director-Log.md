@@ -3,16 +3,16 @@
 ## Active To-Dos
 
 ### High-Priority
-- Finalize EDP architecture decision | Priority: A | Due: 2026-09-08 | Created: 2026-09-01 | Project: edp | Tags: planning
-- Review Q4 headcount ask with HR | Priority: A | Due: 2026-09-10 | Created: 2026-09-01 | Tags: hiring | Mgr: true
-- Unblock Snowflake cost anomaly investigation | Priority: A | Due: 2026-09-07 | Created: 2026-09-02 | Project: platform | Tags: vendor
-- Aero sales table validation sign-off | Priority: A | Due: 2026-09-09 | Created: 2026-09-02 | Project: edp | Tags: deployment | Mgr: true
-- Respond to Tableau renewal proposal | Priority: B | Due: 2026-09-14 | Created: 2026-09-01 | Tags: vendor budgeting
-- Draft BI team Q4 roadmap | Priority: B | Due: 2026-09-15 | Created: 2026-09-01 | Project: bi_discovery | Tags: planning | Mgr: true
-- Schedule skip-levels for September | Priority: B | Due: 2026-09-12 | Created: 2026-09-01 | Tags: hiring
-- Update on-call rotation for October | Priority: C | Due: 2026-09-20 | Created: 2026-09-03 | Project: platform | Tags: planning
-- Review service account audit findings | Priority: C | Due: 2026-09-17 | Created: 2026-09-03 | Project: platform | Tags: reporting
-- Prep weekly staff meeting agenda | Priority: C | Due: 2026-09-06 | Created: 2026-09-03
+- [ ] (A) Review Q4 headcount ask with HR | Due: 2026-09-27 | Created: 2026-09-01 | Tags: hiring
+- [ ] (A) Review Q4 headcount ask with HR | Due: 2026-09-10 | Created: 2026-09-01 | Tags: hiring | Mgr: true
+- [ ] (A) Aero sales table validation sign-off | Due: 2026-09-24 | Created: 2026-09-02 | Project: edp | Tags: deployment
+- [ ] (A) Aero sales table validation sign-off | Due: 2026-09-09 | Created: 2026-09-02 | Project: edp | Tags: deployment | Mgr: true
+- [ ] (B) Respond to Tableau renewal proposal | Due: 2026-09-14 | Created: 2026-09-01 | Tags: vendor budgeting
+- [ ] (B) Draft BI team Q4 roadmap | Due: 2026-09-15 | Created: 2026-09-01 | Project: bi_discovery | Tags: planning | Mgr: true
+- [ ] (B) Schedule skip-levels for September | Due: 2026-09-12 | Created: 2026-09-01 | Tags: hiring
+- [ ] (C) Prep weekly staff meeting agenda | Due: 2026-09-24 | Created: 2026-09-03
+- [ ] (C) Review service account audit findings | Due: 2026-09-17 | Created: 2026-09-03 | Project: platform | Tags: reporting
+- [ ] (C) Prep weekly staff meeting agenda | Due: 2026-09-06 | Created: 2026-09-03
 
 ### Waiting On
 - EDP vendor SOW | Owner: Ashlie | Since: 2026-09-01 | Project: edp | Tags: vendor
@@ -34,10 +34,10 @@
   Notes: Agreed to 2-year renewal at current rate; procurement engaged
 
 ### Someday/Future
-- Standardize data access provisioning workflow | Project: platform | Tags: planning
-- Evaluate dbt Cloud vs self-hosted for EDP | Project: edp | Tags: vendor planning
-- Build internal BI onboarding guide | Project: bi_discovery | Tags: reporting
-- Explore Sigma for store ops dashboards | Tags: vendor | Personal: true
+- Standardize data access provisioning workflow | Owner: Jeff | Since: 2026-09-01 | Project: platform | Tags: planning
+- Evaluate dbt Cloud vs self-hosted for EDP | Owner: Jeff | Since: 2026-09-01 | Project: edp | Tags: vendor planning
+- Build internal BI onboarding guide | Owner: Jeff | Since: 2026-09-02 | Project: bi_discovery | Tags: reporting
+- Explore Sigma for store ops dashboards | Owner: Jeff | Since: 2026-09-03 | Tags: vendor | Personal: true
 
 ### Risks
 - EDP timeline at risk due to vendor delays | Severity: H | Owner: Jeff | Since: 2026-09-01 | Project: edp | Tags: deployment | Mgr: true
@@ -119,7 +119,7 @@
 
 - Two H-severity risks logged today. Worth flagging in next 1:1.
 
-#### 2026-09-03
+#### 2026-09-24
 
 ##### Priorities
 
@@ -140,3 +140,24 @@
 ##### Notes
 
 - Good execution day. Roadmap draft is the main thing hanging.
+
+#### 2026-09-03
+
+##### Priorities
+
+- Finalize EDP architecture decision
+- Snowflake cost investigation
+- Q4 roadmap draft
+
+##### Accomplished
+
+- EDP arch review completed with team; decision pending vendor response
+- Snowflake anomaly traced to untagged warehouse; cost controls applied
+
+##### Blocked
+
+- Q4 budget approval still pending CFO
+
+##### Notes
+
+- Good momentum on EDP. Roadmap draft needs Chetan's input before it moves.
