@@ -72,14 +72,14 @@ def edit_risk(old_description, new_description, owner, severity, tags=None, proj
 
 def delete_risk(description):
     content = load_log()
-    pattern = re.compile(r"- " + re.escape(description) + r" \| Owner:.*\n")
+    pattern = re.compile(r"- " + re.escape(description) + r" \| Owner:.*\r?\n")
     content = pattern.sub("", content, count=1)
     save_log(content)
 
 
 def resolve_risk(description, notes):
     content = load_log()
-    pattern = re.compile(r"- " + re.escape(description) + r" \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2}) \| Severity:\s*([HML]).*")
+    pattern = re.compile(r"- " + re.escape(description) + r" \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2}) \| Severity:\s*([HML]).*\r?\n")
     match = pattern.search(content)
     if not match:
         return

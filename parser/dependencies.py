@@ -81,14 +81,14 @@ def edit_dependency(old_item, new_item, owner, expected_date=None, tags=None, pr
 
 def delete_dependency(item_text):
     content = load_log()
-    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*\n")
+    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*\r?\n")
     content = pattern.sub("", content, count=1)
     save_log(content)
 
 
 def resolve_dependency(dependency_name, resolution_notes):
     content = load_log()
-    pattern = re.compile(r"- " + re.escape(dependency_name) + r" \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2}).*")
+    pattern = re.compile(r"- " + re.escape(dependency_name) + r" \| Owner:\s*(.*?) \| Since:\s*(\d{4}-\d{2}-\d{2}).*\r?\n")
     match = pattern.search(content)
     if not match:
         return

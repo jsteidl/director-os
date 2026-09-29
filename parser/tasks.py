@@ -95,9 +95,9 @@ def edit_task(old_title, new_title, priority="", due_date="", tags=None, created
 def delete_task(task_title, created=None):
     content = load_log()
     if created:
-        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*\r?\n")
     else:
-        pattern = re.compile(r"- \[ \] .*" + re.escape(task_title.rstrip("…")) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(task_title.rstrip("…")) + r".*\r?\n")
     if not pattern.search(content):
         return False
     content = pattern.sub("", content, count=1)
@@ -108,9 +108,9 @@ def delete_task(task_title, created=None):
 def complete_task(task_text, outcome, created=None):
     content = load_log()
     if created:
-        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*Created: " + re.escape(created) + r".*\r?\n")
     else:
-        pattern = re.compile(r"- \[ \] .*" + re.escape(task_text.rstrip("…")) + r".*\n")
+        pattern = re.compile(r"- \[ \] .*" + re.escape(task_text.rstrip("…")) + r".*\r?\n")
     match = pattern.search(content)
     if not match:
         return

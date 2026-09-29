@@ -67,7 +67,7 @@ def edit_someday_item(old_item, new_item, owner, tags=None, project=""):
 
 def delete_someday_item(item_text):
     content = load_log()
-    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*\n")
+    pattern = re.compile(r"- " + re.escape(item_text) + r" \| Owner:.*\r?\n")
     content = pattern.sub("", content, count=1)
     save_log(content)
 
@@ -94,6 +94,7 @@ def promote_someday_item(item_text, priority="", due_date="", tags=None, project
     if not match:
         return
     content = content.replace(match.group(0) + "\n", "", 1)
+    content = content.replace(match.group(0) + "\r\n", "", 1)
     title = f"({priority}) {item_text}" if priority else item_text
     task_line = f"- [ ] {title} | Created: {date.today()}"
     if due_date:
