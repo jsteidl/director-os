@@ -12,6 +12,8 @@ COMMANDS = [
     ("update",   "Manager update"),
     ("weekly",   "Weekly review"),
     ("events",   "Events"),
+    ("meetings",           "Meeting analysis — current month"),
+    ("meetings-tentative", "Meeting analysis — include tentative"),
     ("about",    "About director_os"),
 ]
 

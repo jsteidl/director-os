@@ -31,7 +31,7 @@ class ConfigScreen(ModalScreen):
         align: center middle;
     }
     Vertical {
-        width: 60;
+        width: 80;
         height: auto;
         border: solid $accent;
         background: $surface;
@@ -47,20 +47,49 @@ class ConfigScreen(ModalScreen):
 
     def compose(self) -> ComposeResult:
         config = _load_config()
-        current_path = config.get("logs_path", "logs")
+        ts = config.get("terminal_size", [])
+        ts_str = f"{ts[0]}x{ts[1]}" if ts else ""
 
         yield Vertical(
             Label("Configuration  [dim]ctrl+s to save · esc to cancel[/dim]"),
             Label("Logs Path"),
-            Input(value=current_path, id="logs-path"),
+            Input(value=config.get("logs_path", "logs"), id="logs-path"),
+            Label("Calendar ICS Path  [dim]today panel agenda[/dim]"),
+            Input(value=config.get("calendar_ics_path", ""), id="cal-ics"),
+            Label("Calendar History ICS Path  [dim]analyze_calendar.py[/dim]"),
+            Input(value=config.get("calendar_history_ics_path", ""), id="cal-history"),
+            Label("Terminal Size  [dim]WxH e.g. 220x50 — leave blank to use current[/dim]"),
+            Input(value=ts_str, id="terminal-size"),
         )
 
     def action_save(self):
-        logs_path = self.query_one("#logs-path", Input).value.strip()
-
         config = _load_config()
+
+        logs_path = self.query_one("#logs-path", Input).value.strip()
         if logs_path:
             config["logs_path"] = logs_path
+
+        cal_ics = self.query_one("#cal-ics", Input).value.strip()
+        if cal_ics:
+            config["calendar_ics_path"] = cal_ics
+        else:
+            config.pop("calendar_ics_path", None)
+
+        cal_history = self.query_one("#cal-history", Input).value.strip()
+        if cal_history:
+            config["calendar_history_ics_path"] = cal_history
+        else:
+            config.pop("calendar_history_ics_path", None)
+
+        ts_str = self.query_one("#terminal-size", Input).value.strip()
+        if ts_str and "x" in ts_str:
+            try:
+                w, h = ts_str.lower().split("x")
+                config["terminal_size"] = [int(w), int(h)]
+            except ValueError:
+                pass
+        else:
+            config.pop("terminal_size", None)
 
         with open(CONFIG_PATH, "wb") as f:
             tomli_w.dump(config, f)

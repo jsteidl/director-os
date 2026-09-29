@@ -3,6 +3,7 @@ from textual.containers import ScrollableContainer
 from textual.css.query import NoMatches
 
 from parser import get_today_entry
+from parser.calendar import get_agenda, format_agenda_line
 
 
 class TodayWidget(ScrollableContainer):
@@ -12,11 +13,23 @@ class TodayWidget(ScrollableContainer):
 
     def load_today(self):
         entry = get_today_entry()
+        agenda = get_agenda()
+        lines = []
+
+        if agenda:
+            lines.append("[bold]Agenda[/bold]")
+            for e in agenda:
+                lines.append(format_agenda_line(e))
 
         if not entry:
-            text = "No check-in for today yet. Press [bold]![/bold] to add one."
+            if not agenda:
+                text = "No check-in for today yet. Press [bold]![/bold] to add one."
+            else:
+                lines.append("\nNo check-in yet. Press [bold]![/bold] to add one.")
+                text = "\n".join(lines)
         else:
-            lines = []
+            if agenda:
+                lines.append("")
 
             if entry.priorities:
                 lines.append("[bold]Priorities[/bold]")

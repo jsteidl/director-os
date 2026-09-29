@@ -47,7 +47,8 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 - **Personal flag** — mark items as personal (♦); cycle dashboard between All / Personal / Work views
 - **Scratch pad** — persistent markdown scratch pad with checkbox navigation and promote-to-task
 - **Tag manager** — rename and merge tags across all objects
-- **Command palette** — `:` to access sync, config, tags, update, weekly, and events
+- **Calendar agenda** — export your Outlook (or any) calendar as `.ics` and surface today's meetings in the Today panel; re-export daily to keep current; requires `icalendar` (`pip install icalendar`); optional — app works without it
+- **Meeting analysis** — `analyze_calendar.py` script for monthly meeting trends: total time, avg per day, by weekday, by week, busiest days, top recurring meetings; requires `recurring-ical-events` (`pip install recurring-ical-events`); reads `calendar_history_ics_path` from `config.toml`
 - **Log sync** — push logs to any git remote with `G`; auto-syncs on quit
 - **Plain text log format** — pipe-delimited named fields (`Field: value`) across all object types; human-readable and easily parsed
 
@@ -61,17 +62,26 @@ cp config.toml.example config.toml  # then edit logs_path
 python app.py
 ```
 
+`icalendar` is an optional dependency — only needed if you want calendar agenda in the Today panel. The app runs without it.
+
 ## Configuration
 
-Set your logs path in `config.toml`:
+Set your paths in `config.toml`:
 
 ```toml
 logs_path = "/path/to/your/logs"
+
+# Optional: ICS calendar export for Today panel agenda (re-export daily)
+calendar_ics_path = "/path/to/outlook_calendar.ics"
+
+# Optional: wider ICS export for analyze_calendar.py (re-export as needed)
+calendar_history_ics_path = "/path/to/outlook_calendar_history.ics"
+
+# Optional: set terminal size on launch
+# terminal_size = [220, 50]
 ```
 
-`config.toml` is gitignored — each machine has its own. The app falls back to `logs/` if no config is present. Theme is hardcoded to `gruvbox`.
-
-The logs directory can be any local or synced path (e.g. a private git repo, OneDrive folder). If the path is missing on startup, a clear error screen is shown.
+`config.toml` is gitignored — each machine has its own. The app falls back to `logs/` if no config is present. All config fields are editable via `:config` in the app.
 
 ## Built With AI Assistance
 

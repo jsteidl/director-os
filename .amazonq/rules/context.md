@@ -65,7 +65,7 @@ screens/
   add_event.py                # AddEventScreen form
   update.py                   # UpdateScreen — manager update generator; always project-grouped; programmatic summary per project; ★ flagged only switch; tags on all bullet types; personal items always excluded
   weekly_review.py            # WeeklyReviewScreen
-  config.py                   # ConfigScreen — edit logs_path via UI
+  config.py                   # ConfigScreen — edit logs_path, calendar_ics_path, calendar_history_ics_path, terminal_size via UI
   scratch.py                  # ScratchPadScreen — markdown scratch pad with checkbox navigation and promote-to-task
   command.py                  # CommandScreen — command palette modal (:sync, :config, :tags, :projects, :update, :weekly, :events)
   tab_complete.py             # TabCompleteMixin — intercepts Tab to apply SuggestFromList completion on focused Input
@@ -76,7 +76,9 @@ widgets/
   risks.py                    # RisksTable — tag_filter, project_filter, personal_filter attributes
   someday.py                  # SomedayTable — tag_filter, project_filter, personal_filter attributes
   accomplishments_table.py    # AccomplishmentTable — tag_filter, project_filter, personal_filter attributes; Project and Tags columns
-  today.py                    # TodayWidget — scrollable, shows today's check-in
+  today.py                    # TodayWidget — scrollable, shows agenda (from ICS) then today's check-in
+parser/
+  calendar.py                 # get_agenda(target_date), format_agenda_line(e) — ICS parsing for Today panel; reads calendar_ics_path from config.toml
 ```
 
 ## Dashboard Layout
@@ -112,6 +114,8 @@ Left column = immediate action. Right column = situational awareness.
 - `app.py` checks `_get_logs_path().exists()` on startup and shows `ConfigErrorScreen` if missing
 - `config.toml` supports optional `terminal_size = [width, height]` — emits xterm resize escape on launch via `sys.stdout.write(f"\033[8;{rows};{cols}t")` before `App.run()`
 - `get_terminal_size()` in `parser/_core.py` reads this value; no-op if not set or not a tty
+- `config.toml` supports optional `calendar_ics_path` — path to ICS file for Today panel agenda; re-export from Outlook daily
+- `config.toml` supports optional `calendar_history_ics_path` — path to wider ICS export for `analyze_calendar.py`; falls back to `calendar_ics_path` if not set
 
 ### Log format
 - All single-line object types use pipe-delimited named fields: `- Title | Field: value | Field: value`
@@ -347,7 +351,7 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 - `c` opens `CalendarScreen` — Gregorian + NRF 4-5-4 fiscal calendar; lazy imported
 - `:events` opens `EventsScreen` — lazy imported
 - `v` opens `WidgetViewerScreen` — read-only, full content, no truncation, tags included
-- `:config` opens `ConfigScreen` — edit `logs_path`; saves to `config.toml`
+- `:config` opens `ConfigScreen` — edit `logs_path`, `calendar_ics_path`, `calendar_history_ics_path`, `terminal_size`; saves to `config.toml`
 - Quote rotates on launch and on `R` refresh
 - Executive summary is a single-line metrics bar with red/green health coloring
 - Title bar shows active filters: `director_os (All #tag +Project)`
@@ -383,6 +387,15 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `:` | Command palette (sync, config, tags, projects, update, weekly, events) |
 | `?` | Help |
 | `q` | Quit |
+
+### Calendar agenda
+- `parser/calendar.py` — `get_agenda(target_date)` parses ICS, filters FREE/OOF/tentative, normalizes Windows timezone names, returns sorted list of event dicts
+- `format_agenda_line(e)` — formats for Rich markup with time, duration, location (dim), tentative marker
+- `TodayWidget` prepends Agenda section when events exist; gracefully handles missing ICS or missing `icalendar` package
+- `icalendar` is an optional dependency — imported inside `get_agenda()` with try/except; app works without it
+- `recurring_ical_events` used in `analyze_calendar.py` for RRULE expansion — not used in the app's `parser/calendar.py`
+- Two ICS files: `calendar_ics_path` (daily export, Today panel) and `calendar_history_ics_path` (wide export, analysis script)
+- `analyze_calendar.py` — standalone script at repo root; reads `calendar_history_ics_path` from config; supports date range args, `--include-tentative`, `--raw` debug flag; noise-filters OOO/PTO/self-blocks/declined/following events; deduplicates organizer+attendee copies
 
 ## Open Issues
 

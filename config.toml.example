@@ -10,6 +10,15 @@
 #   logs_path = "C:/Users/username/OneDrive/director_os_logs"
 logs_path = "logs"
 
+# Optional: path to an ICS calendar file for agenda display in the Today panel.
+# Export your calendar from Outlook (File > Save Calendar) and point this at it.
+# Re-export daily to keep it current. Omit to disable agenda.
+# calendar_ics_path = "/path/to/calendar.ics"
+
+# Optional: path to a separate ICS export for historical analysis (analyze_calendar.py).
+# Export with a wider date range for monthly trend analysis.
+# calendar_history_ics_path = "/path/to/calendar_history.ics"
+
 # Optional: set terminal size as [width, height]. Omit to use the current terminal size.
 # terminal_size = [220, 50]
 

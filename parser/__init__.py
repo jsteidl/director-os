@@ -35,3 +35,4 @@ from parser.projects import (
 from parser.metrics import get_metrics, get_update_data, save_update
 from parser.events import get_events, add_event, edit_event, delete_event, check_event_notifications
 from parser.scratch import get_scratch, save_scratch
+from parser.calendar import get_agenda

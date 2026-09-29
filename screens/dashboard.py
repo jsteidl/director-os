@@ -146,7 +146,7 @@ class DashboardScreen(Screen):
     }
 
     #today {
-        height: 12;
+        height: 24;
         border: solid $accent;
         padding: 0 1;
     }
@@ -308,6 +308,12 @@ class DashboardScreen(Screen):
             elif cmd == "events":
                 from screens.events import EventsScreen
                 self.app.push_screen(EventsScreen())
+            elif cmd == "meetings":
+                from screens.meetings import MeetingsScreen
+                self.app.push_screen(MeetingsScreen())
+            elif cmd == "meetings-tentative":
+                from screens.meetings import MeetingsScreen
+                self.app.push_screen(MeetingsScreen(include_tentative=True))
             elif cmd == "about":
                 from screens.about import AboutScreen
                 self.app.call_after_refresh(self.app.push_screen, AboutScreen())
