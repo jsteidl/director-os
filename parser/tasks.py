@@ -1,5 +1,6 @@
 import re
-from datetime import date
+import time
+from datetime import datetime, date
 from models import Task
 from parser._core import _clean, load_log, save_log
 
@@ -26,7 +27,7 @@ def _parse_task_line(line) -> Task:
         mgr=fields.get("Mgr", "").lower() == "true",
         personal=fields.get("Personal", "").lower() == "true",
         project=fields.get("Project") or None,
-        tags=fields.get("Tags", "").split() if fields.get("Tags") else [],
+        tags=[t for t in fields.get("Tags", "").split() if not t.lower().startswith("carried:")] if fields.get("Tags") else [],
     )
 
 
@@ -67,7 +68,7 @@ def add_task(task_name, tag="", due_date="", priority="", project=""):
     content = load_log()
     task_name = _clean(task_name)
     tags = [t.lstrip("#").lower() for t in tag.split() if t] if tag else []
-    line = _build_task_line(task_name, priority, due_date, date.today().isoformat(),
+    line = _build_task_line(task_name, priority, due_date, datetime.now().strftime("%Y-%m-%d %H:%M:%S.") + str(time.time_ns())[-6:],
                             False, False, project, tags) + "\n"
     content = content.replace("### High-Priority\n", f"### High-Priority\n{line}", 1)
     save_log(content)

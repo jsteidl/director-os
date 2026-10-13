@@ -818,7 +818,8 @@ class DashboardScreen(Screen):
             )
 
         if result.get("add_tasks"):
-            existing_titles = {t.title.lower() for t in self._filtered_tasks()}
+            from parser import get_tasks
+            existing_titles = {t.title.lower() for t in get_tasks()}
             for line in result["priorities"].splitlines():
                 line = line.strip().lstrip("- ").strip()
                 if line and line.lower() not in existing_titles:

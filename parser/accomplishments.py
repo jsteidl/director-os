@@ -33,7 +33,7 @@ def get_accomplishments():
             task=parts[0],
             outcome=outcome,
             completed=completed,
-            tags=extract_tags(task),
+            tags=[t for t in extract_tags(task) if not t.lower().startswith("carried:")],
             mgr=fields.get("Mgr") == "true",
             personal=fields.get("Personal") == "true",
             project=fields.get("Project"),

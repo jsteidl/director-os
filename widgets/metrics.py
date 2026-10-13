@@ -43,7 +43,7 @@ class MetricsWidget(Static, can_focus=True):
         deps = get_dependencies()
 
         overdue = sum(1 for t in tasks if t.due_date and date.fromisoformat(t.due_date) < today)
-        oldest_task = max(((today - date.fromisoformat(t.created)).days for t in tasks if t.created), default=0)
+        oldest_task = max(((today - date.fromisoformat(t.created[:10])).days for t in tasks if t.created), default=0)
         high_risks = sum(1 for r in risks if r.severity.upper() == "H")
         month_wins = sum(1 for a in accomplishments if a.completed.startswith(today.strftime("%Y-%m")))
         oldest_dep = max((d.age for d in deps), default=0)
@@ -71,7 +71,7 @@ class MetricsWidget(Static, can_focus=True):
         oldest_idx = max(
             range(len(tasks)),
             key=lambda i: (
-                (date.today() - date.fromisoformat(tasks[i].created)).days
+                (date.today() - date.fromisoformat(tasks[i].created[:10])).days
                 if tasks[i].created else 0
             )
         )

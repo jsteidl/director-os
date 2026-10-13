@@ -20,7 +20,7 @@ PRIORITY_COLORS = {"A": C_BAD, "B": C_WARN, "C": "cyan"}
 def _age_color(created):
     if not created:
         return C_DEFAULT
-    age = (date.today() - date.fromisoformat(created)).days
+    age = (date.today() - date.fromisoformat(created[:10])).days
     if age >= 14:
         return C_BAD
     if age >= 7:

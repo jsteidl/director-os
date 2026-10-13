@@ -40,7 +40,7 @@ parser/
   tags.py                     # get_all_tags, get_tag_counts, rename_tag, delete_tag
   projects.py                 # get_all_projects, get_project_counts, get_project_meta, save_project_meta, delete_project_meta, rename_project, delete_project
   metrics.py                  # get_metrics, get_update_data, save_update
-  events.py                   # get_events, add_event, edit_event, delete_event, check_event_notifications
+  events.py                   # get_events, add_event, edit_event, delete_event, check_event_notifications, get_upcoming_occurrences, get_events_for_rollover
   scratch.py                  # get_scratch, save_scratch
 screens/
   dashboard.py                # Main screen — layout, bindings, all action handlers
@@ -170,7 +170,10 @@ Left column = immediate action. Right column = situational awareness.
 - `toggle_mgr_task(task_title)` — toggles `Mgr: true` on a task line
 - `toggle_mgr_accomplishment(task_title)` — toggles `Mgr: true` on an accomplishment block
 - `get_events()`, `add_event()`, `edit_event()`, `delete_event()` — CRUD for `events.md`
-- `check_event_notifications()` — called on mount; appends reminders to today's daily log
+- `check_event_notifications()` — called on mount; appends reminders to today's daily log; renders `⊘` for closed events
+- `get_upcoming_occurrences(from_date, days_ahead)` — returns `(date, event)` pairs for all recurring events within lookahead window
+- `get_events_for_rollover(next_month_start)` — returns expanded Event objects for the next month; ready to wire into `rollover_log`
+- `_next_occurrence(event, from_date)` — computes next occurrence date for any recurrence pattern; respects `until` date
 
 ### Personal flag
 - `Personal: true` pipe field on tasks, accomplishments, risks, and someday items
@@ -315,6 +318,18 @@ Left column = immediate action. Right column = situational awareness.
 - Suggestion lists built at compose time from `get_all_tags()` / `get_all_projects()`
 - `TabCompleteMixin` in `screens/tab_complete.py` intercepts Tab to apply the current suggestion without moving focus
 - All screens using the mixin set `priority=True` on their `ctrl+s` binding to ensure save works regardless of focused widget
+
+### Events — recurring
+- `Event` model fields: `title`, `date`, `type`, `location`, `remind_days`, `recurrence`, `personal`, `closed`, `until`
+- `recurrence` values: `""` (one-time), `yearly`, `monthly`, `quarterly`, `weekly:Mon`–`weekly:Sun`, `biweekly:Mon`–`biweekly:Fri`
+- `closed: bool` — office closure indicator; renders `⊘` glyph in notifications and events table Flags column
+- `personal: bool` — renders `♦` in Flags column; consistent with personal flag on all other object types
+- `until: str` — recurrence end date `YYYY-MM-DD`; blank = forever; used for fixed-term contracts, project deadlines
+- `_build_event_line()` — canonical writer; optional fields omitted when not set
+- `get_events_for_rollover()` exists but not yet wired into `_scaffold.py` rollover — pending
+- `AddEventScreen` — widened to 64; includes recurrence `Select`, until `Input`, closed/personal `Checkbox` pair
+- `EventsScreen` — reads from parsed objects not cell values; columns: Title, Date, Type, Recurrence, Until, Location, Remind, Flags
+- Branch: `feature/recurring-events` — committed, not yet merged to master
 
 ### Accomplishment blocks
 Stored as structured blocks:
