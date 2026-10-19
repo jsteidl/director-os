@@ -43,17 +43,16 @@ class MetricsWidget(Static, can_focus=True):
         deps = get_dependencies()
 
         overdue = sum(1 for t in tasks if t.due_date and date.fromisoformat(t.due_date) < today)
-        oldest_task = max(((today - date.fromisoformat(t.created[:10])).days for t in tasks if t.created), default=0)
+        overdue_deps = sum(1 for d in deps if d.expected_date and date.fromisoformat(d.expected_date) < today)
         high_risks = sum(1 for r in risks if r.severity.upper() == "H")
         month_wins = sum(1 for a in accomplishments if a.completed.startswith(today.strftime("%Y-%m")))
-        oldest_dep = max((d.age for d in deps), default=0)
 
         line = Text()
         line.append_text(_colored(overdue, "Overdue", bad_if_nonzero=True))
         line.append("  |  ")
         line.append_text(_colored(high_risks, "High Risks", bad_if_nonzero=True))
         line.append("  |  ")
-        line.append_text(_colored(oldest_task, "Oldest Task (d)  [dim]→ to jump[/dim]", bad_if_nonzero=True))
+        line.append_text(_colored(overdue_deps, "Overdue Deps", bad_if_nonzero=True))
         line.append("  |  ")
         line.append_text(_colored(month_wins, "Wins This Month"))
         self.update(line)
@@ -62,21 +61,4 @@ class MetricsWidget(Static, can_focus=True):
         self.update_metrics()
 
     def on_key(self, event):
-        if event.key != "right":
-            return
-        from parser import get_tasks
-        tasks = get_tasks()
-        if not tasks:
-            return
-        oldest_idx = max(
-            range(len(tasks)),
-            key=lambda i: (
-                (date.today() - date.fromisoformat(tasks[i].created[:10])).days
-                if tasks[i].created else 0
-            )
-        )
-        from widgets.tasks import TaskTable
-        table = self.app.screen.query_one(TaskTable)
-        table.focus()
-        table.move_cursor(row=oldest_idx)
-        event.stop()
+        pass

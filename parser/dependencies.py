@@ -55,6 +55,7 @@ def get_dependencies():
     for line in match.group(1).splitlines():
         if re.match(r"- .+ \| Owner:", line):
             deps.append(_parse_dep_line(line))
+    deps.sort(key=lambda d: (d.expected_date or "9999-99-99"))
     return deps
 
 

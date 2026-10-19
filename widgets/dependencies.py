@@ -10,10 +10,19 @@ C_DEFAULT = "default"
 def _t(text, n=50):
     return text if len(text) <= n else text[:n - 1] + "…"
 
-def _age_color(age):
-    if age >= 14:
+C_OVERDUE = "red"
+
+def _dep_color(dep):
+    from datetime import date
+    if dep.expected_date:
+        try:
+            if date.fromisoformat(dep.expected_date) < date.today():
+                return C_OVERDUE
+        except ValueError:
+            pass
+    if dep.age >= 14:
         return C_BAD
-    if age >= 7:
+    if dep.age >= 7:
         return C_WARN
     return C_DEFAULT
 
@@ -35,7 +44,7 @@ class DependencyTable(DataTable):
                 continue
             if self.project_filter and dep.project != self.project_filter:
                 continue
-            color = _age_color(dep.age)
+            color = _dep_color(dep)
             item_text = _t(dep.item) + (" ★" if dep.mgr else "")
             self.add_row(
                 Text(item_text, style=color),
