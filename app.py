@@ -63,17 +63,26 @@ class DirectorOS(App):
             self.push_screen(DashboardScreen())
             self._pull_logs()
 
+    def _refresh_dashboard(self):
+        from screens.dashboard import DashboardScreen
+        screen = self.screen
+        if isinstance(screen, DashboardScreen):
+            screen.refresh_data()
+
     def _pull_logs(self):
         self.run_worker(self._pull_logs_worker, thread=True)
 
     def _pull_logs_worker(self):
         logs_path = str(_get_logs_path())
         try:
-            r = subprocess.run(["git", "-C", logs_path, "pull"], capture_output=True, text=True, timeout=10)
+            subprocess.run(["git", "-C", logs_path, "stash"], capture_output=True, text=True, timeout=10)
+            r = subprocess.run(["git", "-C", logs_path, "pull", "--rebase"], capture_output=True, text=True, timeout=10)
+            subprocess.run(["git", "-C", logs_path, "stash", "pop"], capture_output=True, text=True, timeout=10)
             if r.returncode != 0:
                 self.call_from_thread(self.notify, f"Pull failed: {r.stderr.strip()}", severity="warning")
             else:
                 self.call_from_thread(self.notify, "Logs up to date \u2713", severity="information")
+                self.call_from_thread(self._refresh_dashboard)
         except subprocess.TimeoutExpired:
             self.call_from_thread(self.notify, "Log pull timed out", severity="warning")
         except Exception as e:
