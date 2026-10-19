@@ -1,4 +1,5 @@
 from textual.widgets import DataTable
+from rich.text import Text
 
 from parser import get_someday_items
 
@@ -28,9 +29,10 @@ class SomedayTable(DataTable):
                 continue
             if self.project_filter and item.project != self.project_filter:
                 continue
+            label = _t(item.item) + (" ♦" if item.personal else "")
             self.add_row(
-                _t(item.item) + (" ♦" if item.personal else ""),
-                _t(item.owner),
+                Text(label),
+                Text(_t(item.owner)),
                 item.since,
                 item.project or "",
                 " ".join(f"#{t}" for t in item.tags) if item.tags else "",

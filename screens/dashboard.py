@@ -62,6 +62,7 @@ class DashboardScreen(Screen):
         Binding("s", "send_to_someday", "Someday"),
         Binding("t", "promote_to_task", "To Task"),
         Binding("r", "dep_to_risk", "To Risk"),
+        Binding("S", "dep_to_someday", "To Someday", show=False),
         Binding("u", "reopen_task", "Reopen"),
         Binding("delete", "delete_selected", "Delete"),
         Binding("M", "toggle_mgr", "Mgr flag"),
@@ -882,6 +883,31 @@ class DashboardScreen(Screen):
         add_risk(description, owner, severity, tags, project=project)
         self.refresh_data()
         self.app.notify("Moved to Risks ✓", severity="information")
+
+    def action_dep_to_someday(self):
+        focused = self.focused
+        if not isinstance(focused, DependencyTable):
+            return
+        row = focused.cursor_row
+        if row is None:
+            return
+        deps = self._filtered_dependencies()
+        if row >= len(deps):
+            return
+        dep = deps[row]
+        self.app.push_screen(
+            AddSomedayScreen(item=dep.item, owner=dep.owner, tags=dep.tags, project=dep.project or ""),
+            lambda result: self._dep_to_someday_callback(dep.item, result)
+        )
+
+    def _dep_to_someday_callback(self, dep_item, result):
+        if not result:
+            return
+        item, owner, tags, project = result
+        delete_dependency(dep_item)
+        add_someday_item(item, owner, tags, project=project)
+        self.refresh_data()
+        self.app.notify("Moved to Someday ✓", severity="information")
 
     def resolve_dependency_callback(self, dependency_name, result):
         if result is None:

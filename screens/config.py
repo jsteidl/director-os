@@ -54,6 +54,8 @@ class ConfigScreen(ModalScreen):
             Label("Configuration  [dim]ctrl+s to save · esc to cancel[/dim]"),
             Label("Logs Path"),
             Input(value=config.get("logs_path", "logs"), id="logs-path"),
+            Label("Scratch Path  [dim]override scratch.md location, e.g. Obsidian vault[/dim]"),
+            Input(value=config.get("scratch_path", ""), id="scratch-path"),
             Label("Calendar ICS Path  [dim]today panel agenda[/dim]"),
             Input(value=config.get("calendar_ics_path", ""), id="cal-ics"),
             Label("Calendar History ICS Path  [dim]analyze_calendar.py[/dim]"),
@@ -68,6 +70,12 @@ class ConfigScreen(ModalScreen):
         logs_path = self.query_one("#logs-path", Input).value.strip()
         if logs_path:
             config["logs_path"] = logs_path
+
+        scratch_path = self.query_one("#scratch-path", Input).value.strip()
+        if scratch_path:
+            config["scratch_path"] = scratch_path
+        else:
+            config.pop("scratch_path", None)
 
         cal_ics = self.query_one("#cal-ics", Input).value.strip()
         if cal_ics:

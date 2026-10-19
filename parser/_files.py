@@ -1,4 +1,5 @@
 from datetime import date
+from pathlib import Path
 from parser._core import _get_logs_path
 
 
@@ -25,4 +26,8 @@ def get_projects_file():
 
 
 def get_scratch_file():
+    from parser._core import _load_config
+    scratch_path = _load_config().get("scratch_path", "")
+    if scratch_path:
+        return Path(scratch_path)
     return _get_logs_path() / "scratch.md"
