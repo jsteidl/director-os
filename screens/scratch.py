@@ -72,7 +72,7 @@ class ScratchPadScreen(ModalScreen):
                 out.append(f"{indent}- {marker} {prefix}{item}")
                 cb_idx += 1
             else:
-                out.append(re.sub(r'^(\s*)[-*] ', r'\1• ', line))
+                out.append(re.sub(r'^(-) ', r'• ', line))
         text = "\n".join(out)
         return re.sub(r'(?<!\n)\n(?!\n)', '  \n', text)
 
