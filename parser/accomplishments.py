@@ -36,7 +36,7 @@ def get_accomplishments():
             tags=[t for t in extract_tags(task) if not t.lower().startswith("carried:")],
             mgr=fields.get("Mgr") == "true",
             personal=fields.get("Personal") == "true",
-            project=fields.get("Project"),
+            project=fields.get("Project") if fields.get("Project") and ' ' not in fields.get("Project", "") else None,
         ))
     return results
 

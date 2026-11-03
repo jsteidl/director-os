@@ -25,7 +25,10 @@ class ProjectManagerScreen(TabCompleteMixin, ModalScreen):
     def compose(self) -> ComposeResult:
         self._counts = get_project_counts()
         self._meta = get_project_meta()
-        self._projects = sorted(self._counts.keys(), key=str.lower)
+        self._projects = sorted(
+            (p for p in self._counts.keys() if p and ' ' not in p and ':' not in p),
+            key=str.lower
+        )
         self._tag_inputs = {}
         self._display_inputs = {}
         self._desc_inputs = {}
