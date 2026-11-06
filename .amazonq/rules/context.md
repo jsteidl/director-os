@@ -28,7 +28,7 @@ config.toml.example           # Committed template for config.toml
 logs/                         # Default log directory (overridden by config.toml)
 parser/
   __init__.py                 # Re-exports all public functions — always import from `parser`, never submodules
-  _core.py                    # _get_logs_path, load_log, save_log, extract_tags, strip_tags, _clean, get_terminal_size
+  _core.py                    # _get_logs_path, load_log, save_log, extract_tags, strip_tags, _clean, get_terminal_size, get_layout
   _files.py                   # Path helpers: get_log_file, get_prev_log_file, get_events_file, get_projects_file, get_scratch_file
   _scaffold.py                # scaffold_log, rollover_log
   tasks.py                    # get_tasks, add_task, edit_task, delete_task, complete_task, reopen_task, toggle_mgr_task, toggle_personal_task
@@ -83,15 +83,19 @@ parser/
 
 ## Dashboard Layout
 
+Two layouts available — toggled with `T` or set via `layout` in `config.toml`.
+
+### Default (side-by-side columns)
+
 ```
 ┌─────────────── director_os ───────────────────────────────┐
 │  Executive Summary                                        │
 │  [metrics bar]                                            │
 │                          │                                │
-│  Tasks                   │  Dependencies                  │
+│  Tasks (2fr)             │  Dependencies                  │
 │  [task table]            │  [dependency table]            │
 │                          │                                │
-│  Today                   │  Risks                         │
+│  Today (1fr)             │  Risks                         │
 │  [today panel]           │  [risks table]                 │
 │                          │                                │
 │                          │  Someday / Future              │
@@ -103,6 +107,22 @@ parser/
 ```
 
 Left column = immediate action. Right column = situational awareness.
+
+### Tabbed (compact, portrait/floating window)
+
+```
+┌─────────────── director_os ───────────────────────────────┐
+│  Executive Summary                                        │
+│  [metrics bar]                                            │
+│  ┌Tasks┬Dependencies┬Risks┬Someday┬Accomplishments┬Today┐ │
+│  │                                                      │ │
+│  │  [active tab content]                                │ │
+│  │                                                      │ │
+│  └──────────────────────────────────────────────────────┘ │
+├── [quote] ─────────────────────────── [date & time] ──────┤
+```
+
+Tabs: 1=Tasks, 2=Dependencies, 3=Risks, 4=Someday, 5=Accomplishments, 6=Today
 
 ## Key Patterns
 
@@ -116,6 +136,8 @@ Left column = immediate action. Right column = situational awareness.
 - `get_terminal_size()` in `parser/_core.py` reads this value; no-op if not set or not a tty
 - `config.toml` supports optional `calendar_ics_path` — path to ICS file for Today panel agenda; re-export from Outlook daily
 - `config.toml` supports optional `calendar_history_ics_path` — path to wider ICS export for `analyze_calendar.py`; falls back to `calendar_ics_path` if not set
+- `config.toml` supports optional `layout` — `"default"` (side-by-side columns) or `"tabbed"` (compact tabbed); defaults to `"default"`; `get_layout()` in `parser/_core.py` reads this value
+- `T` keybind toggles layout live without restarting; toggle is session-only (does not write back to config)
 
 ### Log format
 - All single-line object types use pipe-delimited named fields: `- Title | Field: value | Field: value`
@@ -383,6 +405,8 @@ Always use `_find_accomplishment_block()` to locate them — never raw string ma
 | `s` | Send focused task to someday |
 | `t` | Promote focused someday item to task |
 | `r` | Move focused dependency to risk |
+| `T` | Toggle dashboard layout (default ↔ tabbed) |
+| `1`–`6` | Jump to tab (tabbed layout only): Tasks / Deps / Risks / Someday / Accomplishments / Today |
 | `M` | Flag task/accomplishment for manager update (`★`) |
 | `H` | Toggle personal flag on focused item (`♦`) |
 | `P` | Cycle personal filter (All → Personal only → Work only) |

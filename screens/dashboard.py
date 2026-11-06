@@ -2,7 +2,7 @@ import subprocess
 from textual.screen import Screen
 from textual.containers import Horizontal, Vertical
 from textual.binding import Binding
-from textual.widgets import Label
+from textual.widgets import Label, TabbedContent, TabPane
 from datetime import datetime
 from quotes import get_random_quote
 
@@ -55,6 +55,8 @@ class DashboardScreen(Screen):
         self._personal_filter = "all"
         self._tag_filter = ""
         self._project_filter = ""
+        from parser._core import get_layout
+        self._layout = get_layout()
     BINDINGS = [
         Binding("a", "add", "Add"),
         Binding("e", "edit_selected", "Edit"),
@@ -79,6 +81,13 @@ class DashboardScreen(Screen):
         Binding("b", "briefing", "Briefing"),
         Binding("n", "scratch_pad", "Scratch Pad"),
         Binding("!", "daily_checkin", "Check-in"),
+        Binding("T", "toggle_layout", "Layout"),
+        Binding("1", "goto_tab('tab-tasks')", "Tab 1", show=False),
+        Binding("2", "goto_tab('tab-deps')", "Tab 2", show=False),
+        Binding("3", "goto_tab('tab-risks')", "Tab 3", show=False),
+        Binding("4", "goto_tab('tab-someday')", "Tab 4", show=False),
+        Binding("5", "goto_tab('tab-accomplishments')", "Tab 5", show=False),
+        Binding("6", "goto_tab('tab-today')", "Tab 6", show=False),
         Binding("R", "refresh_data", "Refresh"),
         Binding("G", "sync_logs", "Sync"),
         Binding(":", "command", "Command"),
@@ -141,13 +150,17 @@ class DashboardScreen(Screen):
         padding: 0 1;
     }
 
-    #tasks {
+    #main-tabs {
         height: 1fr;
+    }
+
+    #tasks {
+        height: 2fr;
         border: solid $accent;
     }
 
     #today {
-        height: 24;
+        height: 1fr;
         border: solid $accent;
         padding: 0 1;
     }
@@ -181,29 +194,42 @@ class DashboardScreen(Screen):
             Label("", id="app-clock"),
             id="app-footer"
         )
-        yield Horizontal(
+        yield Label("Executive Summary", classes="widget-label")
+        yield MetricsWidget(id="metrics")
 
-            Vertical(
-                Label("Executive Summary", classes="widget-label"),
-                MetricsWidget(id="metrics"),
-                Label("Tasks", classes="widget-label"),
-                TaskTable(id="tasks"),
-                Label("Today", classes="widget-label"),
-                TodayWidget(id="today"),
-            ),
-
-            Vertical(
-                Label("Dependencies", classes="widget-label"),
-                DependencyTable(id="dependencies"),
-                Label("Risks", classes="widget-label"),
-                RisksTable(id="risks"),
-                Label("Someday / Future", classes="widget-label"),
-                SomedayTable(id="someday"),
-                Label("Accomplishments", classes="widget-label"),
-                AccomplishmentTable(id="accomplishments"),
-            ),
-
-        )
+        if self._layout == "tabbed":
+            with TabbedContent(id="main-tabs"):
+                with TabPane("Tasks", id="tab-tasks"):
+                    yield TaskTable(id="tasks")
+                with TabPane("Dependencies", id="tab-deps"):
+                    yield DependencyTable(id="dependencies")
+                with TabPane("Risks", id="tab-risks"):
+                    yield RisksTable(id="risks")
+                with TabPane("Someday", id="tab-someday"):
+                    yield SomedayTable(id="someday")
+                with TabPane("Accomplishments", id="tab-accomplishments"):
+                    yield AccomplishmentTable(id="accomplishments")
+                with TabPane("Today", id="tab-today"):
+                    yield TodayWidget(id="today")
+        else:
+            yield Horizontal(
+                Vertical(
+                    Label("Tasks", classes="widget-label"),
+                    TaskTable(id="tasks"),
+                    Label("Today", classes="widget-label"),
+                    TodayWidget(id="today"),
+                ),
+                Vertical(
+                    Label("Dependencies", classes="widget-label"),
+                    DependencyTable(id="dependencies"),
+                    Label("Risks", classes="widget-label"),
+                    RisksTable(id="risks"),
+                    Label("Someday / Future", classes="widget-label"),
+                    SomedayTable(id="someday"),
+                    Label("Accomplishments", classes="widget-label"),
+                    AccomplishmentTable(id="accomplishments"),
+                ),
+            )
 
     def on_mount(self):
         self._quote = get_random_quote()
@@ -650,6 +676,20 @@ class DashboardScreen(Screen):
     # =====================================================
     # REFRESH
     # =====================================================
+
+    def action_goto_tab(self, tab_id: str):
+        try:
+            self.query_one(TabbedContent).active = tab_id
+        except Exception:
+            pass
+
+    def action_toggle_layout(self):
+        self._layout = "tabbed" if self._layout == "default" else "default"
+        self.app.notify(f"Layout: {self._layout}", timeout=2)
+        self.app.call_after_refresh(self._do_recompose)
+
+    async def _do_recompose(self):
+        await self.recompose()
 
     def action_refresh_data(self):
         self.refresh_data()

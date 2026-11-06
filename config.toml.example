@@ -25,3 +25,7 @@ logs_path = "logs"
 # Textual theme. Options: textual-dark, textual-light, gruvbox, nord, monokai, dracula, tokyo-night, solarized-light
 # Defaults to gruvbox if not set.
 theme = "gruvbox"
+
+# Dashboard layout. Options: default (side-by-side columns), tabbed (single column with tabs)
+# Defaults to "default" if not set.
+# layout = "tabbed"

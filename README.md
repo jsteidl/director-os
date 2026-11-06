@@ -29,6 +29,7 @@ director_os is a low-friction way to manage your work, stay on top of what matte
 
 ## Features
 
+- **Dual layout** — toggle between side-by-side columns (default) and compact tabbed view with `T`; set default via `layout` in `config.toml`; tabbed layout ideal for portrait monitors or floating windows; `1`–`6` jump directly to each tab
 - **Executive Summary** — live status bar showing overdue count, high risk count, oldest task age, and wins this month
 - **Task tracking** — add, edit, complete, delete, and reopen tasks with priority (A/B/C), due dates, tags, and project
 - **Dependency tracking** — track what you're waiting on, by owner and age; hand off from completed tasks

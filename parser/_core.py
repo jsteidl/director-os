@@ -18,6 +18,10 @@ def _get_logs_path() -> Path:
     return p if p.is_absolute() else Path(__file__).parent.parent / p
 
 
+def get_layout() -> str:
+    return _load_config().get("layout", "default")
+
+
 def get_terminal_size() -> tuple[int, int] | None:
     config = _load_config()
     size = config.get("terminal_size")
