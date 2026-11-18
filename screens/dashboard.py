@@ -276,6 +276,8 @@ class DashboardScreen(Screen):
         focused = self.focused
         if isinstance(focused, DependencyTable):
             self.action_resolve_dependency()
+        elif isinstance(focused, RisksTable):
+            self.action_resolve_risk()
         else:
             self.action_complete_task()
 
@@ -974,6 +976,29 @@ class DashboardScreen(Screen):
     # =====================================================
     # RISKS
     # =====================================================
+
+    def action_resolve_risk(self):
+        table = self.query_one(RisksTable)
+        row = table.cursor_row
+        if row is None:
+            return
+        risks = self._filtered_risks()
+        if row >= len(risks):
+            return
+        description = risks[row].description
+        self.app.push_screen(
+            ResolveDependencyScreen(),
+            lambda result: self._resolve_risk_callback(description, result)
+        )
+
+    def _resolve_risk_callback(self, description, result):
+        if result is None:
+            return
+        notes, _ = result
+        from parser import resolve_risk
+        resolve_risk(description, notes or "")
+        self.refresh_data()
+        self.app.notify("Risk resolved ✓", severity="information")
 
     def action_add_risk(self):
         self.app.push_screen(AddRiskScreen(), self.add_risk_callback)
