@@ -80,6 +80,8 @@ class DashboardScreen(Screen):
         Binding("c", "calendar", "Calendar"),
         Binding("b", "briefing", "Briefing"),
         Binding("n", "scratch_pad", "Scratch Pad"),
+        Binding("f1", "reference", "Reference"),
+        Binding("i", "reference", "Reference", show=False),
         Binding("!", "daily_checkin", "Check-in"),
         Binding("T", "toggle_layout", "Layout"),
         Binding("1", "goto_tab('tab-tasks')", "Tab 1", show=False),
@@ -1225,6 +1227,10 @@ class DashboardScreen(Screen):
         self.refresh_data()
         label = f"#{self._tag_filter}" if self._tag_filter else "All tags"
         self.app.notify(f"Tag filter: {label}", timeout=2)
+
+    def action_reference(self):
+        from screens.reference import ReferenceScreen
+        self.app.push_screen(ReferenceScreen())
 
     def action_scratch_pad(self):
         from screens.scratch import ScratchPadScreen

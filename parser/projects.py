@@ -10,7 +10,7 @@ from parser.accomplishments import get_accomplishments
 def get_all_projects():
     projects = set()
     for obj in [*get_tasks(), *get_dependencies(), *get_risks(), *get_someday_items(), *get_accomplishments()]:
-        if obj.project:
+        if obj.project and ' ' not in obj.project and ':' not in obj.project:
             projects.add(obj.project)
     return sorted(projects, key=str.lower)
 

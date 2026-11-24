@@ -5,10 +5,10 @@ from textual.containers import Vertical
 from textual.binding import Binding
 from screens.due_date import resolve_due, DUE_PLACEHOLDER, DUE_ERROR
 from parser import get_all_tags, get_all_projects
-from screens.tab_complete import TabCompleteMixin
+from screens.tab_complete import TabCompleteMixin, ReferenceMixin
 
 
-class AddDependencyScreen(TabCompleteMixin, ModalScreen[tuple]):
+class AddDependencyScreen(TabCompleteMixin, ReferenceMixin, ModalScreen[tuple]):
 
     BINDINGS = [
         Binding("ctrl+s", "save", "Save", priority=True),

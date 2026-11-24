@@ -3580,3 +3580,891 @@ For `use_container_width=True`, use `width='stretch'`. For `use_container_width=
 `use_container_width` will be removed after 2025-12-31.
 
 For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:50.304 Uvicorn server started on :::8501
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8501
+  Network URL: http://172.31.227.237:8501
+
+  Help agents write better Streamlit apps?
+  Install the official Streamlit skills by running streamlit skills in your terminal.
+
+  Detected WSL. Using poll-based file watching for better compatibility. To force watchdog, set server.fileWatcherType = "watchdog".
+gio: http://localhost:8501: Operation not supported
+2026-11-18 17:24:57.738 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:57.782 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:57.801 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:57.805 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.856 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.862 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.869 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.884 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.906 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.913 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.919 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:24:58.924 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:25:56.298 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:56.336 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:56.356 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:56.362 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.083 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.090 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.099 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.110 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.126 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.132 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.139 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:25:57.144 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:26:07.772 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:07.813 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:07.830 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:07.833 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.705 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.715 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.727 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.747 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.764 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.770 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.780 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:08.785 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:26:11.338 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:11.377 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:11.399 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:11.402 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.285 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.291 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.307 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.320 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.339 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.346 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.355 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:12.360 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:26:16.512 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:16.553 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:16.571 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:16.578 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.368 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.377 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.386 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.397 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.421 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.427 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.435 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:17.438 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:26:24.505 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:24.552 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:24.569 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:24.573 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.327 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.332 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.338 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.353 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.367 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.372 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.378 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:25.383 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:26:38.555 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:38.601 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:38.623 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:38.628 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.542 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.548 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.554 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.571 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.588 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.596 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.612 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:39.617 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:26:42.866 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:42.906 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:42.923 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:42.927 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.899 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.905 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.911 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.925 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.940 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.946 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.958 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:26:43.962 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:27:51.435 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:51.487 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:51.521 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:51.532 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.722 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.730 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.740 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.753 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.769 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.776 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.783 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:27:52.787 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:28:04.098 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.146 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.168 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.173 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.955 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.960 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.970 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:04.982 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:05.003 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:05.009 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:05.020 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:05.024 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+[31m──[0m[31m────────────────────────[0m[31m [0m[1;31mTraceback [0m[1;2;31m(most recent call last)[0m[31m [0m[31m─────────────────────────[0m[31m──[0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mexec_code.py[0m:136 in exec_func_with_error_handling                                    [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/home/steidl/miniconda3/lib/python3.13/site-packages/streamlit/runtime/scriptrunner/[0m [31m [0m
+[31m [0m [1mscript_runner.py[0m:924 in code_to_exec                                                 [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m [2m/mnt/c/Users/006423/OneDrive - Catalyst [0m                                             [31m [0m
+[31m [0m [2mBrands/Documents/_Catalyst/boomi_explorer/[0m[1mboomi_streamlit.py[0m:683 in <module>         [31m [0m
+[31m [0m                                                                                      [31m [0m
+[31m [0m   [2m680 [0m[2m│   │   │   [0m(s[[33m"[0m[33mprocess_name[0m[33m"[0m] [94mfor[0m s [95min[0m [96msorted[0m(steps, key=[94mlambda[0m x: x[[33m"[0m[33msort_or[0m [31m [0m
+[31m [0m   [2m681 [0m[2m│   │   │    [0m[94mif[0m s[[33m"[0m[33mstop[0m[33m"[0m] [95min[0m ([33m"[0m[33m"[0m, [33m"[0m[33mNULL[0m[33m"[0m)), [33m"[0m[33munknown[0m[33m"[0m                          [31m [0m
+[31m [0m   [2m682 [0m[2m│   │   [0m)                                                                      [31m [0m
+[31m [0m [31m❱ [0m683 [2m│   │   [0mhour = [1;4;96mint[0m[1;4m(start[[0m[1;4;94m11[0m[1;4m:[0m[1;4;94m13[0m[1;4m])[0m                                               [31m [0m
+[31m [0m   [2m684 [0m[2m│   │   [0mtime_of_day = (                                                        [31m [0m
+[31m [0m   [2m685 [0m[2m│   │   │   [0m[33m"[0m[33movernight (0-5)[0m[33m"[0m  [94mif[0m hour < [94m6[0m  [94melse[0m                               [31m [0m
+[31m [0m   [2m686 [0m[2m│   │   │   [0m[33m"[0m[33mmorning (6-11)[0m[33m"[0m   [94mif[0m hour < [94m12[0m [94melse[0m                               [31m [0m
+[31m────────────────────────────────────────────────────────────────────────────────────────[0m
+[1;91mValueError: [0minvalid literal for [1;35mint[0m[1m([0m[1m)[0m with base [1;36m10[0m: [32m''[0m
+2026-11-18 17:28:14.055 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:14.098 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:14.114 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:14.118 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.304 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.311 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.318 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.334 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.357 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.365 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.372 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.377 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.483 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.529 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.583 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.621 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+2026-11-18 17:28:15.628 Please replace `use_container_width` with `width`.
+
+`use_container_width` will be removed after 2025-12-31.
+
+For `use_container_width=True`, use `width='stretch'`. For `use_container_width=False`, use `width='content'`.
+  Stopping...

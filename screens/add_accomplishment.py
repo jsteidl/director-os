@@ -4,10 +4,10 @@ from textual.suggester import SuggestFromList
 from textual.containers import Vertical
 from textual.binding import Binding
 from parser import get_all_tags, get_all_projects
-from screens.tab_complete import TabCompleteMixin
+from screens.tab_complete import TabCompleteMixin, ReferenceMixin
 
 
-class AddAccomplishmentScreen(TabCompleteMixin, ModalScreen[tuple | None]):
+class AddAccomplishmentScreen(TabCompleteMixin, ReferenceMixin, ModalScreen[tuple | None]):
 
     BINDINGS = [
         Binding("ctrl+s", "save", "Save", priority=True),
@@ -60,7 +60,7 @@ class AddAccomplishmentScreen(TabCompleteMixin, ModalScreen[tuple | None]):
         self.dismiss(None)
 
 
-class EditAccomplishmentScreen(TabCompleteMixin, ModalScreen[tuple | None]):
+class EditAccomplishmentScreen(TabCompleteMixin, ReferenceMixin, ModalScreen[tuple | None]):
 
     BINDINGS = [
         Binding("ctrl+s", "save", "Save", priority=True),

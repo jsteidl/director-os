@@ -4,10 +4,10 @@ from textual.suggester import SuggestFromList
 from textual.containers import Vertical
 from textual.binding import Binding
 from parser import get_all_tags, get_all_projects
-from screens.tab_complete import TabCompleteMixin
+from screens.tab_complete import TabCompleteMixin, ReferenceMixin
 
 
-class AddRiskScreen(TabCompleteMixin, ModalScreen[tuple]):
+class AddRiskScreen(TabCompleteMixin, ReferenceMixin, ModalScreen[tuple]):
 
     BINDINGS = [
         Binding("ctrl+s", "save", "Save", priority=True),

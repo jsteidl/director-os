@@ -18,6 +18,7 @@ def _dep_color(dep):
         try:
             if date.fromisoformat(dep.expected_date) < date.today():
                 return C_OVERDUE
+            return C_DEFAULT
         except ValueError:
             pass
     if dep.age >= 14:

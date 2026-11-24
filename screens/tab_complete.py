@@ -1,4 +1,5 @@
 from textual.widgets import Input
+from textual.binding import Binding
 
 
 class TabCompleteMixin:
@@ -11,3 +12,12 @@ class TabCompleteMixin:
                 focused.value = focused._suggestion
                 focused.cursor_position = len(focused.value)
                 event.prevent_default()
+        elif event.key == "f1":
+            from screens.reference import ReferenceScreen
+            self.app.push_screen(ReferenceScreen())
+            event.prevent_default()
+
+
+class ReferenceMixin:
+    """Stub — reference handling is built into TabCompleteMixin."""
+    pass
